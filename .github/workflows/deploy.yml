@@ -1,0 +1,63 @@
+name: CI / Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Never let two deploys race each other onto the same box. A PR check may be cancelled by a
+# newer push; a deploy that is already running on the VPS must not be killed halfway.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4 # reads the pnpm version from package.json "packageManager"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      # The build needs no backend: landing data is fetched at request time (see CLAUDE.md,
+      # "Cache Components rules"). If this starts failing with a connection error, something
+      # began calling the API at build time.
+      - run: pnpm build
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+          # Dummy values: only the production build on the VPS inlines the real ones.
+          API_BASE_URL: http://localhost:5059
+          NEXT_PUBLIC_API_BASE_URL: http://localhost:5059
+
+  deploy:
+    needs: check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      VPS_HOST: ${{ secrets.VPS_HOST }}
+      VPS_PORT: ${{ secrets.VPS_PORT || '22' }}
+      VPS_USER: ${{ secrets.VPS_USER }}
+      APP_URL: ${{ secrets.APP_URL }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Load SSH key
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -p "$VPS_PORT" -H "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+      # The script is piped in, so the box never needs it checked out first. ssh does not
+      # forward the runner's environment, so APP_URL arrives as $1. Empty is fine: the script
+      # then health-checks the local port directly.
+      - name: Deploy
+        run: |
+          ssh -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" "bash -s -- '$APP_URL'" < scripts/deploy.sh

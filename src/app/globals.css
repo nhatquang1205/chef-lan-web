@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+/* Bon Bocon brand guide, page 3. Dark theme only: beige on olive, terracotta as the accent.
+   Terracotta is for button/badge BACKGROUNDS with beige text (about 5:1); as text on olive it
+   is about 1.8:1 and fails. */
+@theme inline {
+  --color-olive: #2b2a16;
+  --color-olive-raised: #35341f;
+  --color-beige: #d3c8b6;
+  --color-terracotta: #7a3f21;
+  --color-terracotta-hover: #8f4c29;
+  --font-display: var(--font-yeseva), serif;
+  --font-sans: var(--font-barlow), system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--color-olive);
+  color-scheme: dark;
+}
+
+body {
+  background: var(--color-olive);
+  color: var(--color-beige);
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Anchors must clear the sticky header. */
+[id] {
+  scroll-margin-top: 5.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-beige);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--color-terracotta);
+  color: var(--color-beige);
+}

@@ -1,0 +1,23 @@
+# /etc/systemd/system/cheflan-web.service
+#
+# Replace the three <...> values. Mirror the User and the node path from the existing wish-list
+# unit: `systemctl cat wishlist`. systemd needs an ABSOLUTE node path; if node comes from nvm,
+# use that path (`which node` as the deploy user).
+[Unit]
+Description=chef-lan-web (Next.js)
+After=network.target
+
+[Service]
+Type=simple
+User=<deploy-user>
+WorkingDirectory=/home/<deploy-user>/chef-lan-web
+Environment=NODE_ENV=production
+Environment=NEXT_TELEMETRY_DISABLED=1
+# Loopback only: nginx is the single public entry point. 3100 keeps clear of wish-list;
+# check what is taken with `sudo ss -ltnp`.
+ExecStart=<absolute-path-to-node> node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 3100
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

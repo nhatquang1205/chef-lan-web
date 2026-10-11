@@ -1,0 +1,116 @@
+{
+  "meta": {
+    "title": "Bon Bocon — Chef Lan's cooking courses",
+    "description": "Learn to cook at home with chef Lan: video courses by theme, watch anytime."
+  },
+  "brand": { "tagline": "Italian homemade restaurant" },
+  "nav": {
+    "home": "Home",
+    "categories": "Categories",
+    "courses": "Courses",
+    "login": "Log in",
+    "logout": "Log out",
+    "menu": "Open menu",
+    "closeMenu": "Close menu",
+    "language": "Language"
+  },
+  "common": {
+    "loading": "Loading…",
+    "error": "Could not load data. Please try again later.",
+    "retry": "Try again",
+    "free": "Free",
+    "notFoundTitle": "Page not found",
+    "notFoundText": "The page you are looking for does not exist or has moved.",
+    "backHome": "Back to home",
+    "somethingWrong": "Something went wrong"
+  },
+  "level": {
+    "Unspecified": "",
+    "Beginner": "Beginner",
+    "Intermediate": "Intermediate",
+    "Advanced": "Advanced"
+  },
+  "duration": { "hours": "h", "minutes": "min" },
+  "card": { "lessons": "lessons", "lifetime": "Lifetime access" },
+  "hero": { "viewCourse": "View course", "prev": "Previous slide", "next": "Next slide", "goTo": "Go to slide" },
+  "landing": {
+    "showMore": "Show more",
+    "noCoursesYet": "No courses yet.",
+    "prev": "Previous",
+    "next": "Next"
+  },
+  "courses": {
+    "title": "Courses",
+    "inCategory": "Category: {name}",
+    "search": "Search courses",
+    "searchPlaceholder": "Course name…",
+    "category": "Category",
+    "allCategories": "All categories",
+    "level": "Level",
+    "allLevels": "All levels",
+    "sort": "Sort by",
+    "sortNewest": "Newest",
+    "sortPriceAsc": "Price: low to high",
+    "sortPriceDesc": "Price: high to low",
+    "sortTitle": "Name A–Z",
+    "apply": "Filter",
+    "clear": "Clear filters",
+    "empty": "No courses match your filters.",
+    "emptyHint": "Try removing a filter, or type the name with accents (for example “Phở”).",
+    "pageOf": "Page {page} of {total}",
+    "prevPage": "Previous page",
+    "nextPage": "Next page",
+    "results": "{count} courses"
+  },
+  "course": {
+    "back": "All courses",
+    "whatYouWillLearn": "What you will learn",
+    "about": "About this course",
+    "outline": "Course content",
+    "videos": "videos",
+    "watchFree": "Watch preview",
+    "freeUntil": "First {seconds}s free",
+    "access": "Access",
+    "accessDays": "{days} days",
+    "accessLifetime": "Lifetime",
+    "price": "Price",
+    "buyNote": "Contact chef Lan to enroll in this course."
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "fullName": "Full name",
+    "phone": "Phone (optional)",
+    "show": "Show",
+    "hide": "Hide",
+    "loginTitle": "Log in",
+    "loginSubmit": "Log in",
+    "loggingIn": "Logging in…",
+    "noAccount": "No account yet?",
+    "registerLink": "Sign up",
+    "registerTitle": "Create an account",
+    "registerSubmit": "Create account",
+    "registering": "Creating account…",
+    "haveAccount": "Already have an account?",
+    "loginLink": "Log in",
+    "passwordHint": "At least 8 characters.",
+    "hello": "Hello, {name}",
+    "errors": {
+      "invalid": "Email or password is incorrect.",
+      "notActivated": "This account has no password yet. Please contact chef Lan to get it activated.",
+      "locked": "This account is temporarily locked after too many failed attempts. Try again in 15 minutes.",
+      "inactive": "This account has been disabled. Please contact chef Lan.",
+      "emailUsed": "This email is already registered.",
+      "rateLimited": "Too many attempts. Please wait {seconds} seconds and try again.",
+      "validation": "Please check your details.",
+      "network": "Could not reach the server. Please try again.",
+      "unknown": "Something went wrong. Please try again."
+    }
+  },
+  "footer": {
+    "contact": "Contact",
+    "hours": "08:00 – 22:00",
+    "address": "164 Châu Thị Vĩnh Tế, Đà Nẵng, Vietnam",
+    "rights": "All rights reserved, Bon Bocon."
+  }
+}

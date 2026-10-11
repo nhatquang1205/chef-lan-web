@@ -42,15 +42,33 @@ export interface Paged<T> {
 }
 
 export interface LessonVideoOutline {
-  id: number;
+  /** Opaque public id (16 hex chars): what the watch page URL uses. There is no integer id. */
+  publicId: string;
   title: string;
   description?: string | null;
   thumbnailUrl?: string | null;
   durationSeconds: number;
   isFree: boolean;
   freeTillSeconds?: number | null;
-  /** Present only for free videos. */
-  url?: string;
+  // No url: a playable link comes from GET /videos/{publicId}/playback, per play.
+}
+
+export interface Playback {
+  videoId: string;
+  title: string;
+  description?: string | null;
+  /** Signed, short-lived link to the Bunny player. */
+  url: string;
+  expiresAt?: string | null;
+  isFree: boolean;
+  /** Null = no limit (always null for someone who owns the lesson). Enforced by the watch page. */
+  freeTillSeconds?: number | null;
+  /** True when the viewer owns this lesson, through the course or the lesson itself. */
+  hasFullAccess: boolean;
+  durationSeconds: number;
+  courseSlug: string;
+  courseTitle: string;
+  lessonTitle: string;
 }
 
 export interface LessonOutline {
@@ -60,6 +78,9 @@ export interface LessonOutline {
   description?: string | null;
   sortOrder: number;
   durationSeconds: number;
+  /** What this lesson costs on its own; null = only available through the course. */
+  priceVnd?: number | null;
+  priceDisplay?: string | null;
   videos: LessonVideoOutline[];
 }
 
@@ -70,6 +91,12 @@ export interface CourseDetail extends Omit<CourseListItem, "categories"> {
   promoVideoUrl?: string | null;
   categories: Category[];
   lessons: LessonOutline[];
+}
+
+/** What the signed-in customer owns within one course. */
+export interface CourseAccess {
+  hasCourseAccess: boolean;
+  lessonIds: number[];
 }
 
 export interface Customer {

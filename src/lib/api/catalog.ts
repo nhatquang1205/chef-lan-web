@@ -1,6 +1,6 @@
 import { cacheLife, cacheTag } from "next/cache";
 import { apiFetch, ApiError } from "./client";
-import type { Category, CourseDetail, CourseLevel, CourseListItem, CourseSort, Paged } from "./types";
+import type { Category, CourseDetail, CourseLevel, CourseListItem, CourseSort, Paged, Playback } from "./types";
 
 /**
  * Landing-page data, cached for 60s at runtime. Callers must `await connection()` first (see
@@ -60,6 +60,28 @@ export async function getCourse(slug: string): Promise<CourseDetail | null> {
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) {
       return null;
+    }
+
+    throw error;
+  }
+}
+
+export type PlaybackResult = { status: "ok"; playback: Playback } | { status: "not_free" } | { status: "not_found" };
+
+/**
+ * Asks the API for a fresh signed link, per page view. Never cached: the link is short-lived and a
+ * cached copy would hand it to someone else.
+ */
+export async function getPlayback(publicId: string): Promise<PlaybackResult> {
+  try {
+    return { status: "ok", playback: await apiFetch<Playback>(`/api/v1/videos/${encodeURIComponent(publicId)}/playback`) };
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) {
+      return { status: "not_found" };
+    }
+
+    if (error instanceof ApiError && error.status === 403) {
+      return { status: "not_free" };
     }
 
     throw error;

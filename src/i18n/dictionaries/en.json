@@ -3,7 +3,9 @@
     "title": "Bon Bocon — Chef Lan's cooking courses",
     "description": "Learn to cook at home with chef Lan: video courses by theme, watch anytime."
   },
-  "brand": { "tagline": "Italian homemade restaurant" },
+  "brand": {
+    "tagline": "Italian homemade restaurant"
+  },
   "nav": {
     "home": "Home",
     "categories": "Categories",
@@ -31,9 +33,20 @@
     "Intermediate": "Intermediate",
     "Advanced": "Advanced"
   },
-  "duration": { "hours": "h", "minutes": "min" },
-  "card": { "lessons": "lessons", "lifetime": "Lifetime access" },
-  "hero": { "viewCourse": "View course", "prev": "Previous slide", "next": "Next slide", "goTo": "Go to slide" },
+  "duration": {
+    "hours": "h",
+    "minutes": "min"
+  },
+  "card": {
+    "lessons": "lessons",
+    "lifetime": "Lifetime access"
+  },
+  "hero": {
+    "viewCourse": "View course",
+    "prev": "Previous slide",
+    "next": "Next slide",
+    "goTo": "Go to slide"
+  },
   "landing": {
     "showMore": "Show more",
     "noCoursesYet": "No courses yet.",
@@ -69,13 +82,18 @@
     "about": "About this course",
     "outline": "Course content",
     "videos": "videos",
-    "watchFree": "Watch preview",
+    "watchVideo": "Watch video",
+    "watchPreview": "Watch preview",
+    "locked": "Enroll to watch",
     "freeUntil": "First {seconds}s free",
     "access": "Access",
     "accessDays": "{days} days",
     "accessLifetime": "Lifetime",
     "price": "Price",
-    "buyNote": "Contact chef Lan to enroll in this course."
+    "buyNote": "Contact chef Lan to enroll in this course.",
+    "lessonPrice": "Buy this lesson on its own: {price}",
+    "buyLessonNote": "Contact chef Lan to buy this lesson on its own.",
+    "owned": "Owned"
   },
   "auth": {
     "email": "Email",
@@ -114,5 +132,21 @@
     "hours": "08:00 – 22:00",
     "address": "164 Châu Thị Vĩnh Tế, Đà Nẵng, Vietnam",
     "rights": "All rights reserved, Bon Bocon."
+  },
+  "watch": {
+    "previewNotice": "This is a preview: the first {seconds} seconds are free.",
+    "countdown": "Preview: {time} left",
+    "previewEnded": "The preview has ended",
+    "previewEndedText": "Contact chef Lan to enroll in the course and watch it in full.",
+    "backToCourse": "Back to the course",
+    "loadingPlayer": "Loading the player…",
+    "playerFailed": "The player could not be loaded. Please reload the page.",
+    "notFreeTitle": "This video is not free",
+    "notFreeText": "Enroll in the course to watch this video.",
+    "lesson": "Lesson",
+    "playerLabel": "Video player",
+    "signInHint": "Bought this course or lesson? Sign in to watch it.",
+    "signIn": "Sign in",
+    "checkingAccess": "Checking your access…"
   }
 }

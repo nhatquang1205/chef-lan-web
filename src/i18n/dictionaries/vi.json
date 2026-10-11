@@ -3,7 +3,9 @@
     "title": "Bon Bocon — Khóa học nấu ăn của cô Lan",
     "description": "Học nấu ăn tại nhà cùng cô Lan: khóa học video theo từng chủ đề, xem mọi lúc."
   },
-  "brand": { "tagline": "Italian homemade restaurant" },
+  "brand": {
+    "tagline": "Italian homemade restaurant"
+  },
   "nav": {
     "home": "Trang chủ",
     "categories": "Danh mục",
@@ -31,9 +33,20 @@
     "Intermediate": "Trung cấp",
     "Advanced": "Nâng cao"
   },
-  "duration": { "hours": "giờ", "minutes": "phút" },
-  "card": { "lessons": "bài học", "lifetime": "Truy cập trọn đời" },
-  "hero": { "viewCourse": "Xem khóa học", "prev": "Slide trước", "next": "Slide sau", "goTo": "Tới slide" },
+  "duration": {
+    "hours": "giờ",
+    "minutes": "phút"
+  },
+  "card": {
+    "lessons": "bài học",
+    "lifetime": "Truy cập trọn đời"
+  },
+  "hero": {
+    "viewCourse": "Xem khóa học",
+    "prev": "Slide trước",
+    "next": "Slide sau",
+    "goTo": "Tới slide"
+  },
   "landing": {
     "showMore": "Xem thêm",
     "noCoursesYet": "Chưa có khóa học nào.",
@@ -69,13 +82,18 @@
     "about": "Giới thiệu",
     "outline": "Nội dung khóa học",
     "videos": "video",
-    "watchFree": "Xem thử",
+    "watchVideo": "Xem video",
+    "watchPreview": "Xem thử",
+    "locked": "Đăng ký để xem",
     "freeUntil": "Miễn phí {seconds} giây đầu",
     "access": "Thời hạn truy cập",
     "accessDays": "{days} ngày",
     "accessLifetime": "Trọn đời",
     "price": "Học phí",
-    "buyNote": "Liên hệ cô Lan để đăng ký khóa học."
+    "buyNote": "Liên hệ cô Lan để đăng ký khóa học.",
+    "lessonPrice": "Mua riêng bài học này: {price}",
+    "buyLessonNote": "Liên hệ cô Lan để mua riêng bài học này.",
+    "owned": "Đã sở hữu"
   },
   "auth": {
     "email": "Email",
@@ -114,5 +132,21 @@
     "hours": "08:00 – 22:00",
     "address": "164 Châu Thị Vĩnh Tế, Đà Nẵng",
     "rights": "Bản quyền thuộc Bon Bocon."
+  },
+  "watch": {
+    "previewNotice": "Đây là bản xem thử: {seconds} giây đầu được xem miễn phí.",
+    "countdown": "Xem thử: còn {time}",
+    "previewEnded": "Phần xem thử đã kết thúc",
+    "previewEndedText": "Liên hệ cô Lan để đăng ký khóa học và xem trọn vẹn.",
+    "backToCourse": "Về trang khóa học",
+    "loadingPlayer": "Đang tải trình phát…",
+    "playerFailed": "Không tải được trình phát. Hãy tải lại trang.",
+    "notFreeTitle": "Video này không miễn phí",
+    "notFreeText": "Đăng ký khóa học để xem video này.",
+    "lesson": "Bài học",
+    "playerLabel": "Trình phát video",
+    "signInHint": "Đã mua khóa học hoặc bài học này? Hãy đăng nhập để xem.",
+    "signIn": "Đăng nhập",
+    "checkingAccess": "Đang kiểm tra quyền xem…"
   }
 }

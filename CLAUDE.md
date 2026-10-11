@@ -38,6 +38,30 @@ course and category text comes from the API in Vietnamese.
 
 Both `vi.json` and `en.json` must have the same keys (`Dictionary` is typed from `vi.json`).
 
+## Who owns what (browser-side)
+
+Login tokens live in the browser, so server-rendered pages cannot know who is watching. Two things therefore
+call the API **from the browser** with the customer's token: `WatchView` (playback, so an owner of the course or
+lesson unlocks the video and loses the preview limit) and `CourseAccessProvider` (the outline overlay: "Owned"
+badge and WATCH VIDEO instead of the lock, from `GET /courses/{slug}/access`). The API enforces access; the
+overlay only changes buttons. `AuthProvider.getAccessToken()` hands out a token renewed when near expiry, one
+renewal at a time (refresh tokens rotate). **The session ref is set together with the state, never from an
+effect:** child effects run before the provider's, and an effect-synced ref was still empty when the access
+provider asked for a token, so the access request was silently never sent. Lessons with a `priceVnd` show a
+"buy this lesson on its own" note; there is no online checkout, so it says to contact chef Lan.
+
+## Watch page and the preview limit
+
+`/courses/{slug}/watch/{videoId}` (`videoId` is the opaque `publicId`) embeds Bunny's player in an iframe
+and controls it with Bunny's player.js (`playerjs-latest.min.js`: `on`, `pause`, `setCurrentTime`,
+`getCurrentTime`; events `ready`, `timeupdate`, `seeked`, `play`). `VideoPlayer` applies `freeTillSeconds`:
+stop at the limit, undo seeks past it, cover with an overlay. **It is a teaser limit, not a paywall** (the
+iframe's signed link is for the whole video). It fails closed: for a limited video the player stays covered
+and unfocusable until player.js has attached. The link comes from `getPlayback()` per page view, never
+cached. Outline buttons: free + no limit = WATCH VIDEO, free + limit = WATCH PREVIEW, paid = lock, no link.
+Next 16 keeps the state of a page you navigate away from, so back/forward can revive an "ended" overlay;
+test the limiter with full page loads. Real-Bunny behaviour is unverified.
+
 ## Header categories dropdown
 
 `CategoryLinks` (server component, `await connection()`, swallows API errors) is streamed into the

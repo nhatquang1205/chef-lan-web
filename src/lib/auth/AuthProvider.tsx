@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { apiFetch, ApiError, NetworkError } from "@/lib/api/client";
 import type { SessionResponse } from "@/lib/api/types";
 
@@ -59,6 +59,8 @@ interface AuthContextValue {
   login(email: string, password: string): Promise<AuthResult>;
   register(input: RegisterInput): Promise<AuthResult>;
   logout(): Promise<void>;
+  /** A valid access token for API calls from the browser, renewed first if it is about to expire. Null when signed out. */
+  getAccessToken(): Promise<string | null>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -127,12 +129,24 @@ function toFailure(error: unknown): AuthResult {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [status, setStatus] = useState<AuthContextValue["status"]>("loading");
+  const sessionRef = useRef<Session | null>(null);
+  const renewing = useRef<Promise<string | null> | null>(null);
 
-  const store = useCallback((next: Session | null) => {
-    writeSession(next);
+  // The ref is set together with the state, never from a later effect: child components' effects run
+  // BEFORE this provider's, so an effect-synced ref would still be empty when they ask for a token.
+  const applySession = useCallback((next: Session | null) => {
+    sessionRef.current = next;
     setSession(next);
-    setStatus(next ? "authenticated" : "anonymous");
   }, []);
+
+  const store = useCallback(
+    (next: Session | null) => {
+      writeSession(next);
+      applySession(next);
+      setStatus(next ? "authenticated" : "anonymous");
+    },
+    [applySession],
+  );
 
   // Restore on mount. A session whose access token is (nearly) expired is refreshed first;
   // if that fails the user is simply signed out.
@@ -148,7 +162,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (new Date(saved.accessTokenExpiresAt).getTime() - Date.now() > REFRESH_MARGIN_MS) {
-        setSession(saved);
+        applySession(saved);
         setStatus("authenticated");
         return;
       }
@@ -168,7 +182,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (error instanceof ApiError) {
             store(null);
           } else {
-            setSession(saved);
+            applySession(saved);
             setStatus("authenticated");
           }
         }
@@ -180,7 +194,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [store]);
+  }, [store, applySession]);
 
   const login = useCallback<AuthContextValue["login"]>(
     async (email, password) => {
@@ -251,9 +265,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [session, store]);
 
+  const getAccessToken = useCallback(async (): Promise<string | null> => {
+    const current = sessionRef.current;
+
+    if (!current) {
+      return null;
+    }
+
+    if (new Date(current.accessTokenExpiresAt).getTime() - Date.now() > REFRESH_MARGIN_MS) {
+      return current.accessToken;
+    }
+
+    // One renewal at a time: refresh tokens rotate, so two parallel renewals would trip reuse detection.
+    renewing.current ??= (async () => {
+      try {
+        const next = toSession(
+          await apiFetch<SessionResponse>("/api/v1/auth/refresh", {
+            method: "POST",
+            body: { refreshToken: current.refreshToken },
+          }),
+        );
+        store(next);
+        return next.accessToken;
+      } catch (error) {
+        // A network blip must not sign the user out; a real rejection must.
+        if (error instanceof ApiError) {
+          store(null);
+        }
+
+        return null;
+      } finally {
+        renewing.current = null;
+      }
+    })();
+
+    return renewing.current;
+  }, [store]);
+
   const value = useMemo<AuthContextValue>(
-    () => ({ status, user: session?.user ?? null, login, register, logout }),
-    [status, session, login, register, logout],
+    () => ({ status, user: session?.user ?? null, login, register, logout, getAccessToken }),
+    [status, session, login, register, logout, getAccessToken],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

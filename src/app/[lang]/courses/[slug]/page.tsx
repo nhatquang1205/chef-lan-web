@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { CourseAccessProvider, OwnedBadge, VideoAction } from "@/components/CourseAccess";
 import { Thumbnail } from "@/components/Thumbnail";
 import { localePath } from "@/i18n/config";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
@@ -89,14 +90,18 @@ async function Content({ params }: { params: PageProps<"/[lang]/courses/[slug]">
 
       <section className="mt-10">
         <h2 className="font-display text-2xl">{dict.course.outline}</h2>
+        <CourseAccessProvider slug={course.slug}>
         <ol className="mt-4 divide-y divide-beige/15 rounded-lg border border-beige/15">
           {course.lessons.map((lesson, index) => (
             <li key={lesson.id}>
               <details open={index === 0} className="group">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-3 hover:bg-olive-raised">
-                  <span>
-                    <span className="text-beige/55">{index + 1}. </span>
-                    {lesson.title}
+                  <span className="flex items-center gap-2">
+                    <span>
+                      <span className="text-beige/55">{index + 1}. </span>
+                      {lesson.title}
+                    </span>
+                    <OwnedBadge lessonId={lesson.id} dict={dict} />
                   </span>
                   <span className="shrink-0 text-sm text-beige/60">
                     {lesson.videos.length} {dict.course.videos}
@@ -109,8 +114,14 @@ async function Content({ params }: { params: PageProps<"/[lang]/courses/[slug]">
                   {lesson.description && (
                     <li className="whitespace-pre-line text-sm text-beige/70">{lesson.description}</li>
                   )}
+                  {lesson.priceDisplay && (
+                    <li className="rounded bg-terracotta/20 px-3 py-2 text-sm">
+                      <span className="font-semibold">{template(dict.course.lessonPrice, { price: lesson.priceDisplay })}</span>
+                      <span className="text-beige/70"> · {dict.course.buyLessonNote}</span>
+                    </li>
+                  )}
                   {lesson.videos.map((video) => (
-                    <li key={video.id} className="flex flex-wrap items-center justify-between gap-3 text-sm">
+                    <li key={video.publicId} className="flex flex-wrap items-center justify-between gap-3 text-sm">
                       <span className="flex items-center gap-2">
                         {video.title}
                         {video.isFree && (
@@ -122,11 +133,13 @@ async function Content({ params }: { params: PageProps<"/[lang]/courses/[slug]">
                       <span className="flex items-center gap-4 text-beige/65">
                         {video.freeTillSeconds != null && <span>{template(dict.course.freeUntil, { seconds: video.freeTillSeconds })}</span>}
                         {video.durationSeconds > 0 && <span>{formatDuration(video.durationSeconds, dict)}</span>}
-                        {video.url && (
-                          <a href={video.url} target="_blank" rel="noopener noreferrer" className="font-semibold uppercase tracking-widest text-beige underline underline-offset-4">
-                            {dict.course.watchFree}
-                          </a>
-                        )}
+                        <VideoAction
+                          href={localePath(lang, `/courses/${course.slug}/watch/${video.publicId}`)}
+                          lessonId={lesson.id}
+                          isFree={video.isFree}
+                          limited={video.freeTillSeconds != null}
+                          dict={dict}
+                        />
                       </span>
                     </li>
                   ))}
@@ -135,6 +148,7 @@ async function Content({ params }: { params: PageProps<"/[lang]/courses/[slug]">
             </li>
           ))}
         </ol>
+        </CourseAccessProvider>
       </section>
     </article>
   );

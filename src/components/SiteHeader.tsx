@@ -21,8 +21,18 @@ function useHydrated() {
   return useSyncExternalStore(subscribeNothing, () => true, () => false);
 }
 
-export function SiteHeader({ lang, dict }: { lang: Locale; dict: Dictionary }) {
+export function SiteHeader({
+  lang,
+  dict,
+  categoryLinks,
+}: {
+  lang: Locale;
+  dict: Dictionary;
+  /** The <li> items of the Categories dropdown, rendered on the server (see CategoryLinks). */
+  categoryLinks: React.ReactNode;
+}) {
   const [open, setOpen] = useState(false);
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
   const pathname = usePathname();
   const auth = useAuth();
   const hydrated = useHydrated();
@@ -31,7 +41,7 @@ export function SiteHeader({ lang, dict }: { lang: Locale; dict: Dictionary }) {
   const items = [
     { key: "home", href: home, label: dict.nav.home, active: pathname === home },
     // Plain anchor: from any other page, Next navigates to the landing page and scrolls.
-    { key: "categories", href: `${home === "/" ? "" : home}/#categories`, label: dict.nav.categories, active: false },
+    { key: "categories", href: `${home === "/" ? "" : home}/#categories`, label: dict.nav.categories, active: false, menu: true },
     {
       key: "courses",
       href: localePath(lang, "/courses"),
@@ -48,10 +58,15 @@ export function SiteHeader({ lang, dict }: { lang: Locale; dict: Dictionary }) {
   const account = !hydrated || auth.status === "loading" ? (
     // Reserve the space so the header does not jump when the session is read.
     <div aria-hidden className="h-9 w-28" />
-  ) : auth.status === "authenticated" && auth.customer ? (
+  ) : auth.status === "authenticated" && auth.user ? (
       <div className="flex items-center gap-3">
-        <span className="max-w-40 truncate text-sm text-beige/80">
-          {template(dict.auth.hello, { name: auth.customer.fullName })}
+        <span className="flex max-w-56 items-center gap-2 text-sm text-beige/80">
+          <span className="truncate">{template(dict.auth.hello, { name: auth.user.name })}</span>
+          {auth.user.actor === "Staff" && (
+            <span className="shrink-0 rounded bg-terracotta px-2 py-0.5 text-xs font-semibold uppercase tracking-widest text-beige">
+              {dict.auth.adminBadge}
+            </span>
+          )}
         </span>
         <button
           type="button"
@@ -77,11 +92,55 @@ export function SiteHeader({ lang, dict }: { lang: Locale; dict: Dictionary }) {
         <Logo lang={lang} />
 
         <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
-          {items.map((item) => (
-            <Link key={item.key} href={item.href} aria-current={item.active ? "page" : undefined} className={linkClass(item.active)}>
-              {item.label}
-            </Link>
-          ))}
+          {items.map((item) =>
+            "menu" in item ? (
+              // Opens on hover, on focus, and on tap/click of the chevron; Escape or leaving closes it.
+              <div
+                key={item.key}
+                className="relative flex items-center"
+                onMouseEnter={() => setCategoriesOpen(true)}
+                onMouseLeave={() => setCategoriesOpen(false)}
+                onBlur={(event) => {
+                  if (!event.currentTarget.contains(event.relatedTarget)) setCategoriesOpen(false);
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === "Escape") setCategoriesOpen(false);
+                }}
+                onClick={() => setCategoriesOpen(false)}
+              >
+                <Link href={item.href} className={`${linkClass(false)} pr-1`}>
+                  {item.label}
+                </Link>
+                <button
+                  type="button"
+                  aria-label={dict.nav.categoriesMenu}
+                  aria-haspopup="menu"
+                  aria-expanded={categoriesOpen}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setCategoriesOpen((value) => !value);
+                  }}
+                  className="rounded p-1 text-beige/75 hover:text-beige"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden className={categoriesOpen ? "rotate-180" : ""}>
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </button>
+                {categoriesOpen && (
+                  // The pt-2 wrapper bridges the gap, so the pointer never leaves the hover area.
+                  <div className="absolute left-0 top-full z-50 pt-2">
+                    <ul role="menu" className="min-w-52 rounded-lg border border-beige/20 bg-olive-raised p-1 shadow-xl">
+                      {categoryLinks}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link key={item.key} href={item.href} aria-current={item.active ? "page" : undefined} className={linkClass(item.active)}>
+                {item.label}
+              </Link>
+            ),
+          )}
         </nav>
 
         <div className="hidden items-center gap-5 md:flex">
@@ -107,9 +166,12 @@ export function SiteHeader({ lang, dict }: { lang: Locale; dict: Dictionary }) {
         <div id="mobile-menu" className="border-t border-beige/15 px-4 pb-5 pt-3 md:hidden" onClick={() => setOpen(false)}>
           <nav aria-label="Main" className="flex flex-col">
             {items.map((item) => (
-              <Link key={item.key} href={item.href} aria-current={item.active ? "page" : undefined} className={`${linkClass(item.active)} py-3`}>
-                {item.label}
-              </Link>
+              <div key={item.key}>
+                <Link href={item.href} aria-current={item.active ? "page" : undefined} className={`${linkClass(item.active)} block py-3`}>
+                  {item.label}
+                </Link>
+                {"menu" in item && <ul className="mb-2 ml-3 border-l border-beige/20 pl-2">{categoryLinks}</ul>}
+              </div>
             ))}
           </nav>
           <div className="mt-3 flex items-center justify-between gap-4 border-t border-beige/15 pt-4" onClick={(e) => e.stopPropagation()}>

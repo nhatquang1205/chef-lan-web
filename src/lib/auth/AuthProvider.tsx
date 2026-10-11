@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { apiFetch, ApiError, NetworkError } from "@/lib/api/client";
-import type { Customer, CustomerAuthResponse } from "@/lib/api/types";
+import type { SessionResponse } from "@/lib/api/types";
 
 /**
  * Tokens live in localStorage. That is readable by any script on the page, so an XSS bug
@@ -12,11 +12,32 @@ import type { Customer, CustomerAuthResponse } from "@/lib/api/types";
 const STORAGE_KEY = "cheflan.session";
 const REFRESH_MARGIN_MS = 60_000;
 
+/** What the UI needs to know about whoever is signed in, customer or admin alike. */
+export interface AuthUser {
+  name: string;
+  actor: "Customer" | "Staff";
+  role?: string;
+}
+
 interface Session {
   accessToken: string;
   accessTokenExpiresAt: string;
   refreshToken: string;
-  customer: Customer;
+  user: AuthUser;
+}
+
+/** Maps the API response (customer or staff) onto the stored session. */
+function toSession(response: SessionResponse): Session {
+  const staff = response.actor === "Staff" ? response.staff : undefined;
+
+  return {
+    accessToken: response.accessToken,
+    accessTokenExpiresAt: response.accessTokenExpiresAt,
+    refreshToken: response.refreshToken,
+    user: staff
+      ? { name: staff.displayName, actor: "Staff", role: staff.role }
+      : { name: response.customer?.fullName ?? "", actor: "Customer" },
+  };
 }
 
 export type AuthFailure =
@@ -34,7 +55,7 @@ export interface RegisterInput {
 
 interface AuthContextValue {
   status: "loading" | "anonymous" | "authenticated";
-  customer: Customer | null;
+  user: AuthUser | null;
   login(email: string, password: string): Promise<AuthResult>;
   register(input: RegisterInput): Promise<AuthResult>;
   logout(): Promise<void>;
@@ -45,7 +66,19 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 function readSession(): Session | null {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as Session) : null;
+
+    if (!raw) {
+      return null;
+    }
+
+    const parsed = JSON.parse(raw) as Session & { customer?: { fullName: string } };
+
+    // Sessions stored by an earlier build had `customer` instead of `user`.
+    if (!parsed.user && parsed.customer) {
+      parsed.user = { name: parsed.customer.fullName, actor: "Customer" };
+    }
+
+    return parsed.user ? parsed : null;
   } catch {
     return null;
   }
@@ -121,13 +154,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       try {
-        const renewed = await apiFetch<CustomerAuthResponse>("/api/v1/auth/refresh", {
+        const renewed = await apiFetch<SessionResponse>("/api/v1/auth/refresh", {
           method: "POST",
           body: { refreshToken: saved.refreshToken },
         });
 
         if (!cancelled) {
-          store(renewed);
+          store(toSession(renewed));
         }
       } catch (error) {
         // A network blip must not sign the user out; a real rejection must.
@@ -153,10 +186,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async (email, password) => {
       try {
         store(
-          await apiFetch<CustomerAuthResponse>("/api/v1/auth/login", {
-            method: "POST",
-            body: { email, password },
-          }),
+          toSession(
+            await apiFetch<SessionResponse>("/api/v1/auth/login", {
+              method: "POST",
+              body: { email, password },
+            }),
+          ),
         );
         return { ok: true };
       } catch (error) {
@@ -170,10 +205,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async (input) => {
       try {
         store(
-          await apiFetch<CustomerAuthResponse>("/api/v1/auth/register", {
-            method: "POST",
-            body: { ...input, phone: input.phone || null },
-          }),
+          toSession(
+            await apiFetch<SessionResponse>("/api/v1/auth/register", {
+              method: "POST",
+              body: { ...input, phone: input.phone || null },
+            }),
+          ),
         );
         return { ok: true };
       } catch (error) {
@@ -195,10 +232,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Logout needs a valid access token to revoke the refresh token, so renew it first if
       // it has expired. Failing here must not keep the user signed in: we are already
       // signed out locally.
-      let active = current;
+      let active: { accessToken: string; refreshToken: string } = current;
 
       if (new Date(current.accessTokenExpiresAt).getTime() <= Date.now()) {
-        active = await apiFetch<CustomerAuthResponse>("/api/v1/auth/refresh", {
+        active = await apiFetch<SessionResponse>("/api/v1/auth/refresh", {
           method: "POST",
           body: { refreshToken: current.refreshToken },
         });
@@ -215,7 +252,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [session, store]);
 
   const value = useMemo<AuthContextValue>(
-    () => ({ status, customer: session?.customer ?? null, login, register, logout }),
+    () => ({ status, user: session?.user ?? null, login, register, logout }),
     [status, session, login, register, logout],
   );
 

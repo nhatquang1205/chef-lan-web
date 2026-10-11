@@ -2,11 +2,18 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useId, useState } from "react";
+import { useId, useState, useSyncExternalStore } from "react";
 import { useAuth, type AuthFailure } from "@/lib/auth/AuthProvider";
 import { localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { template } from "@/lib/format";
+
+const subscribeNothing = () => () => {};
+
+/** False until the page's JavaScript has hydrated this form. */
+function useHydrated() {
+  return useSyncExternalStore(subscribeNothing, () => true, () => false);
+}
 
 /** Same-origin paths only: `?next=https://evil.example` or `//evil.example` would be an open redirect. */
 function safeNext(value: string | null): string | null {
@@ -34,6 +41,7 @@ export function AuthForm({ mode, lang, dict }: { mode: "login" | "register"; lan
   const router = useRouter();
   const next = safeNext(useSearchParams().get("next"));
   const uid = useId();
+  const hydrated = useHydrated();
   const [showPassword, setShowPassword] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -135,7 +143,9 @@ export function AuthForm({ mode, lang, dict }: { mode: "login" | "register"; lan
 
       <button
         type="submit"
-        disabled={pending}
+        // Until hydration the form has no submit handler, and a native submit would be a GET that
+        // puts the email AND password in the URL (history, server logs, referrers).
+        disabled={pending || !hydrated}
         className="w-full rounded bg-terracotta px-5 py-3 font-semibold uppercase tracking-widest text-beige hover:bg-terracotta-hover disabled:opacity-60"
       >
         {pending ? (isLogin ? dict.auth.loggingIn : dict.auth.registering) : isLogin ? dict.auth.loginSubmit : dict.auth.registerSubmit}

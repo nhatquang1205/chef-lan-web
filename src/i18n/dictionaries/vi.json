@@ -11,6 +11,7 @@
     "login": "Đăng nhập",
     "logout": "Đăng xuất",
     "menu": "Mở menu",
+    "categoriesMenu": "Mở danh sách danh mục",
     "closeMenu": "Đóng menu",
     "language": "Ngôn ngữ"
   },
@@ -94,6 +95,7 @@
     "haveAccount": "Đã có tài khoản?",
     "loginLink": "Đăng nhập",
     "passwordHint": "Tối thiểu 8 ký tự.",
+    "adminBadge": "Quản trị",
     "hello": "Xin chào, {name}",
     "errors": {
       "invalid": "Email hoặc mật khẩu không đúng.",

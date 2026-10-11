@@ -79,9 +79,26 @@ export interface Customer {
   phone?: string | null;
 }
 
-export interface CustomerAuthResponse {
+/** An admin who signed in through the shared login (see the backend's CustomerAuthController). */
+export interface Staff {
+  id: number;
+  email: string;
+  displayName: string;
+  role: "Admin" | "Staff";
+  jobTitle?: string | null;
+  mustChangePassword: boolean;
+}
+
+/**
+ * Result of /auth/login and /auth/refresh. `actor` says which population the token belongs to;
+ * exactly one of `customer` and `staff` is present. /auth/register returns the customer shape
+ * without `actor`.
+ */
+export interface SessionResponse {
+  actor?: "Customer" | "Staff";
   accessToken: string;
   accessTokenExpiresAt: string;
   refreshToken: string;
-  customer: Customer;
+  customer?: Customer;
+  staff?: Staff;
 }

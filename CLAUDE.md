@@ -38,7 +38,21 @@ course and category text comes from the API in Vietnamese.
 
 Both `vi.json` and `en.json` must have the same keys (`Dictionary` is typed from `vi.json`).
 
+## Header categories dropdown
+
+`CategoryLinks` (server component, `await connection()`, swallows API errors) is streamed into the
+client `SiteHeader` as the `categoryLinks` slot. It lists every **Active** category, including ones with
+no published courses (the landing page hides those; the dropdown links to the filtered list, which then
+shows its empty state). Opens on hover, focus and chevron tap; Escape/leave closes. Mobile shows the same
+list nested under "Danh mục".
+
 ## Auth
+
+One login form for customers **and admins**: the backend's `/auth/login` answers with `actor`
+(`Customer` or `Staff`) and the session stores a small `AuthUser {name, actor, role}`. The header
+shows an "Admin" badge for staff. Refresh and logout use the same `/auth/*` endpoints for both. The
+admin token is an Internal token: it works on `/api/v1/admins/**` and `/api/v1/me`, but the public
+course endpoints still treat it as anonymous (no paid-video preview yet).
 
 Tokens are in **localStorage** (`src/lib/auth/AuthProvider.tsx`), chosen over httpOnly cookies:
 simpler and no BFF, but any XSS can read them. The backend's refresh-token rotation with

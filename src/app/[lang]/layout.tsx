@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Barlow_Semi_Condensed, Yeseva_One } from "next/font/google";
 import { Suspense } from "react";
+import { CategoryLinks } from "@/components/CategoryLinks";
 import { Logo } from "@/components/Logo";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Footer } from "@/components/Footer";
@@ -50,7 +51,15 @@ export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
               </header>
             }
           >
-            <SiteHeader lang={lang} dict={dict} />
+            <SiteHeader
+              lang={lang}
+              dict={dict}
+              categoryLinks={
+                <Suspense fallback={null}>
+                  <CategoryLinks lang={lang} />
+                </Suspense>
+              }
+            />
           </Suspense>
           <main className="flex-1">{children}</main>
           <Footer dict={dict} />

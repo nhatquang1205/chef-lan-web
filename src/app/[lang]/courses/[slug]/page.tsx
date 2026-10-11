@@ -105,7 +105,10 @@ async function Content({ params }: { params: PageProps<"/[lang]/courses/[slug]">
                 </summary>
 
                 <ul className="space-y-2 bg-olive-raised/60 px-4 py-3">
-                  {lesson.description && <li className="text-sm text-beige/70">{lesson.description}</li>}
+                  {/* whitespace-pre-line keeps the author's line breaks (e.g. one recipe step per line). */}
+                  {lesson.description && (
+                    <li className="whitespace-pre-line text-sm text-beige/70">{lesson.description}</li>
+                  )}
                   {lesson.videos.map((video) => (
                     <li key={video.id} className="flex flex-wrap items-center justify-between gap-3 text-sm">
                       <span className="flex items-center gap-2">

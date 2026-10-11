@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import { Suspense } from "react";
 import { CategorySection } from "@/features/landing/CategorySection";
 import { HeroSlider } from "@/features/landing/HeroSlider";
@@ -20,7 +21,11 @@ export default function HomePage() {
   );
 }
 
+// Both sections wait for a real request before touching the API (`connection()`), so
+// `next build` never needs the backend and an outage during a build cannot fail it. The data
+// functions are still cached at runtime.
 async function Hero() {
+  await connection();
   const [lang, dict] = await Promise.all([getLocale(), getDictionary()]);
 
   let courses;
@@ -36,6 +41,7 @@ async function Hero() {
 }
 
 async function Categories() {
+  await connection();
   const [lang, dict] = await Promise.all([getLocale(), getDictionary()]);
 
   let categories;

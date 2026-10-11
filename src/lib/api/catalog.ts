@@ -3,10 +3,9 @@ import { apiFetch, ApiError } from "./client";
 import type { Category, CourseDetail, CourseLevel, CourseListItem, CourseSort, Paged } from "./types";
 
 /**
- * Landing-page data. `expire` is under 5 minutes, which makes these request-time holes
- * rather than build-time prerenders: the build never needs the API, and an outage during a
- * build cannot get baked into the HTML. They are still cached for 60s at runtime.
- * Arguments are bounded (category slugs come from the API itself).
+ * Landing-page data, cached for 60s at runtime. Callers must `await connection()` first (see
+ * app/[lang]/page.tsx): without it Next runs these at build time and the build then needs the
+ * API. Arguments are bounded (category slugs come from the API itself).
  */
 const landingLife = { stale: 30, revalidate: 60, expire: 240 };
 

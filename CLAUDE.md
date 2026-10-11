@@ -16,9 +16,11 @@ Customer web for chef Lan's cooking courses. Backend, plans and decisions live i
 - Anything dynamic (`searchParams`, `params`, `usePathname`, `useSearchParams`, uncached
   `fetch`) must sit under a `<Suspense>` or the build fails with a "blocking route" error.
   The header is wrapped in one in `app/[lang]/layout.tsx` for this reason.
-- Landing data (`src/lib/api/catalog.ts`) uses `"use cache"` with `expire` **under 5 minutes**
-  on purpose: that makes it a request-time hole, so `next build` never needs the API and an
-  outage during a build cannot be baked into the HTML. Do not raise `expire` past 5 minutes.
+- Landing data (`src/lib/api/catalog.ts`) is cached with `"use cache"`, but the components that
+  call it must `await connection()` first. Without that, `next build` executes the fetch and
+  fails whenever the API is unreachable (CI, a build while the backend is down). A short
+  `expire` alone does NOT prevent this. Always verify with the API **stopped**:
+  `pnpm build` must succeed.
 - Do not cache anything keyed on free user input (`/courses` search): unbounded cache growth.
 - No `new Date()` / `Date.now()` / `Math.random()` in server components outside a
   cache or Suspense boundary — it blocks prerendering.
@@ -26,8 +28,10 @@ Customer web for chef Lan's cooking courses. Backend, plans and decisions live i
 ## i18n
 
 Hand-rolled, no library: `src/i18n/`. Routes are under `app/[lang]`; `src/proxy.ts` rewrites a
-bare path to `/vi/...` and redirects a visible `/vi/...` back to the bare path. English is
-`/en/...`. Always build links with `localePath(lang, path)`. Only UI chrome is translated;
+bare path to `/vi/...`. It must NOT redirect `/vi/...` back to the bare path, and neither may
+`next.config` `redirects()`: in production both also see the rewritten path and loop forever
+(308), while `next dev` hides it. **Always test routing with `pnpm build && pnpm start`, not
+only `pnpm dev`.** English is `/en/...`. Always build links with `localePath(lang, path)`. Only UI chrome is translated;
 course and category text comes from the API in Vietnamese.
 
 Both `vi.json` and `en.json` must have the same keys (`Dictionary` is typed from `vi.json`).

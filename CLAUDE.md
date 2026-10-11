@@ -27,11 +27,13 @@ Customer web for chef Lan's cooking courses. Backend, plans and decisions live i
 
 ## i18n
 
-Hand-rolled, no library: `src/i18n/`. Routes are under `app/[lang]`; `src/proxy.ts` rewrites a
-bare path to `/vi/...`. It must NOT redirect `/vi/...` back to the bare path, and neither may
-`next.config` `redirects()`: in production both also see the rewritten path and loop forever
-(308), while `next dev` hides it. **Always test routing with `pnpm build && pnpm start`, not
-only `pnpm dev`.** English is `/en/...`. Always build links with `localePath(lang, path)`. Only UI chrome is translated;
+Hand-rolled, no library: `src/i18n/`. Routes are under `app/[lang]`; `next.config.ts` `rewrites()` maps a
+bare path to `/vi/...` (English is `/en/...`, left alone). **Not a `proxy.ts`**: a proxy rewrite
+behind nginx's `X-Forwarded-Proto: https` made Next fetch `https://localhost:3100` over TLS
+and every page was a 500 (invisible locally). And do not redirect `/vi/...` back to the bare
+path, in config or anywhere: in production the rewritten path is redirected again and loops
+(308). **Always test with `pnpm build && pnpm start` and the nginx headers:**
+`curl -H "Host: x.example" -H "X-Forwarded-Proto: https" http://127.0.0.1:3100/` must be 200. Always build links with `localePath(lang, path)`. Only UI chrome is translated;
 course and category text comes from the API in Vietnamese.
 
 Both `vi.json` and `en.json` must have the same keys (`Dictionary` is typed from `vi.json`).

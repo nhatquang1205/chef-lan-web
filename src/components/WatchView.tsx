@@ -10,10 +10,11 @@ import { useAuth } from "@/lib/auth/AuthProvider";
 import { localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { template } from "@/lib/format";
+import { readHistory, saveProgress } from "@/lib/history";
 
 type State =
   | { kind: "loading" }
-  | { kind: "ok"; playback: Playback }
+  | { kind: "ok"; playback: Playback; startAt: number }
   | { kind: "not_found" }
   | { kind: "forbidden" }
   | { kind: "error" };
@@ -63,7 +64,11 @@ export function WatchView({
           return;
         }
 
-        setState({ kind: "ok", playback });
+        const saved = auth.user ? readHistory(`${auth.user.actor}-${auth.user.id}`).find((item) => item.videoId === playback.videoId) : undefined;
+        // Near the end, start over rather than resume into the credits.
+        const startAt = saved && saved.positionSeconds < playback.durationSeconds - 5 ? Math.floor(saved.positionSeconds) : 0;
+
+        setState({ kind: "ok", playback, startAt });
       } catch (error) {
         if (cancelled) {
           return;
@@ -127,7 +132,8 @@ export function WatchView({
     return <p role="alert" className="mx-auto max-w-5xl px-4 py-24 text-center text-beige/70">{dict.common.error}</p>;
   }
 
-  const { playback } = state;
+  const { playback, startAt } = state;
+  const historyKey = auth.user ? `${auth.user.actor}-${auth.user.id}` : null;
 
   return (
     <article className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
@@ -149,6 +155,21 @@ export function WatchView({
           freeTillSeconds={playback.freeTillSeconds ?? null}
           courseHref={courseHref}
           dict={dict}
+          startAt={startAt}
+          onProgress={
+            historyKey
+              ? (seconds) =>
+                  saveProgress(historyKey, {
+                    videoId: playback.videoId,
+                    courseSlug: playback.courseSlug,
+                    courseTitle: playback.courseTitle,
+                    lessonTitle: playback.lessonTitle,
+                    title: playback.title,
+                    positionSeconds: seconds,
+                    durationSeconds: playback.durationSeconds,
+                  })
+              : undefined
+          }
         />
       </div>
 

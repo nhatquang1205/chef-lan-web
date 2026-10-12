@@ -81,6 +81,8 @@ export interface LessonOutline {
   /** What this lesson costs on its own; null = only available through the course. */
   priceVnd?: number | null;
   priceDisplay?: string | null;
+  /** False = add-on: not covered by the course price, bought separately. */
+  includedInCourse: boolean;
   videos: LessonVideoOutline[];
 }
 
@@ -128,4 +130,11 @@ export interface SessionResponse {
   refreshToken: string;
   customer?: Customer;
   staff?: Staff;
+}
+
+/** A course the signed-in customer owns, whole or in part. Backend contract pending: see lib/api/myCourses.ts. */
+export interface MyCourse extends CourseListItem {
+  enrolledAt: string;
+  accessType: "Course" | "Lessons";
+  ownedLessonCount: number;
 }

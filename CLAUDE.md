@@ -62,6 +62,21 @@ cached. Outline buttons: free + no limit = WATCH VIDEO, free + limit = WATCH PRE
 Next 16 keeps the state of a page you navigate away from, so back/forward can revive an "ended" overlay;
 test the limiter with full page loads. Real-Bunny behaviour is unverified.
 
+## Account menu, history and my courses
+
+`AccountMenu` replaces the Login button once signed in: the user's name, with a dropdown (hover, focus,
+chevron; flat list in the mobile menu) of My courses, History and Log out. `AuthUser` now carries `id`;
+sessions stored without it are dropped (sign in again).
+
+Watch history is **FE only**, in localStorage under `cheflan.history.v1.<actor>-<id>` (`src/lib/history.ts`,
+newest first, 50 max). `VideoPlayer` reports progress every 10s and on pause/end/page hide, and the watch page
+resumes from it. localStorage rather than IndexedDB: tiny data, synchronous, same as the session. Not synced
+across devices.
+
+`/account/courses` is a **mock** (`src/lib/api/myCourses.ts` returns the first public courses). The backend
+needs `GET /api/v1/me/courses` (customer token; owned courses and courses with bought lessons, newest enrolment
+first, shaped like `MyCourse` in `types.ts`); then swap the function body.
+
 ## Header categories dropdown
 
 `CategoryLinks` (server component, `await connection()`, swallows API errors) is streamed into the
@@ -109,3 +124,5 @@ Vietnamese subset.
 - Thumbnails use `unoptimized` because their host is not fixed; no resizing by Next.
 - Search is accent-sensitive (backend limitation).
 - No tests yet. The login flow, locale switching and the filter form deserve Playwright tests.
+
+Add-on lessons (`includedInCourse: false`) render in their own group; owned = `(hasCourseAccess && includedInCourse) || lessonIds.includes(id)` in `CourseAccess.tsx`.

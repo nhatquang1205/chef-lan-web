@@ -19,6 +19,8 @@ declare global {
   }
 }
 
+const PROGRESS_INTERVAL_MS = 10_000;
+
 const PLAYERJS_SRC = "https://assets.mediadelivery.net/playerjs/playerjs-latest.min.js";
 
 function loadPlayerJs(): Promise<NonNullable<Window["playerjs"]>> {
@@ -56,6 +58,8 @@ export function VideoPlayer({
   freeTillSeconds,
   courseHref,
   dict,
+  startAt = 0,
+  onProgress,
 }: {
   url: string;
   title: string;
@@ -63,7 +67,15 @@ export function VideoPlayer({
   freeTillSeconds: number | null;
   courseHref: string;
   dict: Dictionary;
+  /** Resume position in seconds. */
+  startAt?: number;
+  /** Called about every 10s while playing, and on pause, end and page hide. */
+  onProgress?: (seconds: number) => void;
 }) {
+  const onProgressRef = useRef(onProgress);
+  useEffect(() => {
+    onProgressRef.current = onProgress;
+  });
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const limited = freeTillSeconds != null;
   const [status, setStatus] = useState<"loading" | "ready" | "failed">(limited ? "loading" : "ready");
@@ -71,13 +83,26 @@ export function VideoPlayer({
   const [remaining, setRemaining] = useState<number | null>(freeTillSeconds);
 
   useEffect(() => {
-    if (freeTillSeconds == null) {
-      return;
-    }
-
     const limit = freeTillSeconds;
     let cancelled = false;
     let stopped = false;
+    let lastSeconds = 0;
+    let lastSavedAt = 0;
+
+    const save = (force = false) => {
+      // Right after a resume the player still reports ~0; saving that would erase the position.
+      if (!onProgressRef.current || (startAt > 0 && lastSeconds < 1)) {
+        return;
+      }
+
+      if (force || Date.now() - lastSavedAt >= PROGRESS_INTERVAL_MS) {
+        lastSavedAt = Date.now();
+        onProgressRef.current(lastSeconds);
+      }
+    };
+
+    const onHide = () => save(true);
+    window.addEventListener("pagehide", onHide);
 
     loadPlayerJs()
       .then((playerjs) => {
@@ -88,7 +113,7 @@ export function VideoPlayer({
         const player = new playerjs.Player(iframeRef.current);
 
         const stop = () => {
-          if (stopped) {
+          if (stopped || limit == null) {
             return;
           }
 
@@ -106,18 +131,27 @@ export function VideoPlayer({
 
           setStatus("ready");
 
+          if (startAt > 0) {
+            player.setCurrentTime(limit == null ? startAt : Math.min(startAt, Math.max(limit - 1, 0)));
+          }
+
           player.on("timeupdate", (data) => {
             const seconds = data?.seconds ?? 0;
 
-            if (seconds >= limit) {
+            if (limit != null && seconds >= limit) {
               stop();
             } else if (!stopped) {
-              setRemaining(limit - seconds);
+              if (limit != null) {
+                setRemaining(limit - seconds);
+              }
+
+              lastSeconds = seconds;
+              save();
             }
           });
 
           // A drag of the timeline past the limit: undo it.
-          player.on("seeked", () => player.getCurrentTime((seconds) => seconds >= limit && stop()));
+          player.on("seeked", () => player.getCurrentTime((seconds) => limit != null && seconds >= limit && stop()));
 
           // Once stopped, a play (keyboard, or a click that got through) is paused again.
           player.on("play", () => {
@@ -125,14 +159,19 @@ export function VideoPlayer({
               player.pause();
             }
           });
+
+          player.on("pause", () => save(true));
+          player.on("ended", () => save(true));
         });
       })
-      .catch(() => !cancelled && setStatus("failed"));
+      .catch(() => !cancelled && limit != null && setStatus("failed"));
 
     return () => {
       cancelled = true;
+      window.removeEventListener("pagehide", onHide);
+      save(true);
     };
-  }, [freeTillSeconds]);
+  }, [freeTillSeconds, startAt]);
 
   const covered = status !== "ready" || ended;
 

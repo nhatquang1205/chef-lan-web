@@ -15,7 +15,10 @@
     "menu": "Open menu",
     "categoriesMenu": "Show categories",
     "closeMenu": "Close menu",
-    "language": "Language"
+    "language": "Language",
+    "account": "Account",
+    "myCourses": "My courses",
+    "history": "History"
   },
   "common": {
     "loading": "Loading…",
@@ -93,7 +96,10 @@
     "buyNote": "Contact chef Lan to enroll in this course.",
     "lessonPrice": "Buy this lesson on its own: {price}",
     "buyLessonNote": "Contact chef Lan to buy this lesson on its own.",
-    "owned": "Owned"
+    "owned": "Owned",
+    "addonsTitle": "Add-on lessons",
+    "addonsNote": "These lessons are not part of the course price and are bought one by one.",
+    "addonNote": "Add-on lesson, not included in the course price. Contact chef Lan to buy it."
   },
   "auth": {
     "email": "Email",
@@ -148,5 +154,17 @@
     "signInHint": "Bought this course or lesson? Sign in to watch it.",
     "signIn": "Sign in",
     "checkingAccess": "Checking your access…"
+  },
+  "account": {
+    "myCoursesTitle": "My courses",
+    "myCoursesEmpty": "You don't have any courses yet.",
+    "browseCourses": "Browse courses",
+    "historyTitle": "Watch history",
+    "historyEmpty": "You haven't watched any videos yet.",
+    "clearHistory": "Clear history",
+    "watched": "Watched {percent}%",
+    "resume": "Resume",
+    "loading": "Loading…",
+    "menuLabel": "Account menu"
   }
 }

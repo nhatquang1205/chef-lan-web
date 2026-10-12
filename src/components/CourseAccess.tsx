@@ -54,14 +54,14 @@ export function CourseAccessProvider({ slug, children }: { slug: string; childre
   return <AccessContext.Provider value={isCustomer ? access : NONE}>{children}</AccessContext.Provider>;
 }
 
-function useOwns(lessonId: number): boolean {
+function useOwns(lessonId: number, included: boolean): boolean {
   const access = useContext(AccessContext);
-  return access.hasCourseAccess || access.lessonIds.includes(lessonId);
+  return (access.hasCourseAccess && included) || access.lessonIds.includes(lessonId);
 }
 
 /** "Owned" marker on a lesson the customer has. */
-export function OwnedBadge({ lessonId, dict }: { lessonId: number; dict: Dictionary }) {
-  return useOwns(lessonId) ? (
+export function OwnedBadge({ lessonId, included, dict }: { lessonId: number; included: boolean; dict: Dictionary }) {
+  return useOwns(lessonId, included) ? (
     <span className="rounded border border-beige/50 px-2 py-0.5 text-xs font-semibold uppercase tracking-widest">
       {dict.course.owned}
     </span>
@@ -75,17 +75,19 @@ export function OwnedBadge({ lessonId, dict }: { lessonId: number; dict: Diction
 export function VideoAction({
   href,
   lessonId,
+  included,
   isFree,
   limited,
   dict,
 }: {
   href: string;
   lessonId: number;
+  included: boolean;
   isFree: boolean;
   limited: boolean;
   dict: Dictionary;
 }) {
-  const owned = useOwns(lessonId);
+  const owned = useOwns(lessonId, included);
 
   if (owned || isFree) {
     return (

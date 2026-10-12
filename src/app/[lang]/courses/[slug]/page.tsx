@@ -36,6 +36,66 @@ async function Content({ params }: { params: PageProps<"/[lang]/courses/[slug]">
       ? dict.course.accessLifetime
       : template(dict.course.accessDays, { days: course.accessDurationDays });
 
+  const includedLessons = course.lessons.filter((l) => l.includedInCourse);
+  const addonLessons = course.lessons.filter((l) => !l.includedInCourse);
+
+  const renderLesson = (lesson: (typeof course.lessons)[number], index: number, addon: boolean) => (
+    <li key={lesson.id}>
+      <details open={index === 0 && !addon} className="group">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-3 hover:bg-olive-raised">
+          <span className="flex items-center gap-2">
+            <span>
+              <span className="text-beige/55">{index + 1}. </span>
+              {lesson.title}
+            </span>
+            <OwnedBadge lessonId={lesson.id} included={lesson.includedInCourse} dict={dict} />
+          </span>
+          <span className="shrink-0 text-sm text-beige/60">
+            {lesson.videos.length} {dict.course.videos}
+            {lesson.durationSeconds > 0 && ` · ${formatDuration(lesson.durationSeconds, dict)}`}
+          </span>
+        </summary>
+
+        <ul className="space-y-2 bg-olive-raised/60 px-4 py-3">
+          {/* whitespace-pre-line keeps the author's line breaks (e.g. one recipe step per line). */}
+          {lesson.description && (
+            <li className="whitespace-pre-line text-sm text-beige/70">{lesson.description}</li>
+          )}
+          {lesson.priceDisplay && (
+            <li className="rounded bg-terracotta/20 px-3 py-2 text-sm">
+              <span className="font-semibold">{template(dict.course.lessonPrice, { price: lesson.priceDisplay })}</span>
+              <span className="text-beige/70"> · {addon ? dict.course.addonNote : dict.course.buyLessonNote}</span>
+            </li>
+          )}
+          {lesson.videos.map((video) => (
+            <li key={video.publicId} className="flex flex-wrap items-center justify-between gap-3 text-sm">
+              <span className="flex items-center gap-2">
+                {video.title}
+                {video.isFree && (
+                  <span className="rounded bg-terracotta px-2 py-0.5 text-xs font-semibold uppercase tracking-widest">
+                    {dict.common.free}
+                  </span>
+                )}
+              </span>
+              <span className="flex items-center gap-4 text-beige/65">
+                {video.freeTillSeconds != null && <span>{template(dict.course.freeUntil, { seconds: video.freeTillSeconds })}</span>}
+                {video.durationSeconds > 0 && <span>{formatDuration(video.durationSeconds, dict)}</span>}
+                <VideoAction
+                  href={localePath(lang, `/courses/${course.slug}/watch/${video.publicId}`)}
+                  lessonId={lesson.id}
+                  included={lesson.includedInCourse}
+                  isFree={video.isFree}
+                  limited={video.freeTillSeconds != null}
+                  dict={dict}
+                />
+              </span>
+            </li>
+          ))}
+        </ul>
+      </details>
+    </li>
+  );
+
   return (
     <article className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
       <title>{course.title}</title>
@@ -92,62 +152,17 @@ async function Content({ params }: { params: PageProps<"/[lang]/courses/[slug]">
         <h2 className="font-display text-2xl">{dict.course.outline}</h2>
         <CourseAccessProvider slug={course.slug}>
         <ol className="mt-4 divide-y divide-beige/15 rounded-lg border border-beige/15">
-          {course.lessons.map((lesson, index) => (
-            <li key={lesson.id}>
-              <details open={index === 0} className="group">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-3 hover:bg-olive-raised">
-                  <span className="flex items-center gap-2">
-                    <span>
-                      <span className="text-beige/55">{index + 1}. </span>
-                      {lesson.title}
-                    </span>
-                    <OwnedBadge lessonId={lesson.id} dict={dict} />
-                  </span>
-                  <span className="shrink-0 text-sm text-beige/60">
-                    {lesson.videos.length} {dict.course.videos}
-                    {lesson.durationSeconds > 0 && ` · ${formatDuration(lesson.durationSeconds, dict)}`}
-                  </span>
-                </summary>
-
-                <ul className="space-y-2 bg-olive-raised/60 px-4 py-3">
-                  {/* whitespace-pre-line keeps the author's line breaks (e.g. one recipe step per line). */}
-                  {lesson.description && (
-                    <li className="whitespace-pre-line text-sm text-beige/70">{lesson.description}</li>
-                  )}
-                  {lesson.priceDisplay && (
-                    <li className="rounded bg-terracotta/20 px-3 py-2 text-sm">
-                      <span className="font-semibold">{template(dict.course.lessonPrice, { price: lesson.priceDisplay })}</span>
-                      <span className="text-beige/70"> · {dict.course.buyLessonNote}</span>
-                    </li>
-                  )}
-                  {lesson.videos.map((video) => (
-                    <li key={video.publicId} className="flex flex-wrap items-center justify-between gap-3 text-sm">
-                      <span className="flex items-center gap-2">
-                        {video.title}
-                        {video.isFree && (
-                          <span className="rounded bg-terracotta px-2 py-0.5 text-xs font-semibold uppercase tracking-widest">
-                            {dict.common.free}
-                          </span>
-                        )}
-                      </span>
-                      <span className="flex items-center gap-4 text-beige/65">
-                        {video.freeTillSeconds != null && <span>{template(dict.course.freeUntil, { seconds: video.freeTillSeconds })}</span>}
-                        {video.durationSeconds > 0 && <span>{formatDuration(video.durationSeconds, dict)}</span>}
-                        <VideoAction
-                          href={localePath(lang, `/courses/${course.slug}/watch/${video.publicId}`)}
-                          lessonId={lesson.id}
-                          isFree={video.isFree}
-                          limited={video.freeTillSeconds != null}
-                          dict={dict}
-                        />
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            </li>
-          ))}
+          {includedLessons.map((lesson, index) => renderLesson(lesson, index, false))}
         </ol>
+        {addonLessons.length > 0 && (
+          <>
+            <h3 className="mt-8 font-display text-xl">{dict.course.addonsTitle}</h3>
+            <p className="mt-1 text-sm text-beige/70">{dict.course.addonsNote}</p>
+            <ol className="mt-3 divide-y divide-beige/15 rounded-lg border border-beige/15">
+              {addonLessons.map((lesson, index) => renderLesson(lesson, index, true))}
+            </ol>
+          </>
+        )}
         </CourseAccessProvider>
       </section>
     </article>

@@ -3,12 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useSyncExternalStore } from "react";
+import { AccountMenu } from "./AccountMenu";
 import { LanguageToggle } from "./LanguageToggle";
 import { Logo } from "./Logo";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
-import { template } from "@/lib/format";
 
 const subscribeNothing = () => () => {};
 
@@ -55,27 +55,11 @@ export function SiteHeader({
       active ? "text-beige underline decoration-terracotta decoration-2 underline-offset-8" : "text-beige/75 hover:text-beige"
     }`;
 
-  const account = !hydrated || auth.status === "loading" ? (
+  const renderAccount = (inline: boolean) => !hydrated || auth.status === "loading" ? (
     // Reserve the space so the header does not jump when the session is read.
     <div aria-hidden className="h-9 w-28" />
   ) : auth.status === "authenticated" && auth.user ? (
-      <div className="flex items-center gap-3">
-        <span className="flex max-w-56 items-center gap-2 text-sm text-beige/80">
-          <span className="truncate">{template(dict.auth.hello, { name: auth.user.name })}</span>
-          {auth.user.actor === "Staff" && (
-            <span className="shrink-0 rounded bg-terracotta px-2 py-0.5 text-xs font-semibold uppercase tracking-widest text-beige">
-              {dict.auth.adminBadge}
-            </span>
-          )}
-        </span>
-        <button
-          type="button"
-          onClick={() => void auth.logout()}
-          className="rounded bg-terracotta px-4 py-2 text-sm font-semibold uppercase tracking-widest text-beige hover:bg-terracotta-hover"
-        >
-          {dict.nav.logout}
-        </button>
-      </div>
+      <AccountMenu lang={lang} dict={dict} inline={inline} />
     ) : (
       <Link
         href={localePath(lang, "/login")}
@@ -145,7 +129,7 @@ export function SiteHeader({
 
         <div className="hidden items-center gap-5 md:flex">
           <LanguageToggle lang={lang} label={dict.nav.language} />
-          {account}
+          {renderAccount(false)}
         </div>
 
         <button
@@ -174,9 +158,9 @@ export function SiteHeader({
               </div>
             ))}
           </nav>
-          <div className="mt-3 flex items-center justify-between gap-4 border-t border-beige/15 pt-4" onClick={(e) => e.stopPropagation()}>
+          <div className="mt-3 flex flex-wrap items-start justify-between gap-4 border-t border-beige/15 pt-4" onClick={(e) => e.stopPropagation()}>
             <LanguageToggle lang={lang} label={dict.nav.language} />
-            {account}
+            {renderAccount(true)}
           </div>
         </div>
       )}

@@ -15,7 +15,10 @@
     "menu": "Mở menu",
     "categoriesMenu": "Mở danh sách danh mục",
     "closeMenu": "Đóng menu",
-    "language": "Ngôn ngữ"
+    "language": "Ngôn ngữ",
+    "account": "Tài khoản",
+    "myCourses": "Khóa học của tôi",
+    "history": "Lịch sử"
   },
   "common": {
     "loading": "Đang tải…",
@@ -93,7 +96,10 @@
     "buyNote": "Liên hệ cô Lan để đăng ký khóa học.",
     "lessonPrice": "Mua riêng bài học này: {price}",
     "buyLessonNote": "Liên hệ cô Lan để mua riêng bài học này.",
-    "owned": "Đã sở hữu"
+    "owned": "Đã sở hữu",
+    "addonsTitle": "Bài học mua thêm",
+    "addonsNote": "Những bài học này không nằm trong giá khóa học, mua riêng từng bài.",
+    "addonNote": "Bài học mua thêm, không nằm trong giá khóa học. Liên hệ cô Lan để mua."
   },
   "auth": {
     "email": "Email",
@@ -148,5 +154,17 @@
     "signInHint": "Đã mua khóa học hoặc bài học này? Hãy đăng nhập để xem.",
     "signIn": "Đăng nhập",
     "checkingAccess": "Đang kiểm tra quyền xem…"
+  },
+  "account": {
+    "myCoursesTitle": "Khóa học của tôi",
+    "myCoursesEmpty": "Bạn chưa có khóa học nào.",
+    "browseCourses": "Xem các khóa học",
+    "historyTitle": "Lịch sử xem",
+    "historyEmpty": "Bạn chưa xem video nào.",
+    "clearHistory": "Xóa lịch sử",
+    "watched": "Đã xem {percent}%",
+    "resume": "Tiếp tục xem",
+    "loading": "Đang tải…",
+    "menuLabel": "Menu tài khoản"
   }
 }

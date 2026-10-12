@@ -14,6 +14,7 @@ const REFRESH_MARGIN_MS = 60_000;
 
 /** What the UI needs to know about whoever is signed in, customer or admin alike. */
 export interface AuthUser {
+  id: number;
   name: string;
   actor: "Customer" | "Staff";
   role?: string;
@@ -35,8 +36,8 @@ function toSession(response: SessionResponse): Session {
     accessTokenExpiresAt: response.accessTokenExpiresAt,
     refreshToken: response.refreshToken,
     user: staff
-      ? { name: staff.displayName, actor: "Staff", role: staff.role }
-      : { name: response.customer?.fullName ?? "", actor: "Customer" },
+      ? { id: staff.id, name: staff.displayName, actor: "Staff", role: staff.role }
+      : { id: response.customer?.id ?? 0, name: response.customer?.fullName ?? "", actor: "Customer" },
   };
 }
 
@@ -73,14 +74,10 @@ function readSession(): Session | null {
       return null;
     }
 
-    const parsed = JSON.parse(raw) as Session & { customer?: { fullName: string } };
+    const parsed = JSON.parse(raw) as Session;
 
-    // Sessions stored by an earlier build had `customer` instead of `user`.
-    if (!parsed.user && parsed.customer) {
-      parsed.user = { name: parsed.customer.fullName, actor: "Customer" };
-    }
-
-    return parsed.user ? parsed : null;
+    // Sessions stored by earlier builds lack `user.id`: sign in again.
+    return parsed.user?.id != null ? parsed : null;
   } catch {
     return null;
   }

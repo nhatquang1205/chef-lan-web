@@ -165,6 +165,10 @@
     "watched": "Đã xem {percent}%",
     "resume": "Tiếp tục xem",
     "loading": "Đang tải…",
-    "menuLabel": "Menu tài khoản"
+    "menuLabel": "Menu tài khoản",
+    "ownedWhole": "Trọn khóa",
+    "lifetime": "Xem trọn đời",
+    "expires": "Hết hạn: {date}",
+    "ownedLessons": "{count} bài học đã mua"
   }
 }

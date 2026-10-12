@@ -165,6 +165,10 @@
     "watched": "Watched {percent}%",
     "resume": "Resume",
     "loading": "Loading…",
-    "menuLabel": "Account menu"
+    "menuLabel": "Account menu",
+    "ownedWhole": "Full course",
+    "lifetime": "Lifetime access",
+    "expires": "Expires: {date}",
+    "ownedLessons": "{count} lessons owned"
   }
 }

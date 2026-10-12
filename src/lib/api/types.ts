@@ -132,9 +132,16 @@ export interface SessionResponse {
   staff?: Staff;
 }
 
-/** A course the signed-in customer owns, whole or in part. Backend contract pending: see lib/api/myCourses.ts. */
-export interface MyCourse extends CourseListItem {
-  enrolledAt: string;
-  accessType: "Course" | "Lessons";
-  ownedLessonCount: number;
+/** One course in the signed-in customer's library (GET /api/v1/me/courses). */
+export interface MyCourse {
+  courseId: number;
+  slug: string;
+  title: string;
+  thumbnailUrl?: string | null;
+  /** The whole course is owned. */
+  hasCourseAccess: boolean;
+  /** When whole-course access ends; null = lifetime or no whole-course access. */
+  courseExpiresAt?: string | null;
+  /** Lessons owned on their own (add-ons or bought individually). */
+  lessons: { id: number; title: string; expiresAt?: string | null }[];
 }

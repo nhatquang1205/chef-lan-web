@@ -73,9 +73,7 @@ newest first, 50 max). `VideoPlayer` reports progress every 10s and on pause/end
 resumes from it. localStorage rather than IndexedDB: tiny data, synchronous, same as the session. Not synced
 across devices.
 
-`/account/courses` is a **mock** (`src/lib/api/myCourses.ts` returns the first public courses). The backend
-needs `GET /api/v1/me/courses` (customer token; owned courses and courses with bought lessons, newest enrolment
-first, shaped like `MyCourse` in `types.ts`); then swap the function body.
+`/account/courses` lists `GET /api/v1/me/courses` (`getMyCourses`, customer token only: a staff login gets 403/empty).
 
 ## Header categories dropdown
 

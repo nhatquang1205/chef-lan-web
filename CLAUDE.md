@@ -124,3 +124,8 @@ Vietnamese subset.
 - No tests yet. The login flow, locale switching and the filter form deserve Playwright tests.
 
 Add-on lessons (`includedInCourse: false`) render in their own group; owned = `(hasCourseAccess && includedInCourse) || lessonIds.includes(id)` in `CourseAccess.tsx`.
+
+Lesson page: `/[lang]/courses/[slug]/lessons/[lessonSlug]` (`LessonView`, fetched from the browser with the token because the
+recipe is owner-only). The selected video is `?v=<publicId>`. The old `/watch/[videoId]` route only redirects there
+(`WatchRedirect`). `VideoPlayer` blanks its iframe in an effect cleanup: Next keeps pages you left alive but hidden
+(React Activity), and a hidden Bunny iframe otherwise keeps playing after Back. Keep that effect.

@@ -99,7 +99,13 @@
     "owned": "Owned",
     "addonsTitle": "Add-on lessons",
     "addonsNote": "These lessons are not part of the course price and are bought one by one.",
-    "addonNote": "Add-on lesson, not included in the course price. Contact chef Lan to buy it."
+    "addonNote": "Add-on lesson, not included in the course price. Contact chef Lan to buy it.",
+    "details": "Details",
+    "lessonsCount": "{count} lessons",
+    "level": "Level",
+    "duration": "Duration",
+    "lessons": "Lessons",
+    "categories": "Categories"
   },
   "auth": {
     "email": "Email",
@@ -170,5 +176,20 @@
     "lifetime": "Lifetime access",
     "expires": "Expires: {date}",
     "ownedLessons": "{count} lessons owned"
+  },
+  "lesson": {
+    "back": "Back to course",
+    "label": "Lesson {number}",
+    "descriptionAndRecipe": "Description & recipe",
+    "recipe": "Recipe",
+    "recipeLocked": "The recipe is only for students who bought this lesson.",
+    "videos": "Videos in this lesson",
+    "noVideos": "This lesson has no videos yet.",
+    "previous": "Previous lesson",
+    "next": "Next lesson",
+    "lockedVideoTitle": "This video is for students",
+    "lockedVideoText": "Buy the course or this lesson to watch it.",
+    "owned": "You own this lesson",
+    "free": "Free"
   }
 }

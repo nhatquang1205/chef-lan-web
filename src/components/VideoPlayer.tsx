@@ -82,6 +82,22 @@ export function VideoPlayer({
   const [ended, setEnded] = useState(false);
   const [remaining, setRemaining] = useState<number | null>(freeTillSeconds);
 
+  // Next keeps a page you navigated away from alive but hidden (React Activity), and only runs effect
+  // cleanups. Without this the hidden iframe kept playing with sound after pressing Back.
+  useEffect(() => {
+    const iframe = iframeRef.current;
+
+    if (iframe && iframe.src !== url) {
+      iframe.src = url;
+    }
+
+    return () => {
+      if (iframe) {
+        iframe.src = "about:blank";
+      }
+    };
+  }, [url]);
+
   useEffect(() => {
     const limit = freeTillSeconds;
     let cancelled = false;

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { createContext, useContext, useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api/client";
 import type { CourseAccess as CourseAccessData } from "@/lib/api/types";
@@ -66,47 +65,4 @@ export function OwnedBadge({ lessonId, included, dict }: { lessonId: number; inc
       {dict.course.owned}
     </span>
   ) : null;
-}
-
-/**
- * The button for one video in the outline. Owners get WATCH VIDEO; otherwise a free video is WATCH VIDEO
- * (no limit) or WATCH PREVIEW (limited), and a paid one shows a lock with no link.
- */
-export function VideoAction({
-  href,
-  lessonId,
-  included,
-  isFree,
-  limited,
-  dict,
-}: {
-  href: string;
-  lessonId: number;
-  included: boolean;
-  isFree: boolean;
-  limited: boolean;
-  dict: Dictionary;
-}) {
-  const owned = useOwns(lessonId, included);
-
-  if (owned || isFree) {
-    return (
-      <Link
-        href={href}
-        className="rounded bg-terracotta px-3 py-1 text-xs font-semibold uppercase tracking-widest text-beige hover:bg-terracotta-hover"
-      >
-        {owned || !limited ? dict.course.watchVideo : dict.course.watchPreview}
-      </Link>
-    );
-  }
-
-  return (
-    <span className="flex items-center gap-1.5 text-xs uppercase tracking-widest">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-        <rect x="5" y="11" width="14" height="9" rx="2" />
-        <path d="M8 11V8a4 4 0 0 1 8 0v3" />
-      </svg>
-      {dict.course.locked}
-    </span>
-  );
 }

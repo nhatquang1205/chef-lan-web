@@ -69,6 +69,7 @@ export interface Playback {
   courseSlug: string;
   courseTitle: string;
   lessonTitle: string;
+  lessonSlug: string;
 }
 
 export interface LessonOutline {
@@ -144,4 +145,22 @@ export interface MyCourse {
   courseExpiresAt?: string | null;
   /** Lessons owned on their own (add-ons or bought individually). */
   lessons: { id: number; title: string; expiresAt?: string | null }[];
+}
+
+/** The lesson page. The recipe is only present for a viewer who owns the lesson. */
+export interface LessonPage {
+  courseSlug: string;
+  courseTitle: string;
+  lesson: LessonOutline;
+  hasAccess: boolean;
+  recipes?: string | null;
+  /** The lesson has a recipe this viewer may not read. */
+  recipesLocked: boolean;
+  previous?: LessonLink | null;
+  next?: LessonLink | null;
+}
+
+export interface LessonLink {
+  slug: string;
+  title: string;
 }

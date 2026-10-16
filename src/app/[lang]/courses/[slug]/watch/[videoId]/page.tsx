@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { WatchView } from "@/components/WatchView";
+import { WatchRedirect } from "@/components/WatchRedirect";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
 
-// The page is gated content and carries a signed link: keep it out of search indexes.
+// Only a redirect: keep it out of search indexes.
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 export default function WatchPage({ params }: PageProps<"/[lang]/courses/[slug]/watch/[videoId]">) {
@@ -17,6 +17,6 @@ export default function WatchPage({ params }: PageProps<"/[lang]/courses/[slug]/
 async function Content({ params }: { params: PageProps<"/[lang]/courses/[slug]/watch/[videoId]">["params"] }) {
   const [lang, dict, { slug, videoId }] = await Promise.all([getLocale(), getDictionary(), params]);
 
-  // The playback request is made from the browser (see WatchView), so the customer's token can be sent.
-  return <WatchView slug={slug} videoId={videoId} lang={lang} dict={dict} />;
+  // Old links: the browser finds the video's lesson (with the customer's token) and moves there.
+  return <WatchRedirect slug={slug} videoId={videoId} lang={lang} dict={dict} />;
 }

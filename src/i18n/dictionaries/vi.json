@@ -99,7 +99,13 @@
     "owned": "Đã sở hữu",
     "addonsTitle": "Bài học mua thêm",
     "addonsNote": "Những bài học này không nằm trong giá khóa học, mua riêng từng bài.",
-    "addonNote": "Bài học mua thêm, không nằm trong giá khóa học. Liên hệ cô Lan để mua."
+    "addonNote": "Bài học mua thêm, không nằm trong giá khóa học. Liên hệ cô Lan để mua.",
+    "details": "Chi tiết",
+    "lessonsCount": "{count} bài học",
+    "level": "Trình độ",
+    "duration": "Thời lượng",
+    "lessons": "Bài học",
+    "categories": "Danh mục"
   },
   "auth": {
     "email": "Email",
@@ -170,5 +176,20 @@
     "lifetime": "Xem trọn đời",
     "expires": "Hết hạn: {date}",
     "ownedLessons": "{count} bài học đã mua"
+  },
+  "lesson": {
+    "back": "Về khóa học",
+    "label": "Bài {number}",
+    "descriptionAndRecipe": "Mô tả & công thức",
+    "recipe": "Công thức",
+    "recipeLocked": "Công thức chỉ dành cho học viên đã mua bài học này.",
+    "videos": "Video trong bài",
+    "noVideos": "Bài học này chưa có video.",
+    "previous": "Bài trước",
+    "next": "Bài tiếp theo",
+    "lockedVideoTitle": "Video này dành cho học viên",
+    "lockedVideoText": "Mua khóa học hoặc bài học này để xem.",
+    "owned": "Bạn đã sở hữu bài học này",
+    "free": "Miễn phí"
   }
 }

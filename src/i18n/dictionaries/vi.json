@@ -117,14 +117,13 @@
     "loginTitle": "Đăng nhập",
     "loginSubmit": "Đăng nhập",
     "loggingIn": "Đang đăng nhập…",
-    "noAccount": "Chưa có tài khoản?",
-    "registerLink": "Đăng ký",
     "registerTitle": "Đăng ký tài khoản",
     "registerSubmit": "Tạo tài khoản",
     "registering": "Đang tạo tài khoản…",
     "haveAccount": "Đã có tài khoản?",
     "loginLink": "Đăng nhập",
     "passwordHint": "Tối thiểu 8 ký tự.",
+    "noAccountHint": "Chưa có tài khoản? Liên hệ cô Lan để được tạo tài khoản.",
     "adminBadge": "Quản trị",
     "hello": "Xin chào, {name}",
     "errors": {
@@ -138,6 +137,23 @@
       "network": "Không kết nối được máy chủ. Vui lòng thử lại.",
       "unknown": "Có lỗi xảy ra. Vui lòng thử lại."
     }
+  },
+  "activate": {
+    "title": "Kích hoạt tài khoản",
+    "checking": "Đang kiểm tra liên kết…",
+    "hello": "Xin chào {name}",
+    "intro": "Đặt mật khẩu để hoàn tất kích hoạt tài khoản.",
+    "newPassword": "Mật khẩu mới",
+    "confirmPassword": "Nhập lại mật khẩu",
+    "submit": "Kích hoạt tài khoản",
+    "submitting": "Đang kích hoạt…",
+    "mismatch": "Hai mật khẩu không khớp.",
+    "invalidTitle": "Liên kết không hợp lệ",
+    "invalidText": "Liên kết này không hợp lệ. Vui lòng mở lại liên kết trong email, hoặc liên hệ cô Lan.",
+    "expiredTitle": "Liên kết đã hết hạn",
+    "expiredText": "Liên kết đã hết hạn hoặc đã được sử dụng. Liên hệ cô Lan để nhận liên kết mới.",
+    "contact": "Liên hệ cô Lan",
+    "loginLink": "Đến trang đăng nhập"
   },
   "footer": {
     "contact": "Liên hệ",
@@ -163,6 +179,7 @@
   },
   "account": {
     "myCoursesTitle": "Khóa học của tôi",
+    "activated": "Tài khoản đã được kích hoạt",
     "myCoursesEmpty": "Bạn chưa có khóa học nào.",
     "browseCourses": "Xem các khóa học",
     "historyTitle": "Lịch sử xem",

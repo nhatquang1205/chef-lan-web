@@ -40,3 +40,13 @@ Client component (tokens live in the browser), in the same style as the login pa
   the address bar, the name/email show, a mismatching confirm is refused client-side, a valid password signs in and
   lands on `/account/courses`; reopening the same link shows the expired/used state.
 - `pnpm lint`, `pnpm typecheck`, `pnpm build` clean.
+
+## Implementation notes
+
+- Register link removed from the login form (replaced by `auth.noAccountHint`); no other `/register` links existed. `register/page.tsx` now exports `robots: { index: false, follow: false }`. The unused `auth.noAccount` / `auth.registerLink` keys were deleted.
+- `/[lang]/activate` = server page (noindex, title) + client `src/components/ActivateView.tsx`. The token is read once from `location.hash` (`#token=`, `decodeURIComponent`), kept only in a ref, and the fragment is removed at once with `history.replaceState`. A ref guard keeps it working under React's double effect in development.
+- States: checking, missing token ("invalid link"), expired/used (`customer.invite_invalid`, from inspect or accept; shows Lan's phone and a login link), generic/429 error, and the form (name, read-only email, password + confirm with a shared show/hide toggle; mismatch refused client-side).
+- `AuthProvider.acceptInvite(token, password)` posts to `/auth/invitations/accept` and stores the session via `store(toSession(...))` like `login`; `toFailure` maps `customer.invite_invalid` to a new `inviteInvalid` failure kind. Accepting replaces any existing session.
+- On success: `router.replace(/account/courses?activated=1)`; `ActivatedNotice` (in Suspense) shows the "account activated" banner. The `?activated=1` stays in the URL (harmless).
+- Phone number is duplicated from `Footer.tsx` as a constant in `ActivateView`.
+- Not verified against a live backend (reviewer tests in a browser).

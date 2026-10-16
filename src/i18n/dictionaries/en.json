@@ -117,14 +117,13 @@
     "loginTitle": "Log in",
     "loginSubmit": "Log in",
     "loggingIn": "Logging in…",
-    "noAccount": "No account yet?",
-    "registerLink": "Sign up",
     "registerTitle": "Create an account",
     "registerSubmit": "Create account",
     "registering": "Creating account…",
     "haveAccount": "Already have an account?",
     "loginLink": "Log in",
     "passwordHint": "At least 8 characters.",
+    "noAccountHint": "No account yet? Contact chef Lan to have one created for you.",
     "adminBadge": "Admin",
     "hello": "Hello, {name}",
     "errors": {
@@ -138,6 +137,23 @@
       "network": "Could not reach the server. Please try again.",
       "unknown": "Something went wrong. Please try again."
     }
+  },
+  "activate": {
+    "title": "Activate your account",
+    "checking": "Checking your link…",
+    "hello": "Hello {name}",
+    "intro": "Set a password to finish activating your account.",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "submit": "Activate account",
+    "submitting": "Activating…",
+    "mismatch": "The two passwords do not match.",
+    "invalidTitle": "Invalid link",
+    "invalidText": "This link is not valid. Please open the link from your email again, or contact chef Lan.",
+    "expiredTitle": "Link expired",
+    "expiredText": "This link has expired or has already been used. Contact chef Lan to get a new one.",
+    "contact": "Contact chef Lan",
+    "loginLink": "Go to log in"
   },
   "footer": {
     "contact": "Contact",
@@ -163,6 +179,7 @@
   },
   "account": {
     "myCoursesTitle": "My courses",
+    "activated": "Your account has been activated",
     "myCoursesEmpty": "You don't have any courses yet.",
     "browseCourses": "Browse courses",
     "historyTitle": "Watch history",

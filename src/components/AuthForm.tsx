@@ -30,6 +30,7 @@ function message(failure: AuthFailure, dict: Dictionary): string {
     case "inactive": return errors.inactive;
     case "emailUsed": return errors.emailUsed;
     case "rateLimited": return template(errors.rateLimited, { seconds: failure.seconds });
+    case "inviteInvalid": return errors.unknown;
     case "validation": return errors.validation;
     case "network": return errors.network;
     default: return errors.unknown;
@@ -152,13 +153,19 @@ export function AuthForm({ mode, lang, dict }: { mode: "login" | "register"; lan
       </button>
 
       <p className="text-center text-sm text-beige/75">
-        {isLogin ? dict.auth.noAccount : dict.auth.haveAccount}{" "}
-        <Link
-          href={`${localePath(lang, isLogin ? "/register" : "/login")}${next ? `?next=${encodeURIComponent(next)}` : ""}`}
-          className="font-semibold text-beige underline underline-offset-4"
-        >
-          {isLogin ? dict.auth.registerLink : dict.auth.loginLink}
-        </Link>
+        {isLogin ? (
+          dict.auth.noAccountHint
+        ) : (
+          <>
+            {dict.auth.haveAccount}{" "}
+            <Link
+              href={`${localePath(lang, "/login")}${next ? `?next=${encodeURIComponent(next)}` : ""}`}
+              className="font-semibold text-beige underline underline-offset-4"
+            >
+              {dict.auth.loginLink}
+            </Link>
+          </>
+        )}
       </p>
     </form>
   );

@@ -42,7 +42,7 @@ function toSession(response: SessionResponse): Session {
 }
 
 export type AuthFailure =
-  | { kind: "invalid" | "notActivated" | "locked" | "inactive" | "emailUsed" | "validation" | "network" | "unknown" }
+  | { kind: "invalid" | "notActivated" | "locked" | "inactive" | "emailUsed" | "validation" | "inviteInvalid" | "network" | "unknown" }
   | { kind: "rateLimited"; seconds: number };
 
 export type AuthResult = { ok: true } | { ok: false; failure: AuthFailure; fieldErrors?: Record<string, string[]> };
@@ -59,6 +59,8 @@ interface AuthContextValue {
   user: AuthUser | null;
   login(email: string, password: string): Promise<AuthResult>;
   register(input: RegisterInput): Promise<AuthResult>;
+  /** Sets the first password from an invitation link and signs in, replacing any current session. */
+  acceptInvite(token: string, password: string): Promise<AuthResult>;
   logout(): Promise<void>;
   /** A valid access token for API calls from the browser, renewed first if it is about to expire. Null when signed out. */
   getAccessToken(): Promise<string | null>;
@@ -106,6 +108,10 @@ function toFailure(error: unknown): AuthResult {
 
   if (error.status === 429) {
     return { ok: false, failure: { kind: "rateLimited", seconds: error.retryAfterSeconds ?? 60 } };
+  }
+
+  if (error.code === "customer.invite_invalid") {
+    return { ok: false, failure: { kind: "inviteInvalid" } };
   }
 
   if (error.status === 400) {
@@ -231,6 +237,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [store],
   );
 
+  const acceptInvite = useCallback<AuthContextValue["acceptInvite"]>(
+    async (token, password) => {
+      try {
+        store(
+          toSession(
+            await apiFetch<SessionResponse>("/api/v1/auth/invitations/accept", {
+              method: "POST",
+              body: { token, password },
+            }),
+          ),
+        );
+        return { ok: true };
+      } catch (error) {
+        return toFailure(error);
+      }
+    },
+    [store],
+  );
+
   const logout = useCallback(async () => {
     const current = session;
     store(null);
@@ -300,8 +325,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [store]);
 
   const value = useMemo<AuthContextValue>(
-    () => ({ status, user: session?.user ?? null, login, register, logout, getAccessToken }),
-    [status, session, login, register, logout, getAccessToken],
+    () => ({ status, user: session?.user ?? null, login, register, acceptInvite, logout, getAccessToken }),
+    [status, session, login, register, acceptInvite, logout, getAccessToken],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

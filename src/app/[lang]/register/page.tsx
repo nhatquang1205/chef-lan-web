@@ -1,6 +1,9 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import { AuthForm } from "@/components/AuthForm";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
+
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 export default async function Page() {
   const [lang, dict] = await Promise.all([getLocale(), getDictionary()]);

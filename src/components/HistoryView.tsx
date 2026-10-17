@@ -6,7 +6,14 @@ import { clearHistory, readHistory, type HistoryEntry } from "@/lib/history";
 import { useRequireAuth } from "@/lib/auth/useRequireAuth";
 import { localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
-import { template } from "@/lib/format";
+
+function clock(totalSeconds: number): string {
+  const s = Math.max(0, Math.floor(totalSeconds));
+  const h = Math.floor(s / 3600);
+  const mm = String(Math.floor((s % 3600) / 60)).padStart(h > 0 ? 2 : 1, "0");
+  const ss = String(s % 60).padStart(2, "0");
+  return h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
+}
 
 export function HistoryView({ lang, dict }: { lang: Locale; dict: Dictionary }) {
   const auth = useRequireAuth(lang);
@@ -45,13 +52,13 @@ export function HistoryView({ lang, dict }: { lang: Locale; dict: Dictionary }) 
                   aria-valuenow={percent}
                   aria-valuemin={0}
                   aria-valuemax={100}
-                  aria-label={template(dict.account.watched, { percent })}
+                  aria-label={`${clock(entry.positionSeconds)} / ${clock(entry.durationSeconds)}`}
                   className="mt-3 h-1.5 overflow-hidden rounded bg-beige/15"
                 >
                   <div className="h-full bg-beige" style={{ width: `${percent}%` }} />
                 </div>
                 <p className="mt-2 flex justify-between text-sm text-beige/70">
-                  <span>{template(dict.account.watched, { percent })}</span>
+                  <span>{clock(entry.positionSeconds)} / {clock(entry.durationSeconds)}</span>
                   <span>{dict.account.resume}</span>
                 </p>
               </Link>

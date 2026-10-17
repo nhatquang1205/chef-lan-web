@@ -108,9 +108,9 @@ export function LessonView({ slug, lessonSlug, lang, dict }: { slug: string; les
             {videos.length} {dict.course.videos}
             {lesson.durationSeconds > 0 && ` · ${formatDuration(lesson.durationSeconds, dict)}`}
           </span>
-          {page.hasAccess && (
+          {!page.hasAccess && (
             <span className="rounded border border-beige/40 px-2 py-0.5 text-xs font-semibold uppercase tracking-widest text-beige">
-              {dict.lesson.owned}
+              {dict.course.notOwned}
             </span>
           )}
           {!lesson.includedInCourse && (

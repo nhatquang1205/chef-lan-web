@@ -6,8 +6,6 @@ import { formatDuration, formatVnd } from "@/lib/format";
 import type { CourseListItem } from "@/lib/api/types";
 
 export function CourseCard({ course, lang, dict }: { course: CourseListItem; lang: Locale; dict: Dictionary }) {
-  const level = dict.level[course.level];
-
   return (
     <Link
       href={localePath(lang, `/courses/${course.slug}`)}
@@ -20,11 +18,6 @@ export function CourseCard({ course, lang, dict }: { course: CourseListItem; lan
           sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 80vw"
           className="transition-transform duration-300 group-hover:scale-105"
         />
-        {level && (
-          <span className="absolute left-3 top-3 rounded bg-terracotta px-2 py-0.5 text-xs font-semibold uppercase tracking-widest text-beige">
-            {level}
-          </span>
-        )}
       </div>
 
       <div className="flex flex-1 flex-col gap-2 p-4">

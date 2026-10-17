@@ -88,17 +88,12 @@ function MyCourseCard({ course, lang, dict }: { course: MyCourse; lang: Locale; 
     >
       <div className="relative aspect-[16/10] overflow-hidden">
         <Thumbnail src={course.thumbnailUrl} alt="" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 90vw" className="transition-transform duration-300 group-hover:scale-105" />
-        {course.hasCourseAccess && (
-          <span className="absolute left-3 top-3 rounded bg-terracotta px-2 py-0.5 text-xs font-semibold uppercase tracking-widest text-beige">
-            {dict.account.ownedWhole}
-          </span>
-        )}
       </div>
       <div className="flex flex-1 flex-col gap-2 p-4">
         <h3 className="font-display text-xl leading-snug">{course.title}</h3>
-        {course.hasCourseAccess && (
+        {expires && (
           <p className="mt-auto pt-2 text-sm text-beige/70">
-            {expires ? template(dict.account.expires, { date: expires }) : dict.account.lifetime}
+            {template(dict.account.expires, { date: expires })}
           </p>
         )}
         {course.lessons.length > 0 && (

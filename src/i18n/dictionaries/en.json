@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Bon Bocon — Chef Lan's cooking courses",
-    "description": "Learn to cook at home with chef Lan: video courses by theme, watch anytime."
+    "description": "Learn to cook at home with Chef Lan: video courses by theme, watch anytime."
   },
   "brand": {
     "tagline": "Italian homemade restaurant"
@@ -89,23 +89,19 @@
     "watchPreview": "Watch preview",
     "locked": "Enroll to watch",
     "freeUntil": "First {seconds}s free",
-    "access": "Access",
-    "accessDays": "{days} days",
-    "accessLifetime": "Lifetime",
     "price": "Price",
-    "buyNote": "Contact chef Lan to enroll in this course.",
+    "buyNote": "Contact Chef Lan to enroll in this course.",
     "lessonPrice": "Buy this lesson on its own: {price}",
-    "buyLessonNote": "Contact chef Lan to buy this lesson on its own.",
-    "owned": "Owned",
+    "buyLessonNote": "Contact Chef Lan to buy this lesson on its own.",
     "addonsTitle": "Add-on lessons",
     "addonsNote": "These lessons are not part of the course price and are bought one by one.",
-    "addonNote": "Add-on lesson, not included in the course price. Contact chef Lan to buy it.",
+    "addonNote": "Add-on lesson, not included in the course price. Contact Chef Lan to buy it.",
     "details": "Details",
     "lessonsCount": "{count} lessons",
-    "level": "Level",
     "duration": "Duration",
     "lessons": "Lessons",
-    "categories": "Categories"
+    "categories": "Categories",
+    "notOwned": "Not owned"
   },
   "auth": {
     "email": "Email",
@@ -123,14 +119,14 @@
     "haveAccount": "Already have an account?",
     "loginLink": "Log in",
     "passwordHint": "At least 8 characters.",
-    "noAccountHint": "No account yet? Contact chef Lan to have one created for you.",
+    "noAccountHint": "No account yet? Contact Chef Lan to have one created for you.",
     "adminBadge": "Admin",
     "hello": "Hello, {name}",
     "errors": {
       "invalid": "Email or password is incorrect.",
-      "notActivated": "This account has no password yet. Please contact chef Lan to get it activated.",
+      "notActivated": "This account has no password yet. Please contact Chef Lan to get it activated.",
       "locked": "This account is temporarily locked after too many failed attempts. Try again in 15 minutes.",
-      "inactive": "This account has been disabled. Please contact chef Lan.",
+      "inactive": "This account has been disabled. Please contact Chef Lan.",
       "emailUsed": "This email is already registered.",
       "rateLimited": "Too many attempts. Please wait {seconds} seconds and try again.",
       "validation": "Please check your details.",
@@ -149,10 +145,10 @@
     "submitting": "Activating…",
     "mismatch": "The two passwords do not match.",
     "invalidTitle": "Invalid link",
-    "invalidText": "This link is not valid. Please open the link from your email again, or contact chef Lan.",
+    "invalidText": "This link is not valid. Please open the link from your email again, or contact Chef Lan.",
     "expiredTitle": "Link expired",
-    "expiredText": "This link has expired or has already been used. Contact chef Lan to get a new one.",
-    "contact": "Contact chef Lan",
+    "expiredText": "This link has expired or has already been used. Contact Chef Lan to get a new one.",
+    "contact": "Contact Chef Lan",
     "loginLink": "Go to log in"
   },
   "footer": {
@@ -165,7 +161,7 @@
     "previewNotice": "This is a preview: the first {seconds} seconds are free.",
     "countdown": "Preview: {time} left",
     "previewEnded": "The preview has ended",
-    "previewEndedText": "Contact chef Lan to enroll in the course and watch it in full.",
+    "previewEndedText": "Contact Chef Lan to enroll in the course and watch it in full.",
     "backToCourse": "Back to the course",
     "loadingPlayer": "Loading the player…",
     "playerFailed": "The player could not be loaded. Please reload the page.",
@@ -185,12 +181,9 @@
     "historyTitle": "Watch history",
     "historyEmpty": "You haven't watched any videos yet.",
     "clearHistory": "Clear history",
-    "watched": "Watched {percent}%",
     "resume": "Resume",
     "loading": "Loading…",
     "menuLabel": "Account menu",
-    "ownedWhole": "Full course",
-    "lifetime": "Lifetime access",
     "expires": "Expires: {date}",
     "ownedLessons": "{count} lessons owned"
   },
@@ -206,7 +199,6 @@
     "next": "Next lesson",
     "lockedVideoTitle": "This video is for students",
     "lockedVideoText": "Buy the course or this lesson to watch it.",
-    "owned": "You own this lesson",
     "free": "Free"
   }
 }

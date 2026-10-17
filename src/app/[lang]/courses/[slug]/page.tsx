@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { CourseAccessProvider, OwnedBadge } from "@/components/CourseAccess";
+import { BuyNote, CourseAccessProvider, NotOwnedBadge } from "@/components/CourseAccess";
 import { Thumbnail } from "@/components/Thumbnail";
 import { localePath } from "@/i18n/config";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
@@ -31,23 +31,15 @@ async function Content({ params }: { params: PageProps<"/[lang]/courses/[slug]">
     notFound();
   }
 
-  const access =
-    course.accessDurationDays == null
-      ? dict.course.accessLifetime
-      : template(dict.course.accessDays, { days: course.accessDurationDays });
-
   const includedLessons = course.lessons.filter((l) => l.includedInCourse);
   const addonLessons = course.lessons.filter((l) => !l.includedInCourse);
   const learnItems = (course.whatYouWillLearn ?? "")
     .split("\n")
     .map((line) => line.replace(/^[-*•]\s*/, "").trim())
     .filter(Boolean);
-  const level = dict.level[course.level];
   const facts = [
-    level && { label: dict.course.level, value: level },
     { label: dict.course.lessons, value: String(course.lessonCount) },
     course.totalDurationSeconds > 0 && { label: dict.course.duration, value: formatDuration(course.totalDurationSeconds, dict) },
-    { label: dict.course.access, value: access },
   ].filter((fact): fact is { label: string; value: string } => !!fact);
 
   const renderLesson = (lesson: (typeof course.lessons)[number], index: number, addon: boolean) => (
@@ -61,7 +53,7 @@ async function Content({ params }: { params: PageProps<"/[lang]/courses/[slug]">
             <span className="text-beige/55 sm:hidden">{index + 1}. </span>
             {lesson.title}
           </h3>
-          <OwnedBadge lessonId={lesson.id} included={lesson.includedInCourse} dict={dict} />
+          <NotOwnedBadge lessonId={lesson.id} included={lesson.includedInCourse} dict={dict} />
         </div>
         <p className="mt-1 text-sm text-beige/60">
           {lesson.videos.length} {dict.course.videos}
@@ -120,7 +112,7 @@ async function Content({ params }: { params: PageProps<"/[lang]/courses/[slug]">
                 )}
               </p>
             </div>
-            <p className="rounded bg-terracotta px-4 py-2 text-sm text-beige">{dict.course.buyNote}</p>
+            <BuyNote dict={dict} />
           </div>
         </div>
 

@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "Bon Bocon — Khóa học nấu ăn của cô Lan",
-    "description": "Học nấu ăn tại nhà cùng cô Lan: khóa học video theo từng chủ đề, xem mọi lúc."
+    "title": "Bon Bocon — Khóa học nấu ăn của Chef Lan",
+    "description": "Học nấu ăn tại nhà cùng Chef Lan: khóa học video theo từng chủ đề, xem mọi lúc."
   },
   "brand": {
     "tagline": "Italian homemade restaurant"
@@ -89,23 +89,19 @@
     "watchPreview": "Xem thử",
     "locked": "Đăng ký để xem",
     "freeUntil": "Miễn phí {seconds} giây đầu",
-    "access": "Thời hạn truy cập",
-    "accessDays": "{days} ngày",
-    "accessLifetime": "Trọn đời",
     "price": "Học phí",
-    "buyNote": "Liên hệ cô Lan để đăng ký khóa học.",
+    "buyNote": "Liên hệ Chef Lan để đăng ký khóa học.",
     "lessonPrice": "Mua riêng bài học này: {price}",
-    "buyLessonNote": "Liên hệ cô Lan để mua riêng bài học này.",
-    "owned": "Đã sở hữu",
+    "buyLessonNote": "Liên hệ Chef Lan để mua riêng bài học này.",
     "addonsTitle": "Bài học mua thêm",
     "addonsNote": "Những bài học này không nằm trong giá khóa học, mua riêng từng bài.",
-    "addonNote": "Bài học mua thêm, không nằm trong giá khóa học. Liên hệ cô Lan để mua.",
+    "addonNote": "Bài học mua thêm, không nằm trong giá khóa học. Liên hệ Chef Lan để mua.",
     "details": "Chi tiết",
     "lessonsCount": "{count} bài học",
-    "level": "Trình độ",
     "duration": "Thời lượng",
     "lessons": "Bài học",
-    "categories": "Danh mục"
+    "categories": "Danh mục",
+    "notOwned": "Chưa sở hữu"
   },
   "auth": {
     "email": "Email",
@@ -123,14 +119,14 @@
     "haveAccount": "Đã có tài khoản?",
     "loginLink": "Đăng nhập",
     "passwordHint": "Tối thiểu 8 ký tự.",
-    "noAccountHint": "Chưa có tài khoản? Liên hệ cô Lan để được tạo tài khoản.",
+    "noAccountHint": "Chưa có tài khoản? Liên hệ Chef Lan để được tạo tài khoản.",
     "adminBadge": "Quản trị",
     "hello": "Xin chào, {name}",
     "errors": {
       "invalid": "Email hoặc mật khẩu không đúng.",
-      "notActivated": "Tài khoản này chưa có mật khẩu. Vui lòng liên hệ cô Lan để được kích hoạt.",
+      "notActivated": "Tài khoản này chưa có mật khẩu. Vui lòng liên hệ Chef Lan để được kích hoạt.",
       "locked": "Tài khoản tạm thời bị khóa do nhập sai nhiều lần. Thử lại sau 15 phút.",
-      "inactive": "Tài khoản đã bị vô hiệu hóa. Vui lòng liên hệ cô Lan.",
+      "inactive": "Tài khoản đã bị vô hiệu hóa. Vui lòng liên hệ Chef Lan.",
       "emailUsed": "Email này đã được đăng ký.",
       "rateLimited": "Bạn thử quá nhiều lần. Vui lòng đợi {seconds} giây rồi thử lại.",
       "validation": "Vui lòng kiểm tra lại thông tin.",
@@ -149,10 +145,10 @@
     "submitting": "Đang kích hoạt…",
     "mismatch": "Hai mật khẩu không khớp.",
     "invalidTitle": "Liên kết không hợp lệ",
-    "invalidText": "Liên kết này không hợp lệ. Vui lòng mở lại liên kết trong email, hoặc liên hệ cô Lan.",
+    "invalidText": "Liên kết này không hợp lệ. Vui lòng mở lại liên kết trong email, hoặc liên hệ Chef Lan.",
     "expiredTitle": "Liên kết đã hết hạn",
-    "expiredText": "Liên kết đã hết hạn hoặc đã được sử dụng. Liên hệ cô Lan để nhận liên kết mới.",
-    "contact": "Liên hệ cô Lan",
+    "expiredText": "Liên kết đã hết hạn hoặc đã được sử dụng. Liên hệ Chef Lan để nhận liên kết mới.",
+    "contact": "Liên hệ Chef Lan",
     "loginLink": "Đến trang đăng nhập"
   },
   "footer": {
@@ -165,7 +161,7 @@
     "previewNotice": "Đây là bản xem thử: {seconds} giây đầu được xem miễn phí.",
     "countdown": "Xem thử: còn {time}",
     "previewEnded": "Phần xem thử đã kết thúc",
-    "previewEndedText": "Liên hệ cô Lan để đăng ký khóa học và xem trọn vẹn.",
+    "previewEndedText": "Liên hệ Chef Lan để đăng ký khóa học và xem trọn vẹn.",
     "backToCourse": "Về trang khóa học",
     "loadingPlayer": "Đang tải trình phát…",
     "playerFailed": "Không tải được trình phát. Hãy tải lại trang.",
@@ -185,12 +181,9 @@
     "historyTitle": "Lịch sử xem",
     "historyEmpty": "Bạn chưa xem video nào.",
     "clearHistory": "Xóa lịch sử",
-    "watched": "Đã xem {percent}%",
     "resume": "Tiếp tục xem",
     "loading": "Đang tải…",
     "menuLabel": "Menu tài khoản",
-    "ownedWhole": "Trọn khóa",
-    "lifetime": "Xem trọn đời",
     "expires": "Hết hạn: {date}",
     "ownedLessons": "{count} bài học đã mua"
   },
@@ -206,7 +199,6 @@
     "next": "Bài tiếp theo",
     "lockedVideoTitle": "Video này dành cho học viên",
     "lockedVideoText": "Mua khóa học hoặc bài học này để xem.",
-    "owned": "Bạn đã sở hữu bài học này",
     "free": "Miễn phí"
   }
 }

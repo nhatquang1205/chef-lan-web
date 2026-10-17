@@ -72,6 +72,10 @@
     "results": "{count} khóa học"
   },
   "course": {
+    "gallery": "Ảnh khóa học",
+    "imagePrev": "Ảnh trước",
+    "imageNext": "Ảnh sau",
+    "imageGoTo": "Ảnh",
     "back": "Tất cả khóa học",
     "whatYouWillLearn": "Bạn sẽ học được",
     "about": "Giới thiệu",

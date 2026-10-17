@@ -16,3 +16,16 @@ list items). Shapes: implementation notes at the end of `../chef-lan/docs/course
 Done when: a course with 3 images shows a working carousel (arrows, dots, swipe on mobile width), the card shows the
 first image; a course without images shows its cover on both; the homepage hero still uses the cover image.
 `pnpm lint`, `pnpm typecheck`, `pnpm build` clean.
+
+## Implementation notes
+
+Status: done (lint, typecheck, build clean; not browser-tested).
+
+- Types: `CourseListItem.cardImageUrl`, `MyCourse.cardImageUrl`, `CourseImage`, `CourseDetail.images`.
+- `CourseCard` / `MyCoursesView` use `cardImageUrl ?? thumbnailUrl`; `HeroSlider` untouched.
+- Course page: 2+ images render `Carousel` inside the existing 4:3 frame (arrows from sm up, dots overlaid at the bottom of the
+  frame, swipe, no autoplay, no loop); first slide eager. 0 or 1 image renders a single `Thumbnail` (first image, else
+  `thumbnailUrl`, else the gradient). Alt = image alt, else course title.
+- `Carousel` gained an optional `dotsClassName` (default `mt-4`, so existing uses are unchanged).
+- i18n keys `course.gallery`, `imagePrev`, `imageNext`, `imageGoTo` (dots read "Ảnh 2"/"Image 2").
+- Skipped: thumbnails row; `width`/`height` are typed but unused (the frame is fixed 4:3, `fill` needs no hints).

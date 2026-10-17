@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { BuyNote, CourseAccessProvider, DiscountQuote, NotOwnedBadge } from "@/components/CourseAccess";
+import { Carousel } from "@/components/Carousel";
 import { Thumbnail } from "@/components/Thumbnail";
 import { localePath } from "@/i18n/config";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
@@ -140,7 +141,30 @@ async function Content({ params }: { params: PageProps<"/[lang]/courses/[slug]">
           </div>
 
           <div className="relative order-1 aspect-[4/3] overflow-hidden rounded-xl border border-beige/15 md:order-2">
-            <Thumbnail src={course.thumbnailUrl} alt="" priority sizes="(min-width: 768px) 50vw, 100vw" />
+            {course.images.length > 1 ? (
+              <Carousel
+                label={dict.course.gallery}
+                slideClassName="basis-full"
+                prevLabel={dict.course.imagePrev}
+                nextLabel={dict.course.imageNext}
+                goToLabel={dict.course.imageGoTo}
+                dots
+                dotsClassName="absolute inset-x-0 bottom-3"
+              >
+                {course.images.map((image, index) => (
+                  <div key={image.url} className="relative aspect-[4/3]">
+                    <Thumbnail src={image.url} alt={image.alt || course.title} priority={index === 0} sizes="(min-width: 768px) 50vw, 100vw" />
+                  </div>
+                ))}
+              </Carousel>
+            ) : (
+              <Thumbnail
+                src={course.images[0]?.url ?? course.thumbnailUrl}
+                alt={course.images[0]?.alt || course.title}
+                priority
+                sizes="(min-width: 768px) 50vw, 100vw"
+              />
+            )}
           </div>
         </div>
 

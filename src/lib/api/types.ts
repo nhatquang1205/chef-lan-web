@@ -20,6 +20,8 @@ export interface CourseListItem {
   title: string;
   subtitle?: string | null;
   thumbnailUrl?: string | null;
+  /** First gallery image, else the cover (resolved by the API). Use it on cards; the hero keeps thumbnailUrl. */
+  cardImageUrl?: string | null;
   level: CourseLevel;
   publishedAt?: string | null;
   priceVnd: number;
@@ -87,7 +89,16 @@ export interface LessonOutline {
   videos: LessonVideoOutline[];
 }
 
+export interface CourseImage {
+  url: string;
+  alt?: string | null;
+  width?: number | null;
+  height?: number | null;
+}
+
 export interface CourseDetail extends Omit<CourseListItem, "categories"> {
+  /** Gallery in order; empty when none (fall back to thumbnailUrl). */
+  images: CourseImage[];
   description?: string | null;
   whatYouWillLearn?: string | null;
   metaDescription?: string | null;
@@ -173,6 +184,7 @@ export interface MyCourse {
   slug: string;
   title: string;
   thumbnailUrl?: string | null;
+  cardImageUrl?: string | null;
   /** The whole course is owned. */
   hasCourseAccess: boolean;
   /** When whole-course access ends; null = lifetime or no whole-course access. */

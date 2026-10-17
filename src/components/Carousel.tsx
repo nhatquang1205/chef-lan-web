@@ -17,6 +17,7 @@ interface CarouselProps {
   goToLabel?: string;
   dots?: boolean;
   arrows?: boolean;
+  dotsClassName?: string;
 }
 
 /** Headless Embla, styled here. Used for both the hero and the category rows. */
@@ -32,6 +33,7 @@ export function Carousel({
   goToLabel = "",
   dots = false,
   arrows = true,
+  dotsClassName = "mt-4",
 }: CarouselProps) {
   // Autoplay is skipped entirely for people who ask for reduced motion.
   const plugins = useMemo(() => {
@@ -123,7 +125,7 @@ export function Carousel({
       )}
 
       {dots && snaps.length > 1 && (
-        <div className="mt-4 flex justify-center gap-2">
+        <div className={`flex justify-center gap-2 ${dotsClassName}`}>
           {snaps.map((_, index) => (
             <button
               key={index}

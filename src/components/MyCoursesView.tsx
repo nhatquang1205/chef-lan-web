@@ -87,7 +87,7 @@ function MyCourseCard({ course, lang, dict }: { course: MyCourse; lang: Locale; 
       className="group flex h-full flex-col overflow-hidden rounded-lg border border-beige/15 bg-olive-raised transition-colors hover:border-beige/40"
     >
       <div className="relative aspect-[16/10] overflow-hidden">
-        <Thumbnail src={course.thumbnailUrl} alt="" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 90vw" className="transition-transform duration-300 group-hover:scale-105" />
+        <Thumbnail src={course.cardImageUrl ?? course.thumbnailUrl} alt="" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 90vw" className="transition-transform duration-300 group-hover:scale-105" />
       </div>
       <div className="flex flex-1 flex-col gap-2 p-4">
         <h3 className="font-display text-xl leading-snug">{course.title}</h3>

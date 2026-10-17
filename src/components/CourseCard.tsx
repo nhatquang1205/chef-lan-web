@@ -13,7 +13,7 @@ export function CourseCard({ course, lang, dict }: { course: CourseListItem; lan
     >
       <div className="relative aspect-[16/10] overflow-hidden">
         <Thumbnail
-          src={course.thumbnailUrl}
+          src={course.cardImageUrl ?? course.thumbnailUrl}
           alt=""
           sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 80vw"
           className="transition-transform duration-300 group-hover:scale-105"

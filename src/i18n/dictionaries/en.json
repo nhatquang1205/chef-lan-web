@@ -72,6 +72,10 @@
     "results": "{count} courses"
   },
   "course": {
+    "gallery": "Course images",
+    "imagePrev": "Previous image",
+    "imageNext": "Next image",
+    "imageGoTo": "Image",
     "back": "All courses",
     "whatYouWillLearn": "What you will learn",
     "about": "About this course",

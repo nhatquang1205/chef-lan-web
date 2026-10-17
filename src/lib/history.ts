@@ -32,10 +32,11 @@ export function saveProgress(userId: string, entry: Omit<HistoryEntry, "updatedA
   }
 }
 
-export function clearHistory(userId: string) {
+export function removeFromHistory(userId: string, videoId: string) {
   try {
-    window.localStorage.removeItem(key(userId));
+    const next = readHistory(userId).filter((item) => item.videoId !== videoId);
+    window.localStorage.setItem(key(userId), JSON.stringify(next));
   } catch {
-    // Nothing to clear.
+    // Nothing to remove.
   }
 }

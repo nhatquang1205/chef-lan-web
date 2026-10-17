@@ -6,7 +6,7 @@ Context and decisions: `../chef-lan/docs/customer-invitations/spec.md`. Needs ba
 ## 1. Hide the register button (the API keeps working)
 
 - `src/components/AuthForm.tsx`: on the **login** form, remove the "Đăng ký" link at the bottom (`dict.auth.registerLink`)
-  and replace it with a short line: "Chưa có tài khoản? Liên hệ cô Lan để được tạo tài khoản." (add `auth.noAccountHint`
+  and replace it with a short line: "Chưa có tài khoản? Liên hệ Chef Lan để được tạo tài khoản." (add `auth.noAccountHint`
   in `vi.json` / `en.json`).
 - Check every other place that links to `/register` (`grep -rn "/register" src`): header, account menu, course pages,
   watch/lesson "sign in" hints. Remove those links too.
@@ -22,7 +22,7 @@ Client component (tokens live in the browser), in the same style as the login pa
 2. No token → "Liên kết không hợp lệ" state.
 3. `POST /api/v1/auth/invitations/inspect { token }` → show "Xin chào {fullName}", the email (read-only), and the form:
    new password + confirm (≥ 8 chars, must match, show/hide toggle like the login form).
-   `400 customer.invite_invalid` → state "Liên kết đã hết hạn hoặc đã được sử dụng. Liên hệ cô Lan để nhận liên kết mới."
+   `400 customer.invite_invalid` → state "Liên kết đã hết hạn hoặc đã được sử dụng. Liên hệ Chef Lan để nhận liên kết mới."
    with the contact phone and a link to `/login`.
 4. Submit → `POST /api/v1/auth/invitations/accept { token, password }` → the response is the normal session: store it
    through the existing `AuthProvider` (add a method next to `login`, e.g. `acceptInvite(token, password)`, that calls

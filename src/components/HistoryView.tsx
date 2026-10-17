@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { clearHistory, readHistory, type HistoryEntry } from "@/lib/history";
+import { readHistory, removeFromHistory, type HistoryEntry } from "@/lib/history";
 import { useRequireAuth } from "@/lib/auth/useRequireAuth";
 import { localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
@@ -32,16 +32,15 @@ export function HistoryView({ lang, dict }: { lang: Locale; dict: Dictionary }) 
   }
 
   return (
-    <div>
-      <ul className="space-y-3">
+    <ul className="space-y-3">
         {entries.map((entry) => {
           const percent = entry.durationSeconds > 0 ? Math.min(100, Math.round((entry.positionSeconds / entry.durationSeconds) * 100)) : 0;
 
           return (
-            <li key={entry.videoId}>
+            <li key={entry.videoId} className="relative">
               <Link
                 href={localePath(lang, `/courses/${entry.courseSlug}/watch/${entry.videoId}`)}
-                className="block rounded-lg border border-beige/15 bg-olive-raised p-4 transition-colors hover:border-beige/40"
+                className="block rounded-lg border border-beige/15 bg-olive-raised p-4 pr-12 transition-colors hover:border-beige/40"
               >
                 <p className="font-display text-xl leading-snug">{entry.title}</p>
                 <p className="mt-1 text-sm text-beige/70">
@@ -62,20 +61,23 @@ export function HistoryView({ lang, dict }: { lang: Locale; dict: Dictionary }) 
                   <span>{dict.account.resume}</span>
                 </p>
               </Link>
+              <button
+                type="button"
+                aria-label={dict.account.removeEntry}
+                title={dict.account.removeEntry}
+                onClick={() => {
+                  removeFromHistory(key, entry.videoId);
+                  setVersion((value) => value + 1);
+                }}
+                className="absolute right-3 top-3 rounded p-1.5 text-beige/70 hover:bg-beige/10 hover:text-beige"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+                  <path d="M6 6l12 12M18 6L6 18" />
+                </svg>
+              </button>
             </li>
           );
         })}
-      </ul>
-      <button
-        type="button"
-        onClick={() => {
-          clearHistory(key);
-          setVersion((value) => value + 1);
-        }}
-        className="mt-6 rounded border border-beige/40 px-4 py-2 text-sm font-semibold uppercase tracking-widest text-beige hover:bg-beige/10"
-      >
-        {dict.account.clearHistory}
-      </button>
-    </div>
+    </ul>
   );
 }

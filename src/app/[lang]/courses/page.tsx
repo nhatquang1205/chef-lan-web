@@ -1,3 +1,4 @@
+import { Select } from "@/components/Select";
 import Link from "next/link";
 import { Suspense } from "react";
 import { CourseCard } from "@/components/CourseCard";
@@ -5,10 +6,9 @@ import { Pagination } from "@/features/courses/Pagination";
 import { localePath } from "@/i18n/config";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
 import { listCategories, searchCourses } from "@/lib/api/catalog";
-import type { CourseLevel, CourseSort } from "@/lib/api/types";
+import type { CourseSort } from "@/lib/api/types";
 import { template } from "@/lib/format";
 
-const levels: CourseLevel[] = ["Beginner", "Intermediate", "Advanced"];
 const sorts: CourseSort[] = ["Newest", "PriceAsc", "PriceDesc", "Title"];
 const PAGE_SIZE = 12;
 
@@ -33,27 +33,24 @@ async function Content({ searchParams }: { searchParams: SearchParams }) {
   // Validate against the allowed values: anything else is ignored, never forwarded.
   const q = first(raw.q).trim().slice(0, 100);
   const category = first(raw.category).slice(0, 140);
-  const levelRaw = first(raw.level);
-  const level = levels.find((l) => l === levelRaw);
   const sortRaw = first(raw.sort);
   const sort = sorts.find((s) => s === sortRaw) ?? "Newest";
   const page = Math.max(1, Number.parseInt(first(raw.page), 10) || 1);
 
   const [categoriesResult, resultsResult] = await Promise.allSettled([
     listCategories(),
-    searchCourses({ q, categorySlug: category, level, sort, page, pageSize: PAGE_SIZE }),
+    searchCourses({ q, categorySlug: category, sort, page, pageSize: PAGE_SIZE }),
   ]);
 
   const categories = categoriesResult.status === "fulfilled" ? categoriesResult.value : [];
   const activeCategory = categories.find((c) => c.slug === category);
-  const filtered = Boolean(q || category || level || sort !== "Newest");
+  const filtered = Boolean(q || category || sort !== "Newest");
 
   const hrefFor = (target: number) => {
     const params = new URLSearchParams();
 
     if (q) params.set("q", q);
     if (category) params.set("category", category);
-    if (level) params.set("level", level);
     if (sort !== "Newest") params.set("sort", sort);
     if (target > 1) params.set("page", String(target));
 
@@ -74,37 +71,33 @@ async function Content({ searchParams }: { searchParams: SearchParams }) {
       </header>
 
       {/* A plain GET form: works without JavaScript, and every filter lives in the URL. */}
-      <form method="get" action={basePath} role="search" aria-label={dict.courses.search} className="mb-8 grid gap-4 rounded-lg border border-beige/15 bg-olive-raised p-4 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr_auto] lg:items-end">
+      <form method="get" action={basePath} role="search" aria-label={dict.courses.search} className="mb-8 grid gap-4 rounded-lg border border-beige/15 bg-olive-raised p-4 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_auto] lg:items-end">
         <div>
           <label htmlFor="q" className={label}>{dict.courses.search}</label>
           <input id="q" name="q" type="search" defaultValue={q} maxLength={100} placeholder={dict.courses.searchPlaceholder} className={field} />
         </div>
         <div>
           <label htmlFor="category" className={label}>{dict.courses.category}</label>
-          <select id="category" name="category" defaultValue={category} className={field}>
-            <option value="">{dict.courses.allCategories}</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.slug}>{c.name}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label htmlFor="level" className={label}>{dict.courses.level}</label>
-          <select id="level" name="level" defaultValue={level ?? ""} className={field}>
-            <option value="">{dict.courses.allLevels}</option>
-            {levels.map((l) => (
-              <option key={l} value={l}>{dict.level[l]}</option>
-            ))}
-          </select>
+          <Select
+            id="category"
+            name="category"
+            defaultValue={category}
+            options={[{ value: "", label: dict.courses.allCategories }, ...categories.map((c) => ({ value: c.slug, label: c.name }))]}
+          />
         </div>
         <div>
           <label htmlFor="sort" className={label}>{dict.courses.sort}</label>
-          <select id="sort" name="sort" defaultValue={sort} className={field}>
-            <option value="Newest">{dict.courses.sortNewest}</option>
-            <option value="PriceAsc">{dict.courses.sortPriceAsc}</option>
-            <option value="PriceDesc">{dict.courses.sortPriceDesc}</option>
-            <option value="Title">{dict.courses.sortTitle}</option>
-          </select>
+          <Select
+            id="sort"
+            name="sort"
+            defaultValue={sort}
+            options={[
+              { value: "Newest", label: dict.courses.sortNewest },
+              { value: "PriceAsc", label: dict.courses.sortPriceAsc },
+              { value: "PriceDesc", label: dict.courses.sortPriceDesc },
+              { value: "Title", label: dict.courses.sortTitle },
+            ]}
+          />
         </div>
         <div className="flex items-center gap-3 sm:col-span-2 lg:col-span-1">
           <button type="submit" className="rounded bg-terracotta px-5 py-2 font-semibold uppercase tracking-widest text-beige hover:bg-terracotta-hover">

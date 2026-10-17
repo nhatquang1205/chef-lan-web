@@ -30,12 +30,6 @@
     "backHome": "Back to home",
     "somethingWrong": "Something went wrong"
   },
-  "level": {
-    "Unspecified": "",
-    "Beginner": "Beginner",
-    "Intermediate": "Intermediate",
-    "Advanced": "Advanced"
-  },
   "duration": {
     "hours": "h",
     "minutes": "min"
@@ -63,8 +57,6 @@
     "searchPlaceholder": "Course name…",
     "category": "Category",
     "allCategories": "All categories",
-    "level": "Level",
-    "allLevels": "All levels",
     "sort": "Sort by",
     "sortNewest": "Newest",
     "sortPriceAsc": "Price: low to high",
@@ -180,12 +172,12 @@
     "browseCourses": "Browse courses",
     "historyTitle": "Watch history",
     "historyEmpty": "You haven't watched any videos yet.",
-    "clearHistory": "Clear history",
     "resume": "Resume",
     "loading": "Loading…",
     "menuLabel": "Account menu",
     "expires": "Expires: {date}",
-    "ownedLessons": "{count} lessons owned"
+    "ownedLessons": "{count} lessons owned",
+    "removeEntry": "Remove from history"
   },
   "lesson": {
     "back": "Back to course",

@@ -30,12 +30,6 @@
     "backHome": "Về trang chủ",
     "somethingWrong": "Có lỗi xảy ra"
   },
-  "level": {
-    "Unspecified": "",
-    "Beginner": "Cơ bản",
-    "Intermediate": "Trung cấp",
-    "Advanced": "Nâng cao"
-  },
   "duration": {
     "hours": "giờ",
     "minutes": "phút"
@@ -63,8 +57,6 @@
     "searchPlaceholder": "Tên khóa học…",
     "category": "Danh mục",
     "allCategories": "Tất cả danh mục",
-    "level": "Trình độ",
-    "allLevels": "Mọi trình độ",
     "sort": "Sắp xếp",
     "sortNewest": "Mới nhất",
     "sortPriceAsc": "Giá tăng dần",
@@ -180,12 +172,12 @@
     "browseCourses": "Xem các khóa học",
     "historyTitle": "Lịch sử xem",
     "historyEmpty": "Bạn chưa xem video nào.",
-    "clearHistory": "Xóa lịch sử",
     "resume": "Tiếp tục xem",
     "loading": "Đang tải…",
     "menuLabel": "Menu tài khoản",
     "expires": "Hết hạn: {date}",
-    "ownedLessons": "{count} bài học đã mua"
+    "ownedLessons": "{count} bài học đã mua",
+    "removeEntry": "Xóa khỏi lịch sử"
   },
   "lesson": {
     "back": "Về khóa học",

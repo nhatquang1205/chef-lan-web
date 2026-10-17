@@ -10,26 +10,27 @@ const NONE: CourseAccessData = { hasCourseAccess: false, lessonIds: [] };
 
 interface AccessState {
   access: CourseAccessData;
-  /** False while a signed-in customer's access is still being fetched, so nothing flashes as "not owned". */
+  /** False while a signed-in viewer's access is still being fetched, so nothing flashes as "not owned". */
   ready: boolean;
 }
 
 const AccessContext = createContext<AccessState>({ access: NONE, ready: true });
 
 /**
- * What the signed-in CUSTOMER owns in this course, fetched from the browser (login tokens live in the
- * browser, so the server-rendered page cannot know). Used only to unlock the outline: it changes what
- * buttons show, never what plays — the playback endpoint decides that. Anonymous visitors, staff and
- * any failure all mean "owns nothing", so the outline falls back to the public view.
+ * What the signed-in viewer can open in this course, fetched from the browser (login tokens live in the
+ * browser, so the server-rendered page cannot know). A customer gets what they own; a STAFF account gets
+ * everything published (the API answers that for staff tokens). Used only to unlock the outline: it changes
+ * what buttons show, never what plays — the playback endpoint decides that. Anonymous visitors and any
+ * failure mean "owns nothing", so the outline falls back to the public view.
  */
 export function CourseAccessProvider({ slug, children }: { slug: string; children: React.ReactNode }) {
   const auth = useAuth();
   const [access, setAccess] = useState<CourseAccessData>(NONE);
   const [loaded, setLoaded] = useState(false);
-  const isCustomer = auth.status === "authenticated" && auth.user?.actor === "Customer";
+  const isSignedIn = auth.status === "authenticated";
 
   useEffect(() => {
-    if (!isCustomer) {
+    if (!isSignedIn) {
       return;
     }
 
@@ -57,9 +58,9 @@ export function CourseAccessProvider({ slug, children }: { slug: string; childre
     return () => {
       cancelled = true;
     };
-  }, [isCustomer, slug, auth]);
+  }, [isSignedIn, slug, auth]);
 
-  return <AccessContext.Provider value={isCustomer ? { access, ready: loaded } : { access: NONE, ready: auth.status !== "loading" }}>{children}</AccessContext.Provider>;
+  return <AccessContext.Provider value={isSignedIn ? { access, ready: loaded } : { access: NONE, ready: auth.status !== "loading" }}>{children}</AccessContext.Provider>;
 }
 
 function useOwns(lessonId: number, included: boolean): boolean | null {

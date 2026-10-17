@@ -12,7 +12,12 @@ import { localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { formatDuration, template } from "@/lib/format";
 
-type State = { kind: "loading" } | { kind: "ok"; page: LessonPage } | { kind: "not_found" } | { kind: "error" };
+type State =
+  | { kind: "loading" }
+  | { kind: "ok"; page: LessonPage }
+  | { kind: "signin" }
+  | { kind: "not_found" }
+  | { kind: "error" };
 
 /**
  * The lesson page body: description and recipe, then the player with a choice of the lesson's videos.
@@ -31,11 +36,22 @@ export function LessonView({ slug, lessonSlug, lang, dict }: { slug: string; les
       return;
     }
 
+    // Lessons are for signed-in accounts only (the API answers 401); the render shows a sign-in prompt.
+    if (auth.status !== "authenticated") {
+      return;
+    }
+
     let cancelled = false;
 
     void (async () => {
       try {
         const token = await auth.getAccessToken();
+        if (!token) {
+          if (!cancelled) {
+            setState({ kind: "signin" });
+          }
+          return;
+        }
         const page = await apiFetch<LessonPage>(
           `/api/v1/courses/${encodeURIComponent(slug)}/lessons/${encodeURIComponent(lessonSlug)}`,
           { token: token ?? undefined },
@@ -45,7 +61,12 @@ export function LessonView({ slug, lessonSlug, lang, dict }: { slug: string; les
           setState({ kind: "ok", page });
         }
       } catch (error) {
-        if (!cancelled) {
+        if (cancelled) {
+          return;
+        }
+        if (error instanceof ApiError && error.status === 401) {
+          setState({ kind: "signin" });
+        } else {
           setState(error instanceof ApiError && error.status === 404 ? { kind: "not_found" } : { kind: "error" });
         }
       }
@@ -55,6 +76,27 @@ export function LessonView({ slug, lessonSlug, lang, dict }: { slug: string; les
       cancelled = true;
     };
   }, [auth, auth.status, slug, lessonSlug]);
+
+  if (auth.status === "anonymous" || state.kind === "signin") {
+    const next = typeof window === "undefined" ? "" : window.location.pathname + window.location.search;
+    return (
+      <div className="mx-auto max-w-xl px-4 py-24 text-center">
+        <h1 className="font-display text-4xl">{dict.lesson.signInTitle}</h1>
+        <p className="mt-4 text-beige/75">{dict.lesson.signInText}</p>
+        <Link
+          href={`${localePath(lang, "/login")}?next=${encodeURIComponent(next)}`}
+          className="mt-8 inline-block rounded bg-terracotta px-6 py-3 font-semibold uppercase tracking-widest text-beige hover:bg-terracotta-hover"
+        >
+          {dict.watch.signIn}
+        </Link>
+        <p className="mt-4">
+          <Link href={courseHref} className="text-sm uppercase tracking-widest text-beige/70 hover:text-beige">
+            ← {dict.lesson.back}
+          </Link>
+        </p>
+      </div>
+    );
+  }
 
   if (state.kind === "loading") {
     return <div className="mx-auto h-96 max-w-5xl animate-pulse px-4 py-10" role="status" aria-label={dict.watch.checkingAccess} />;

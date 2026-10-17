@@ -100,6 +100,8 @@ export interface CourseDetail extends Omit<CourseListItem, "categories"> {
 export interface CourseAccess {
   hasCourseAccess: boolean;
   lessonIds: number[];
+  /** Signed in with a staff account: everything published is open, nothing is owned. */
+  viewerIsStaff?: boolean;
 }
 
 export interface Customer {
@@ -153,6 +155,8 @@ export interface LessonPage {
   courseTitle: string;
   lesson: LessonOutline;
   hasAccess: boolean;
+  /** Signed in with a staff account: full access to every published lesson. */
+  viewerIsStaff?: boolean;
   recipes?: string | null;
   /** The lesson has a recipe this viewer may not read. */
   recipesLocked: boolean;

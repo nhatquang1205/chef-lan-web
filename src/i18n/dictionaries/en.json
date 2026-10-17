@@ -191,6 +191,8 @@
     "next": "Next lesson",
     "lockedVideoTitle": "This video is for students",
     "lockedVideoText": "Buy the course or this lesson to watch it.",
-    "free": "Free"
+    "free": "Free",
+    "signInTitle": "Sign in to view this lesson",
+    "signInText": "Lesson content and videos are only available to signed-in accounts."
   }
 }

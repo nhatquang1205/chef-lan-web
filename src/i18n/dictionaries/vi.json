@@ -191,6 +191,8 @@
     "next": "Bài tiếp theo",
     "lockedVideoTitle": "Video này dành cho học viên",
     "lockedVideoText": "Mua khóa học hoặc bài học này để xem.",
-    "free": "Miễn phí"
+    "free": "Miễn phí",
+    "signInTitle": "Đăng nhập để xem bài học",
+    "signInText": "Nội dung bài học và video chỉ dành cho tài khoản đã đăng nhập."
   }
 }

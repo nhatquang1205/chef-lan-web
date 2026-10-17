@@ -93,7 +93,11 @@
     "duration": "Thời lượng",
     "lessons": "Bài học",
     "categories": "Danh mục",
-    "notOwned": "Chưa sở hữu"
+    "notOwned": "Chưa sở hữu",
+    "sharedModule": "Học phần: {title}",
+    "sharedModuleNote": "Học phần dùng chung, cũng có trong khóa khác.",
+    "includedIn": "Có trong khóa:",
+    "discountLine": "Bạn đã có khóa {title}: −{amount}"
   },
   "auth": {
     "email": "Email",

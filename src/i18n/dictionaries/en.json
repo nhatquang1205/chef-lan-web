@@ -93,7 +93,11 @@
     "duration": "Duration",
     "lessons": "Lessons",
     "categories": "Categories",
-    "notOwned": "Not owned"
+    "notOwned": "Not owned",
+    "sharedModule": "Module: {title}",
+    "sharedModuleNote": "A shared module, also part of other courses.",
+    "includedIn": "Part of:",
+    "discountLine": "You already have {title}: −{amount}"
   },
   "auth": {
     "email": "Email",

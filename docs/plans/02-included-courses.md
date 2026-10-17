@@ -27,3 +27,12 @@ vi/en strings in both dictionaries. Match existing style (double quotes, semicol
 With local data (P includes C, a customer owning C, another owning P): P's page shows C's section with working lesson
 links; owner of P sees C's lessons as owned and can play them; owner of C sees the discounted price on P; anonymous sees
 the plain price; C's page shows "Có trong khóa". `pnpm lint`, `pnpm typecheck`, `pnpm build` clean.
+
+## Implementation notes (done)
+
+- `types.ts`: `CourseDetail` gains `includedCourses`, `includedIn`, `totalLessonCount`, `totalDurationSecondsWithIncluded`; `CourseAccess` gains `includedCourses` and `quote` (`CourseQuote`).
+- `page.tsx`: facts box and outline header use the with-included totals; one "Học phần: {title}" section per included course between own lessons and add-ons, "Chi tiết" links to the included course's own lesson URL; "Có trong khóa:" links under the subtitle.
+- `CourseAccess.tsx`: `NotOwnedBadge` takes `includedCourseSlug` and then reads `includedCourses[slug]` (`hasCourseAccess` or `lessonIds`). New `DiscountQuote` (struck list price, final price, one line per discount) renders inside the price box only when the quote has discounts.
+- Deviation: `CourseAccessProvider` now wraps the whole article instead of only the outline, so the price box (`DiscountQuote`) and `BuyNote` see the access data. This also makes `BuyNote` hide for course owners, which it could not before (it sat outside the provider).
+- Staff: the API returns `hasCourseAccess: true` for every included course, so nothing is marked "not owned"; quote is null.
+- Not tested in a browser; lint, typecheck and build (API not running) are clean.

@@ -94,12 +94,44 @@ export interface CourseDetail extends Omit<CourseListItem, "categories"> {
   promoVideoUrl?: string | null;
   categories: Category[];
   lessons: LessonOutline[];
+  /** Published courses shared into this one: their included lessons come with this course. */
+  includedCourses: IncludedCourse[];
+  /** Published courses that include this one. */
+  includedIn: { slug: string; title: string }[];
+  /** Own lessons plus the included courses' lessons. */
+  totalLessonCount: number;
+  totalDurationSecondsWithIncluded: number;
+}
+
+export interface IncludedCourse {
+  slug: string;
+  title: string;
+  subtitle?: string | null;
+  thumbnailUrl?: string | null;
+  lessonCount: number;
+  totalDurationSeconds: number;
+  lessons: LessonOutline[];
+}
+
+export interface IncludedCourseAccess {
+  slug: string;
+  hasCourseAccess: boolean;
+  lessonIds: number[];
+}
+
+export interface CourseQuote {
+  listPriceVnd: number;
+  discounts: { includedCourseId: number; title: string; discountVnd: number; reason: string }[];
+  finalPriceVnd: number;
 }
 
 /** What the signed-in customer owns within one course. */
 export interface CourseAccess {
   hasCourseAccess: boolean;
   lessonIds: number[];
+  includedCourses?: IncludedCourseAccess[];
+  /** Null for staff, anonymous viewers and owners of the course. */
+  quote?: CourseQuote | null;
   /** Signed in with a staff account: everything published is open, nothing is owned. */
   viewerIsStaff?: boolean;
 }

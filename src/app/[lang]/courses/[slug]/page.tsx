@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { BuyNote, CourseAccessProvider, NotOwnedBadge } from "@/components/CourseAccess";
+import { BuyNote, CourseAccessProvider, DiscountQuote, NotOwnedBadge } from "@/components/CourseAccess";
 import { Thumbnail } from "@/components/Thumbnail";
 import { localePath } from "@/i18n/config";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
@@ -37,12 +37,13 @@ async function Content({ params }: { params: PageProps<"/[lang]/courses/[slug]">
     .split("\n")
     .map((line) => line.replace(/^[-*•]\s*/, "").trim())
     .filter(Boolean);
+  const totalDuration = course.totalDurationSecondsWithIncluded;
   const facts = [
-    { label: dict.course.lessons, value: String(course.lessonCount) },
-    course.totalDurationSeconds > 0 && { label: dict.course.duration, value: formatDuration(course.totalDurationSeconds, dict) },
+    { label: dict.course.lessons, value: String(course.totalLessonCount) },
+    totalDuration > 0 && { label: dict.course.duration, value: formatDuration(totalDuration, dict) },
   ].filter((fact): fact is { label: string; value: string } => !!fact);
 
-  const renderLesson = (lesson: (typeof course.lessons)[number], index: number, addon: boolean) => (
+  const renderLesson = (lesson: (typeof course.lessons)[number], index: number, addon: boolean, ownerSlug = course.slug) => (
     <li key={lesson.id} className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:gap-5 sm:px-5">
       <span className="hidden size-9 shrink-0 items-center justify-center rounded-full border border-beige/25 font-display text-beige/80 sm:flex">
         {index + 1}
@@ -53,7 +54,12 @@ async function Content({ params }: { params: PageProps<"/[lang]/courses/[slug]">
             <span className="text-beige/55 sm:hidden">{index + 1}. </span>
             {lesson.title}
           </h3>
-          <NotOwnedBadge lessonId={lesson.id} included={lesson.includedInCourse} dict={dict} />
+          <NotOwnedBadge
+            lessonId={lesson.id}
+            included={lesson.includedInCourse}
+            includedCourseSlug={ownerSlug === course.slug ? undefined : ownerSlug}
+            dict={dict}
+          />
         </div>
         <p className="mt-1 text-sm text-beige/60">
           {lesson.videos.length} {dict.course.videos}
@@ -68,7 +74,7 @@ async function Content({ params }: { params: PageProps<"/[lang]/courses/[slug]">
         )}
       </div>
       <Link
-        href={localePath(lang, `/courses/${course.slug}/lessons/${lesson.slug}`)}
+        href={localePath(lang, `/courses/${ownerSlug}/lessons/${lesson.slug}`)}
         className="self-start rounded border border-beige/40 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-beige hover:border-beige hover:bg-olive-raised sm:self-center"
       >
         {dict.course.details}
@@ -77,86 +83,111 @@ async function Content({ params }: { params: PageProps<"/[lang]/courses/[slug]">
   );
 
   return (
-    <article className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-      <title>{course.title}</title>
-      {course.metaDescription && <meta name="description" content={course.metaDescription} />}
+    <CourseAccessProvider slug={course.slug}>
+      <article className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+        <title>{course.title}</title>
+        {course.metaDescription && <meta name="description" content={course.metaDescription} />}
 
-      <Link href={localePath(lang, "/courses")} className="text-sm uppercase tracking-widest text-beige/70 hover:text-beige">
-        ← {dict.course.back}
-      </Link>
+        <Link href={localePath(lang, "/courses")} className="text-sm uppercase tracking-widest text-beige/70 hover:text-beige">
+          ← {dict.course.back}
+        </Link>
 
-      <div className="mt-6 grid items-center gap-8 md:grid-cols-2 md:gap-12">
-        <div className="order-2 md:order-1">
-          {course.categories.length > 0 && (
-            <p className="text-sm uppercase tracking-widest text-beige/60">{course.categories.map((c) => c.name).join(" · ")}</p>
-          )}
-          <h1 className="mt-2 font-display text-4xl leading-tight sm:text-5xl">{course.title}</h1>
-          {course.subtitle && <p className="mt-4 text-lg text-beige/85">{course.subtitle}</p>}
-
-          <dl className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-beige/15 bg-beige/15">
-            {facts.map((fact) => (
-              <div key={fact.label} className="bg-olive px-3 py-3">
-                <dt className="text-xs uppercase tracking-widest text-beige/55">{fact.label}</dt>
-                <dd className="mt-1 font-semibold">{fact.value}</dd>
-              </div>
-            ))}
-          </dl>
-
-          <div className="mt-6 flex flex-wrap items-end gap-x-6 gap-y-3">
-            <div>
-              <p className="text-xs uppercase tracking-widest text-beige/55">{dict.course.price}</p>
-              <p className="flex items-baseline gap-3">
-                <span className="text-3xl font-semibold">{course.priceDisplay}</span>
-                {course.compareAtPriceVnd != null && course.compareAtPriceVnd > course.priceVnd && (
-                  <s className="text-beige/50">{formatVnd(course.compareAtPriceVnd)}</s>
-                )}
+        <div className="mt-6 grid items-center gap-8 md:grid-cols-2 md:gap-12">
+          <div className="order-2 md:order-1">
+            {course.categories.length > 0 && (
+              <p className="text-sm uppercase tracking-widest text-beige/60">{course.categories.map((c) => c.name).join(" · ")}</p>
+            )}
+            <h1 className="mt-2 font-display text-4xl leading-tight sm:text-5xl">{course.title}</h1>
+            {course.subtitle && <p className="mt-4 text-lg text-beige/85">{course.subtitle}</p>}
+            {course.includedIn.length > 0 && (
+              <p className="mt-3 text-sm text-beige/70">
+                {dict.course.includedIn}{" "}
+                {course.includedIn.map((parent, i) => (
+                  <span key={parent.slug}>
+                    {i > 0 && ", "}
+                    <Link href={localePath(lang, `/courses/${parent.slug}`)} className="underline underline-offset-2 hover:text-beige">
+                      {parent.title}
+                    </Link>
+                  </span>
+                ))}
               </p>
+            )}
+
+            <dl className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-beige/15 bg-beige/15">
+              {facts.map((fact) => (
+                <div key={fact.label} className="bg-olive px-3 py-3">
+                  <dt className="text-xs uppercase tracking-widest text-beige/55">{fact.label}</dt>
+                  <dd className="mt-1 font-semibold">{fact.value}</dd>
+                </div>
+              ))}
+            </dl>
+
+            <div className="mt-6 flex flex-wrap items-end gap-x-6 gap-y-3">
+              <div>
+                <p className="text-xs uppercase tracking-widest text-beige/55">{dict.course.price}</p>
+                {/* The regular price, replaced by the discounted one for a signed-in customer who qualifies. */}
+                <DiscountQuote dict={dict}>
+                  <p className="flex items-baseline gap-3">
+                    <span className="text-3xl font-semibold">{course.priceDisplay}</span>
+                    {course.compareAtPriceVnd != null && course.compareAtPriceVnd > course.priceVnd && (
+                      <s className="text-beige/50">{formatVnd(course.compareAtPriceVnd)}</s>
+                    )}
+                  </p>
+                </DiscountQuote>
+              </div>
+              <BuyNote dict={dict} />
             </div>
-            <BuyNote dict={dict} />
+          </div>
+
+          <div className="relative order-1 aspect-[4/3] overflow-hidden rounded-xl border border-beige/15 md:order-2">
+            <Thumbnail src={course.thumbnailUrl} alt="" priority sizes="(min-width: 768px) 50vw, 100vw" />
           </div>
         </div>
 
-        <div className="relative order-1 aspect-[4/3] overflow-hidden rounded-xl border border-beige/15 md:order-2">
-          <Thumbnail src={course.thumbnailUrl} alt="" priority sizes="(min-width: 768px) 50vw, 100vw" />
-        </div>
-      </div>
+        {(course.description || learnItems.length > 0) && (
+          <div className="mt-14 grid gap-10 md:grid-cols-2 md:gap-12">
+            {course.description && (
+              <section>
+                <h2 className="font-display text-2xl">{dict.course.about}</h2>
+                <p className="mt-3 whitespace-pre-line leading-relaxed text-beige/90">{course.description}</p>
+              </section>
+            )}
+            {learnItems.length > 0 && (
+              <section className={course.description ? "" : "md:col-span-2"}>
+                <h2 className="font-display text-2xl">{dict.course.whatYouWillLearn}</h2>
+                <ul className="mt-3 space-y-2 rounded-lg border border-beige/15 bg-olive-raised/50 p-5">
+                  {learnItems.map((item) => (
+                    <li key={item} className="flex gap-3">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="mt-1 shrink-0 text-terracotta-hover" aria-hidden>
+                        <path d="m5 12 5 5L20 7" />
+                      </svg>
+                      <span className="text-beige/90">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+          </div>
+        )}
 
-      {(course.description || learnItems.length > 0) && (
-        <div className="mt-14 grid gap-10 md:grid-cols-2 md:gap-12">
-          {course.description && (
-            <section>
-              <h2 className="font-display text-2xl">{dict.course.about}</h2>
-              <p className="mt-3 whitespace-pre-line leading-relaxed text-beige/90">{course.description}</p>
-            </section>
-          )}
-          {learnItems.length > 0 && (
-            <section className={course.description ? "" : "md:col-span-2"}>
-              <h2 className="font-display text-2xl">{dict.course.whatYouWillLearn}</h2>
-              <ul className="mt-3 space-y-2 rounded-lg border border-beige/15 bg-olive-raised/50 p-5">
-                {learnItems.map((item) => (
-                  <li key={item} className="flex gap-3">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="mt-1 shrink-0 text-terracotta-hover" aria-hidden>
-                      <path d="m5 12 5 5L20 7" />
-                    </svg>
-                    <span className="text-beige/90">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-        </div>
-      )}
-
-      <section className="mt-14">
-        <h2 className="font-display text-2xl">{dict.course.outline}</h2>
-        <p className="mt-1 text-sm text-beige/60">
-          {template(dict.course.lessonsCount, { count: includedLessons.length })}
-          {course.totalDurationSeconds > 0 && ` · ${formatDuration(course.totalDurationSeconds, dict)}`}
-        </p>
-        <CourseAccessProvider slug={course.slug}>
-          <ol className="mt-4 divide-y divide-beige/15 rounded-lg border border-beige/15">
+        <section className="mt-14">
+          <h2 className="font-display text-2xl">{dict.course.outline}</h2>
+          <p className="mt-1 text-sm text-beige/60">
+            {template(dict.course.lessonsCount, { count: course.totalLessonCount })}
+            {totalDuration > 0 && ` · ${formatDuration(totalDuration, dict)}`}
+          </p>
+        <ol className="mt-4 divide-y divide-beige/15 rounded-lg border border-beige/15">
             {includedLessons.map((lesson, index) => renderLesson(lesson, index, false))}
           </ol>
+          {course.includedCourses.map((shared) => (
+            <div key={shared.slug} className="mt-10">
+              <h3 className="font-display text-xl">{template(dict.course.sharedModule, { title: shared.title })}</h3>
+              <p className="mt-1 text-sm text-beige/70">{dict.course.sharedModuleNote}</p>
+              <ol className="mt-3 divide-y divide-beige/15 rounded-lg border border-beige/15">
+                {shared.lessons.map((lesson, index) => renderLesson(lesson, index, false, shared.slug))}
+              </ol>
+            </div>
+          ))}
           {addonLessons.length > 0 && (
             <>
               <h3 className="mt-10 font-display text-xl">{dict.course.addonsTitle}</h3>
@@ -166,8 +197,8 @@ async function Content({ params }: { params: PageProps<"/[lang]/courses/[slug]">
               </ol>
             </>
           )}
-        </CourseAccessProvider>
-      </section>
-    </article>
+        </section>
+      </article>
+    </CourseAccessProvider>
   );
 }

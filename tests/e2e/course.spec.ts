@@ -10,24 +10,24 @@ test.describe("course page", () => {
     await expect(page.getByText("Cơ bản")).toHaveCount(0);
   });
 
-  test("anonymous: contact note and every lesson marked not owned", async ({ page }) => {
+  test("anonymous: Buy now and every lesson marked not owned", async ({ page }) => {
     await page.goto("/courses/macaron");
-    await expect(page.getByText(dict.course.buyNote).first()).toBeVisible();
+    await expect(page.getByRole("button", { name: dict.checkout.buyNow }).first()).toBeVisible();
     await expect(page.getByText(dict.course.notOwned)).toHaveCount(2);
   });
 
-  test("owner: no contact note and no not-owned marks", async ({ page }) => {
+  test("owner: no Buy now and no not-owned marks", async ({ page }) => {
     await login(page, "owner@test.dev");
     await page.goto("/courses/macaron");
     await expect(page.getByRole("heading", { level: 1, name: "Macaron" })).toBeVisible();
-    await expect(page.getByText(dict.course.buyNote)).toHaveCount(0);
+    await expect(page.getByRole("button", { name: dict.checkout.buyNow })).toHaveCount(0);
     await expect(page.getByText(dict.course.notOwned)).toHaveCount(0);
   });
 
-  test("visitor without the course still sees the note", async ({ page }) => {
+  test("visitor without the course still sees Buy now", async ({ page }) => {
     await login(page, "visitor@test.dev");
     await page.goto("/courses/macaron");
-    await expect(page.getByText(dict.course.buyNote).first()).toBeVisible();
+    await expect(page.getByRole("button", { name: dict.checkout.buyNow }).first()).toBeVisible();
     await expect(page.getByText(dict.course.notOwned)).toHaveCount(2);
   });
 

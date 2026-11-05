@@ -23,13 +23,14 @@ const QR_PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlE
 const orderBody = (order) => ({
   code: order.code,
   status: order.status,
+  paymentMethod: order.method,
   amountVnd: 1000000,
   createdAt: order.createdAt,
   expiresAt: order.expiresAt,
   paidAt: order.status === "Paid" ? new Date().toISOString() : null,
   items: [{ kind: "Course", title: "Macaron", courseSlug: "macaron", listPriceVnd: 1000000, discountVnd: 0, unitPriceVnd: 1000000 }],
   payment:
-    order.status === "Pending"
+    order.status === "Pending" && order.method === "BankTransfer"
       ? {
           amountVnd: 1000000,
           actionUrl: `${ORIGIN}/__mock/gateway`,
@@ -132,6 +133,7 @@ const server = createServer((req, res) => {
       if (existing) return json(res, 200, orderBody(existing));
       const order = {
         code: `BBTEST${String(++orderCounter).padStart(2, "0")}`, customerId: user.id, status: "Pending",
+        method: JSON.parse(body || "{}").method ?? "BankTransfer",
         createdAt: new Date().toISOString(), expiresAt: new Date(Date.now() + 3_600_000).toISOString(),
       };
       orders.set(order.code, order);

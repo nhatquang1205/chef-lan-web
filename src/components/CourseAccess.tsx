@@ -102,8 +102,8 @@ export function NotOwnedBadge({
 }
 
 /**
- * How to get the course: a "Buy now" button when online payment is set up, always with the "contact chef Lan" line
- * beside it. Hidden once the viewer owns the whole course (staff see everything, so they never see it either).
+ * How to get the course: the "Buy now" button, which offers contacting chef Lan and, when online payment is set up,
+ * bank transfer. Hidden once the viewer owns the whole course (staff see everything, so they never see it either).
  */
 export function BuyNote({ dict, lang, slug, returnTo }: { dict: Dictionary; lang: Locale; slug: string; returnTo: string }) {
   const { access } = useContext(AccessContext);
@@ -113,10 +113,7 @@ export function BuyNote({ dict, lang, slug, returnTo }: { dict: Dictionary; lang
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
-      <BuyButton target={{ courseSlug: slug }} lang={lang} dict={dict} returnTo={returnTo} />
-      <p className="rounded bg-terracotta px-4 py-2 text-sm text-beige">{dict.course.buyNote}</p>
-    </div>
+    <BuyButton target={{ courseSlug: slug }} lang={lang} dict={dict} returnTo={returnTo} />
   );
 }
 

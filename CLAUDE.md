@@ -85,8 +85,11 @@ at once when it returns): no SignalR, one event per purchase. A payment is confi
 the return URL. Things that bite:
 
 - **Never edit, add or reorder the form fields**: they are signed, and SePay rejects the order. Render exactly what the API sends.
-- "Buy now" (`BuyButton`) renders only when `GET /checkout/config` says `enabled`; otherwise the page keeps the "contact chef Lan"
-  note. `BuyNote` always keeps that line beside the button. Staff see neither (their access reads as "owns everything").
+- "Buy now" (`BuyButton`) always renders; a signed-in click opens a native `<dialog>` to choose how to pay: contact chef Lan
+  (`method: "ContactChef"`, always offered) or bank transfer (`"BankTransfer"`, offered only when `GET /checkout/config` says `enabled`).
+  A contact order has no `payment`: `CheckoutView` shows its code and chef Lan's phones/Facebook (`src/lib/contact.ts`, also used by the
+  footer) and "held until" instead of a countdown; staff approve it in the admin and polling flips the page to Paid. Staff see no button
+  (their access reads as "owns everything").
 - After Paid, "Start learning" is a plain `<a>` (a full page load), so the course page asks for access afresh. A client link would
   reuse the kept-alive page with stale access.
 - Order pages are `noindex` and disallowed in `robots.ts`. Another customer's order is a 404, by design.

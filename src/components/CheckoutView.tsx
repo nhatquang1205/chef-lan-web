@@ -11,6 +11,7 @@ import { localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { formatVnd, template } from "@/lib/format";
 import { formatClock } from "@/lib/history";
+import { contact, telHref } from "@/lib/contact";
 
 type State = { kind: "loading" } | { kind: "ok"; order: Order } | { kind: "not_found" } | { kind: "error" };
 
@@ -156,7 +157,11 @@ export function CheckoutView({ code, lang, dict }: { code: string; lang: Locale;
     return (
       <Message
         title={expired ? dict.checkout.expiredTitle : dict.checkout.cancelledTitle}
-        text={expired ? template(dict.checkout.expiredText, { code: order.code }) : dict.checkout.cancelledText}
+        text={
+          expired
+            ? template(order.paymentMethod === "ContactChef" ? dict.checkout.expiredContactText : dict.checkout.expiredText, { code: order.code })
+            : dict.checkout.cancelledText
+        }
       >
         <a href={courseHref} className={buttonClass}>
           {dict.checkout.backToCourse}
@@ -166,12 +171,14 @@ export function CheckoutView({ code, lang, dict }: { code: string; lang: Locale;
   }
 
   const payment = order.payment;
+  const byContact = order.paymentMethod === "ContactChef";
+  const title = byContact ? template(dict.checkout.contactTitle, { code: order.code }) : dict.checkout.title;
   const remainingSeconds = now === 0 ? null : Math.max(0, Math.ceil((new Date(order.expiresAt).getTime() - now) / 1000));
 
   return (
     <article className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
-      <title>{dict.checkout.title}</title>
-      <h1 className="font-display text-4xl">{dict.checkout.title}</h1>
+      <title>{title}</title>
+      <h1 className="font-display text-4xl">{title}</h1>
 
       <dl className="mt-6 divide-y divide-beige/10 rounded-lg border border-beige/15 bg-olive-raised">
         {order.items.map((item) => (
@@ -185,6 +192,33 @@ export function CheckoutView({ code, lang, dict }: { code: string; lang: Locale;
           <dd className="font-display text-2xl">{formatVnd(order.amountVnd)}</dd>
         </div>
       </dl>
+
+      {byContact && (
+        <section className="mt-6 rounded-lg border border-beige/15 bg-olive-raised p-5">
+          <p>{template(dict.checkout.contactText, { code: order.code })}</p>
+          <p className="mt-4 text-xs uppercase tracking-widest text-beige/55">{dict.checkout.contactCodeLabel}</p>
+          <p className="font-display text-4xl tracking-wider">{order.code}</p>
+          <ul className="mt-4 space-y-2">
+            {contact.phones.map((phone) => (
+              <li key={phone.number}>
+                <a href={telHref(phone.number)} className="font-semibold underline underline-offset-4">
+                  {phone.number}
+                </a>{" "}
+                <span className="text-beige/55">({phone.label})</span>
+              </li>
+            ))}
+            {contact.social
+              .filter((item) => item.label === "Facebook")
+              .map((item) => (
+                <li key={item.label}>
+                  <a href={item.href} target="_blank" rel="noopener noreferrer" className="font-semibold underline underline-offset-4">
+                    {item.label} {item.handle}
+                  </a>
+                </li>
+              ))}
+          </ul>
+        </section>
+      )}
 
       {payment && (
         // The form is signed by the API: its fields must go to SePay exactly as received. A plain POST leaves the site, and
@@ -206,7 +240,15 @@ export function CheckoutView({ code, lang, dict }: { code: string; lang: Locale;
 
       <p role="status" className="mt-6 flex flex-wrap items-center gap-x-4 text-sm text-beige/80">
         <span>{retrying ? dict.checkout.retrying : dict.checkout.waiting}</span>
-        {remainingSeconds !== null && <span>{template(dict.checkout.expiresIn, { time: formatClock(remainingSeconds) })}</span>}
+        {byContact ? (
+          <span>
+            {template(dict.checkout.heldUntil, {
+              date: new Intl.DateTimeFormat(lang === "vi" ? "vi-VN" : "en-US", { dateStyle: "medium", timeStyle: "short" }).format(new Date(order.expiresAt)),
+            })}
+          </span>
+        ) : (
+          remainingSeconds !== null && <span>{template(dict.checkout.expiresIn, { time: formatClock(remainingSeconds) })}</span>
+        )}
       </p>
 
       <div className="mt-6 flex flex-wrap items-center gap-4">

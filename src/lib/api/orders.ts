@@ -1,5 +1,5 @@
 import { apiFetch } from "./client";
-import type { Order, OrderTarget } from "./types";
+import type { Order, OrderPaymentMethod, OrderTarget } from "./types";
 
 let configRequest: Promise<boolean> | null = null;
 
@@ -12,9 +12,9 @@ export function isCheckoutEnabled(): Promise<boolean> {
   return configRequest;
 }
 
-/** Starts a purchase, or returns the order already waiting for payment for the same item. The price is the server's. */
-export function createOrder(token: string, target: OrderTarget): Promise<Order> {
-  return apiFetch<Order>("/api/v1/orders", { method: "POST", token, body: target });
+/** Starts a purchase, or returns the order already waiting for payment for the same item (switched to this method). The price is the server's. */
+export function createOrder(token: string, target: OrderTarget, method: OrderPaymentMethod): Promise<Order> {
+  return apiFetch<Order>("/api/v1/orders", { method: "POST", token, body: { ...target, method } });
 }
 
 export function getOrder(token: string, code: string, signal?: AbortSignal): Promise<Order> {

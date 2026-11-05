@@ -87,7 +87,6 @@
     "locked": "Enroll to watch",
     "freeUntil": "First {seconds}s free",
     "price": "Price",
-    "buyNote": "Contact Chef Lan to enroll in this course.",
     "lessonPrice": "Buy this lesson on its own: {price}",
     "buyLessonNote": "Contact Chef Lan to buy this lesson on its own.",
     "addonsTitle": "Add-on lessons",
@@ -198,6 +197,8 @@
     "ordersTitle": "My orders",
     "ordersEmpty": "You have no orders yet.",
     "payNow": "Pay",
+    "awaitingChef": "Awaiting Chef Lan",
+    "viewOrder": "View order",
     "staffNoOrders": "Admin accounts do not buy courses, so they have no orders.",
     "orderStatus": {
       "Pending": "Awaiting payment",
@@ -248,6 +249,17 @@
     "cancelledText": "This order was cancelled. You can create a new one on the course page.",
     "payWithQr": "Pay by QR bank transfer",
     "redirecting": "Taking you to SePay…",
-    "payHint": "You will be taken to SePay's secure payment page to scan a QR code with your banking app. When you have paid you come back here and the course opens automatically."
+    "payHint": "You will be taken to SePay's secure payment page to scan a QR code with your banking app. When you have paid you come back here and the course opens automatically.",
+    "chooseMethod": "Choose how to pay",
+    "close": "Close",
+    "optionContactTitle": "Contact Chef Lan directly",
+    "optionContactText": "Create the order, then message Chef Lan for payment instructions.",
+    "optionTransferTitle": "Bank transfer",
+    "optionTransferText": "Scan a QR code with your banking app and the course opens automatically.",
+    "contactTitle": "Order {code}",
+    "contactText": "Contact Chef Lan and give her order code {code} to get payment instructions. Once she confirms, the course opens here automatically.",
+    "contactCodeLabel": "Order code",
+    "heldUntil": "Order held until {date}",
+    "expiredContactText": "This order is no longer held. If you already contacted Chef Lan, message her with order code {code}. If not, create a new order on the course page."
   }
 }

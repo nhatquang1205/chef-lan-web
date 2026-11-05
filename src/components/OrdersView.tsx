@@ -71,14 +71,14 @@ export function OrdersView({ lang, dict }: { lang: Locale; dict: Dictionary }) {
           </div>
           <div className="flex items-center gap-3">
             <span className="rounded border border-beige/40 px-2 py-0.5 text-xs font-semibold uppercase tracking-widest">
-              {dict.account.orderStatus[order.status]}
+              {order.status === "Pending" && order.paymentMethod === "ContactChef" ? dict.account.awaitingChef : dict.account.orderStatus[order.status]}
             </span>
             {order.status === "Pending" && (
               <Link
                 href={localePath(lang, `/checkout/${order.code}`)}
                 className="rounded bg-terracotta px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-beige hover:bg-terracotta-hover"
               >
-                {dict.account.payNow}
+                {order.paymentMethod === "ContactChef" ? dict.account.viewOrder : dict.account.payNow}
               </Link>
             )}
           </div>

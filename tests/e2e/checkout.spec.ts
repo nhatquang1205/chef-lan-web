@@ -6,6 +6,7 @@ const MOCK = "http://127.0.0.1:5099";
 async function startOrder(page: Page): Promise<string> {
   await page.goto("/courses/macaron");
   await page.getByRole("button", { name: dict.checkout.buyNow }).click();
+  await page.getByRole("button", { name: dict.checkout.optionTransferTitle }).click();
   await expect(page).toHaveURL(/\/checkout\/BBTEST\d+$/);
 
   return new URL(page.url()).pathname.split("/").pop()!;
@@ -54,7 +55,6 @@ test.describe("checkout", () => {
     await page.getByRole("link", { name: dict.checkout.startLearning }).click();
     await expect(page).toHaveURL(/\/courses\/macaron$/);
     await expect(page.getByRole("heading", { level: 1, name: "Macaron" })).toBeVisible();
-    await expect(page.getByText(dict.course.buyNote)).toHaveCount(0);
     await expect(page.getByRole("button", { name: dict.checkout.buyNow })).toHaveCount(0);
     await expect(page.getByText(dict.course.notOwned)).toHaveCount(0);
   });
@@ -82,6 +82,7 @@ test.describe("checkout", () => {
 
     await page.goto("/courses/macaron");
     await page.getByRole("button", { name: dict.checkout.buyNow }).click();
+    await page.getByRole("button", { name: dict.checkout.optionTransferTitle }).click();
     await expect(page).toHaveURL(new RegExp(`/checkout/${first}$`));
   });
 
@@ -115,6 +116,22 @@ test.describe("checkout", () => {
     await other.goto(`/checkout/${code}`);
     await expect(other.getByRole("heading", { name: dict.common.notFoundTitle })).toBeVisible();
     await other.close();
+  });
+
+  test("contacting chef Lan creates an order that shows her details and no payment form", async ({ page, request }) => {
+    await login(page, "buyer9@test.dev");
+    await page.goto("/courses/macaron");
+    await page.getByRole("button", { name: dict.checkout.buyNow }).click();
+    await page.getByRole("button", { name: dict.checkout.optionContactTitle }).click();
+    await expect(page).toHaveURL(/\/checkout\/BBTEST\d+$/);
+
+    const code = new URL(page.url()).pathname.split("/").pop()!;
+    await expect(page.getByRole("heading", { name: `Đơn hàng ${code}` })).toBeVisible();
+    await expect(page.getByRole("link", { name: "0932 046 296" })).toBeVisible();
+    await expect(page.getByRole("button", { name: dict.checkout.payWithQr })).toHaveCount(0);
+
+    await bank(request, "pay", code);
+    await expect(page.getByRole("heading", { name: dict.checkout.paidTitle })).toBeVisible({ timeout: 15_000 });
   });
 
   test("an owner does not see Buy now", async ({ page }) => {

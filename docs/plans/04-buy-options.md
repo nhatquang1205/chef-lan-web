@@ -34,3 +34,15 @@ Context: `../chef-lan/docs/payments/plans/02-contact-orders-and-admin-list.md` (
 only the contact option shows; the order page shows the contact details; approving by `mark-paid` flips the open page to
 Paid within a poll and unlocks the course; a lesson purchase works the same; Esc closes the dialog; 375 px layout holds.
 Add implementation notes here.
+
+## Implementation notes
+
+Done as planned. Where it differs or is worth knowing:
+
+- `lib/contact.ts` exports `contact` (email, phones, social: moved verbatim from the footer), `CONTACT_PHONE` (the first phone, as `ActivateView` had it) and a `telHref` helper. The checkout contact panel shows both phones and only the Facebook link (not Instagram), as the plan lists.
+- `BuyButton` renders the dialog only for a signed-in viewer; the `<dialog>` is opened with `showModal()` from the click handler, so no state mirrors its open flag. A backdrop click is detected as a click whose target is the dialog element itself. The transfer option is hidden until `/checkout/config` says enabled. A close "x" button was added for pointer users.
+- `BuyNote` is now just the button; `course.buyNote` was removed from both dictionaries. Added: `checkout.chooseMethod`, `close`, `option*`, `contact*`, `heldUntil`, `expiredContactText`, `account.awaitingChef`, `account.viewOrder`.
+- The Playwright suite was touched because it depended on the old flow: `tests/mock-api.mjs` now stores and returns `paymentMethod` (and only sends `payment` for BankTransfer); `startOrder` picks the transfer option; the `buyNote` assertions became Buy-now button assertions; a new test covers a contact order (panel, no form, flips to Paid). These were type-checked and linted but NOT run.
+- Verified in the browser against the local API, SePay off: only the contact option shows; Esc and a backdrop click close the dialog and focus returns to the button; a contact order for a course shows the code, both phones, Facebook and "held until" (7 days); My orders shows "Chờ Chef Lan xác nhận" / "Xem đơn"; `mark-paid` from the admin API flipped the open page to Paid within one poll and the course page then showed no Buy button and no "not owned" marks; a lesson purchase worked the same; 375 px has no horizontal scroll and the dialog and order page lay out well.
+- Transfer option: with `isCheckoutEnabled` temporarily stubbed to true (reverted, not committed) both options render; choosing transfer showed the "could not create the order" error inside the dialog (the API answers 503 with SePay off). The transfer order page, the expired text for a contact order and the switch of method on an existing order were not seen in a browser.
+- Local setup deviation: port 5061 cannot be used. It is on the browser fetch "bad ports" list (5060/5061, SIP), so Chrome and Node's fetch both fail with "bad port". The API was run on 5071 instead.

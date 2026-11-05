@@ -8,8 +8,7 @@ import { useAuth, type AuthFailure } from "@/lib/auth/AuthProvider";
 import { template } from "@/lib/format";
 import { localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
-
-const CONTACT_PHONE = "0932 046 296";
+import { CONTACT_PHONE, telHref } from "@/lib/contact";
 
 type Phase =
   | { kind: "checking" }
@@ -150,7 +149,7 @@ export function ActivateView({ lang, dict }: { lang: Locale; dict: Dictionary })
       <p className="text-beige/80">{text}</p>
       <p className="text-beige/80">
         {dict.activate.contact}:{" "}
-        <a href={`tel:${CONTACT_PHONE.replaceAll(" ", "")}`} className="font-semibold text-beige underline underline-offset-4">
+        <a href={telHref(CONTACT_PHONE)} className="font-semibold text-beige underline underline-offset-4">
           {CONTACT_PHONE}
         </a>
       </p>

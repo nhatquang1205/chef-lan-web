@@ -213,6 +213,8 @@ export interface LessonLink {
   title: string;
 }
 
+export type OrderPaymentMethod = "BankTransfer" | "ContactChef";
+
 export type OrderStatus = "Pending" | "Paid" | "Expired" | "Cancelled";
 
 export interface PaymentFormField {
@@ -236,16 +238,17 @@ export interface OrderItem {
   unitPriceVnd: number;
 }
 
-/** A purchase paid by bank transfer. The status already accounts for expiry. */
+/** A purchase, paid by bank transfer or arranged with chef Lan. The status already accounts for expiry. */
 export interface Order {
   code: string;
   status: OrderStatus;
+  paymentMethod: OrderPaymentMethod;
   amountVnd: number;
   createdAt: string;
   expiresAt: string;
   paidAt?: string | null;
   items: OrderItem[];
-  /** Only while the order can still be paid. */
+  /** Only while a bank-transfer order can still be paid; a contact order never has one. */
   payment?: PaymentInstructions | null;
 }
 

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -8,6 +9,31 @@ import { localePath } from "@/i18n/config";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
 import { getCourse } from "@/lib/api/catalog";
 import { formatDuration, formatVnd, template } from "@/lib/format";
+
+export async function generateMetadata({ params }: PageProps<"/[lang]/courses/[slug]">): Promise<Metadata> {
+  const { lang, slug } = await params;
+
+  try {
+    const course = await getCourse(slug);
+
+    if (!course) {
+      return { robots: { index: false } };
+    }
+
+    const description = course.metaDescription ?? course.subtitle ?? undefined;
+    const image = course.thumbnailUrl ?? course.images[0]?.url;
+    const path = lang === "en" ? `/en/courses/${slug}` : `/courses/${slug}`;
+
+    return {
+      title: course.title,
+      description,
+      alternates: { canonical: path },
+      openGraph: { type: "website", title: course.title, description, url: path, images: image ? [{ url: image }] : undefined },
+    };
+  } catch {
+    return {};
+  }
+}
 
 export default function CoursePage({ params }: PageProps<"/[lang]/courses/[slug]">) {
   return (
@@ -86,9 +112,6 @@ async function Content({ params }: { params: PageProps<"/[lang]/courses/[slug]">
   return (
     <CourseAccessProvider slug={course.slug}>
       <article className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-        <title>{course.title}</title>
-        {course.metaDescription && <meta name="description" content={course.metaDescription} />}
-
         <Link href={localePath(lang, "/courses")} className="text-sm uppercase tracking-widest text-beige/70 hover:text-beige">
           ← {dict.course.back}
         </Link>

@@ -60,6 +60,7 @@ export function VideoPlayer({
   dict,
   startAt = 0,
   onProgress,
+  onEnded,
 }: {
   url: string;
   title: string;
@@ -71,10 +72,16 @@ export function VideoPlayer({
   startAt?: number;
   /** Called about every 10s while playing, and on pause, end and page hide. */
   onProgress?: (seconds: number) => void;
+  /** Called when the video plays to its end. */
+  onEnded?: () => void;
 }) {
   const onProgressRef = useRef(onProgress);
   useEffect(() => {
     onProgressRef.current = onProgress;
+  });
+  const onEndedRef = useRef(onEnded);
+  useEffect(() => {
+    onEndedRef.current = onEnded;
   });
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const limited = freeTillSeconds != null;
@@ -177,7 +184,10 @@ export function VideoPlayer({
           });
 
           player.on("pause", () => save(true));
-          player.on("ended", () => save(true));
+          player.on("ended", () => {
+            save(true);
+            onEndedRef.current?.();
+          });
         });
       })
       .catch(() => !cancelled && limit != null && setStatus("failed"));

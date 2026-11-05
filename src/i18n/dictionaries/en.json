@@ -155,7 +155,11 @@
     "contact": "Contact",
     "hours": "08:00 – 22:00",
     "address": "164 Châu Thị Vĩnh Tế, Đà Nẵng, Vietnam",
-    "rights": "All rights reserved, Bon Bocon."
+    "rights": "All rights reserved, Bon Bocon.",
+    "terms": "Terms of use",
+    "privacy": "Privacy policy",
+    "refund": "Refund policy",
+    "updated": "Last updated: {date}"
   },
   "watch": {
     "previewNotice": "This is a preview: the first {seconds} seconds are free.",
@@ -171,7 +175,9 @@
     "playerLabel": "Video player",
     "signInHint": "Bought this course or lesson? Sign in to watch it.",
     "signIn": "Sign in",
-    "checkingAccess": "Checking your access…"
+    "checkingAccess": "Checking your access…",
+    "sessionExpiredTitle": "Your session has expired",
+    "sessionExpiredText": "Sign in again to keep watching."
   },
   "account": {
     "myCoursesTitle": "My courses",
@@ -185,7 +191,9 @@
     "menuLabel": "Account menu",
     "expires": "Expires: {date}",
     "ownedLessons": "{count} lessons owned",
-    "removeEntry": "Remove from history"
+    "removeEntry": "Remove from history",
+    "staffNoLibrary": "You are signed in with an admin account, which has no course library. Sign in with a student account to see purchased courses.",
+    "continue": "Continue"
   },
   "lesson": {
     "back": "Back to course",
@@ -201,6 +209,9 @@
     "lockedVideoText": "Buy the course or this lesson to watch it.",
     "free": "Free",
     "signInTitle": "Sign in to view this lesson",
-    "signInText": "Lesson content and videos are only available to signed-in accounts."
+    "signInText": "Lesson content and videos are only available to signed-in accounts.",
+    "upNext": "Up next: {title} (in {seconds}s)",
+    "playNow": "Play now",
+    "cancel": "Cancel"
   }
 }

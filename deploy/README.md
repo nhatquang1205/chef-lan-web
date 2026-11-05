@@ -24,7 +24,9 @@ Run as the deploy user (the same one wish-list uses). Replace `<deploy-user>`.
    ```
    API_BASE_URL=https://<api-host>
    NEXT_PUBLIC_API_BASE_URL=https://<api-host>
+   NEXT_PUBLIC_SITE_URL=https://<chef-lan-domain>
    ```
+   `NEXT_PUBLIC_SITE_URL` is the public origin: it makes the sitemap and Open Graph URLs absolute.
    `NEXT_PUBLIC_API_BASE_URL` is baked into the browser bundle at build time. The API must also
    list this site's origin (`https://<chef-lan-domain>`) in its `Cors:AllowedOrigins`, or
    login and register fail in the browser.

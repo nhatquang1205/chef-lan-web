@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
@@ -12,6 +12,7 @@ const itemClass = "block w-full rounded px-3 py-2 text-left text-sm text-beige/8
 export function AccountMenu({ lang, dict, inline = false }: { lang: Locale; dict: Dictionary; inline?: boolean }) {
   const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
+  const pointer = useRef<string>("mouse");
 
   if (!user) {
     return null;
@@ -75,9 +76,13 @@ export function AccountMenu({ lang, dict, inline = false }: { lang: Locale; dict
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label={dict.account.menuLabel}
+        onPointerDown={(event) => {
+          pointer.current = event.pointerType;
+        }}
         onClick={(event) => {
           event.stopPropagation();
-          setOpen((value) => !value);
+          // A mouse click lands after the hover already opened the menu: keep it open. Touch has no hover, so it toggles.
+          setOpen((value) => (pointer.current === "mouse" ? true : !value));
         }}
         className="flex max-w-56 items-center gap-2 rounded px-3 py-2 text-sm font-semibold text-beige hover:bg-beige/10"
       >

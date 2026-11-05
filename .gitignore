@@ -42,3 +42,8 @@ next-env.d.ts
 
 # keep the committed template
 !.env.example
+
+# playwright
+/.next-e2e
+/test-results
+/playwright-report

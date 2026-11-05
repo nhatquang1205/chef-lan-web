@@ -15,6 +15,7 @@ type State =
   | { kind: "loading" }
   | { kind: "ok"; playback: Playback; startAt: number }
   | { kind: "forbidden" }
+  | { kind: "expired" }
   | { kind: "error" };
 
 /**
@@ -27,6 +28,7 @@ export function LessonVideo({
   loginNext,
   lang,
   dict,
+  onEnded,
 }: {
   publicId: string;
   courseHref: string;
@@ -34,6 +36,8 @@ export function LessonVideo({
   loginNext: string;
   lang: Locale;
   dict: Dictionary;
+  /** The video played to its end (only reported for videos without a preview limit). */
+  onEnded?: () => void;
 }) {
   const auth = useAuth();
   const [state, setState] = useState<State>({ kind: "loading" });
@@ -48,6 +52,13 @@ export function LessonVideo({
     void (async () => {
       try {
         const token = await auth.getAccessToken();
+
+        // Signed in a moment ago, but the refresh was rejected: say so rather than showing a lock.
+        if (!token && auth.user) {
+          setState({ kind: "expired" });
+          return;
+        }
+
         const playback = await apiFetch<Playback>(`/api/v1/videos/${encodeURIComponent(publicId)}/playback`, { token: token ?? undefined });
 
         if (cancelled) {
@@ -61,7 +72,13 @@ export function LessonVideo({
         setState({ kind: "ok", playback, startAt });
       } catch (error) {
         if (!cancelled) {
-          setState(error instanceof ApiError && (error.status === 403 || error.status === 404) ? { kind: "forbidden" } : { kind: "error" });
+          setState(
+            error instanceof ApiError && error.status === 401
+              ? { kind: "expired" }
+              : error instanceof ApiError && (error.status === 403 || error.status === 404)
+                ? { kind: "forbidden" }
+                : { kind: "error" },
+          );
         }
       }
     })();
@@ -76,6 +93,18 @@ export function LessonVideo({
       <div className="flex aspect-video flex-col items-center justify-center gap-3 rounded-lg border border-beige/15 bg-black/40 p-6 text-center">
         {state.kind === "loading" && <p className="text-beige/70">{dict.watch.loadingPlayer}</p>}
         {state.kind === "error" && <p role="alert" className="text-beige/70">{dict.common.error}</p>}
+        {state.kind === "expired" && (
+          <>
+            <p role="alert" className="font-display text-2xl">{dict.watch.sessionExpiredTitle}</p>
+            <p className="max-w-md text-beige/75">{dict.watch.sessionExpiredText}</p>
+            <Link
+              href={`${localePath(lang, "/login")}?next=${encodeURIComponent(loginNext)}`}
+              className="rounded bg-terracotta px-5 py-2 text-sm font-semibold uppercase tracking-widest text-beige hover:bg-terracotta-hover"
+            >
+              {dict.watch.signIn}
+            </Link>
+          </>
+        )}
         {state.kind === "forbidden" && (
           <>
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
@@ -114,6 +143,7 @@ export function LessonVideo({
         courseHref={courseHref}
         dict={dict}
         startAt={startAt}
+        onEnded={playback.freeTillSeconds == null ? onEnded : undefined}
         onProgress={
           historyKey
             ? (seconds) =>
@@ -121,6 +151,7 @@ export function LessonVideo({
                   videoId: playback.videoId,
                   courseSlug: playback.courseSlug,
                   courseTitle: playback.courseTitle,
+                  lessonSlug: playback.lessonSlug,
                   lessonTitle: playback.lessonTitle,
                   title: playback.title,
                   positionSeconds: seconds,

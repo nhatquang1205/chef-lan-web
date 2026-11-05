@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { LessonVideo } from "@/components/LessonVideo";
 import { Markdown } from "@/components/Markdown";
+import { UpNext } from "@/components/UpNext";
 import { ApiError, apiFetch } from "@/lib/api/client";
 import type { LessonPage } from "@/lib/api/types";
 import { useAuth } from "@/lib/auth/AuthProvider";
@@ -29,6 +30,7 @@ export function LessonView({ slug, lessonSlug, lang, dict }: { slug: string; les
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [state, setState] = useState<State>({ kind: "loading" });
+  const [upNext, setUpNext] = useState<{ title: string; go: () => void } | null>(null);
   const courseHref = localePath(lang, `/courses/${slug}`);
 
   useEffect(() => {
@@ -135,6 +137,22 @@ export function LessonView({ slug, lessonSlug, lang, dict }: { slug: string; les
 
   const lessonHref = (target: string) => localePath(lang, `/courses/${slug}/lessons/${target}`);
 
+  // After a full video ends: the next video of this lesson, else the next lesson. Owners only, never a preview.
+  const handleEnded = () => {
+    if (!page.hasAccess || !current) {
+      return;
+    }
+
+    const nextVideo = videos[videos.findIndex((v) => v.publicId === current.publicId) + 1];
+
+    if (nextVideo) {
+      setUpNext({ title: nextVideo.title, go: () => select(nextVideo.publicId) });
+    } else if (page.next) {
+      const target = page.next;
+      setUpNext({ title: target.title, go: () => router.push(lessonHref(target.slug)) });
+    }
+  };
+
   return (
     <article className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
       <title>{`${lesson.title} · ${page.courseTitle}`}</title>
@@ -199,6 +217,18 @@ export function LessonView({ slug, lessonSlug, lang, dict }: { slug: string; les
       )}
 
       <section className="mt-8">
+        {upNext && (
+          <UpNext
+            key={upNext.title}
+            title={upNext.title}
+            dict={dict}
+            go={() => {
+              setUpNext(null);
+              upNext.go();
+            }}
+            cancel={() => setUpNext(null)}
+          />
+        )}
         {current ? (
           <div className="grid gap-6 lg:grid-cols-[1fr_18rem]">
             <LessonVideo
@@ -208,6 +238,7 @@ export function LessonView({ slug, lessonSlug, lang, dict }: { slug: string; les
               loginNext={`${lessonHref(lesson.slug)}?v=${current.publicId}`}
               lang={lang}
               dict={dict}
+              onEnded={handleEnded}
             />
 
             <div>

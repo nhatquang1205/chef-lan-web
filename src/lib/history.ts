@@ -1,7 +1,10 @@
+import { localePath, type Locale } from "@/i18n/config";
+
 export interface HistoryEntry {
   videoId: string;
   courseSlug: string;
   courseTitle: string;
+  lessonSlug?: string;
   lessonTitle: string;
   title: string;
   positionSeconds: number;
@@ -39,4 +42,18 @@ export function removeFromHistory(userId: string, videoId: string) {
   } catch {
     // Nothing to remove.
   }
+}
+
+/** Where "continue watching" goes: the lesson page on that video, or the old watch route (which redirects) for entries saved before lessons were recorded. */
+export function historyHref(lang: Locale, entry: HistoryEntry): string {
+  return entry.lessonSlug
+    ? `${localePath(lang, `/courses/${entry.courseSlug}/lessons/${entry.lessonSlug}`)}?v=${entry.videoId}`
+    : localePath(lang, `/courses/${entry.courseSlug}/watch/${entry.videoId}`);
+}
+
+export function formatClock(totalSeconds: number): string {
+  const s = Math.max(0, Math.floor(totalSeconds));
+  const h = Math.floor(s / 3600);
+  const mm = String(Math.floor((s % 3600) / 60)).padStart(h > 0 ? 2 : 1, "0");
+  return `${h > 0 ? `${h}:` : ""}${mm}:${String(s % 60).padStart(2, "0")}`;
 }

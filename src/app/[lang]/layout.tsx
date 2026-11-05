@@ -8,6 +8,7 @@ import { Footer } from "@/components/Footer";
 import { AuthProvider } from "@/lib/auth/AuthProvider";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
 import { hasLocale, locales } from "@/i18n/config";
+import { siteUrl } from "@/lib/site";
 import "../globals.css";
 
 // Stand-ins for the brand fonts (GLANCE for titles, Calps Sans for content), which are
@@ -28,8 +29,18 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
   const dict = hasLocale(lang) ? (await import(`@/i18n/dictionaries/${lang}.json`)).default : null;
 
   return {
+    metadataBase: new URL(siteUrl()),
     title: { default: dict?.meta.title ?? "Bon Bocon", template: "%s · Bon Bocon" },
     description: dict?.meta.description,
+    openGraph: {
+      type: "website",
+      siteName: "Bon Bocon",
+      locale: lang === "en" ? "en_US" : "vi_VN",
+      title: dict?.meta.title ?? "Bon Bocon",
+      description: dict?.meta.description,
+      images: [{ url: "/logo.png", width: 640, height: 640, alt: "Bon Bocon" }],
+    },
+    twitter: { card: "summary_large_image" },
   };
 }
 
@@ -62,7 +73,7 @@ export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
             />
           </Suspense>
           <main className="flex-1">{children}</main>
-          <Footer dict={dict} />
+          <Footer lang={lang} dict={dict} />
         </AuthProvider>
       </body>
     </html>

@@ -155,7 +155,11 @@
     "contact": "Liên hệ",
     "hours": "08:00 – 22:00",
     "address": "164 Châu Thị Vĩnh Tế, Đà Nẵng",
-    "rights": "Bản quyền thuộc Bon Bocon."
+    "rights": "Bản quyền thuộc Bon Bocon.",
+    "terms": "Điều khoản sử dụng",
+    "privacy": "Chính sách bảo mật",
+    "refund": "Chính sách hoàn tiền",
+    "updated": "Cập nhật lần cuối: {date}"
   },
   "watch": {
     "previewNotice": "Đây là bản xem thử: {seconds} giây đầu được xem miễn phí.",
@@ -171,7 +175,9 @@
     "playerLabel": "Trình phát video",
     "signInHint": "Đã mua khóa học hoặc bài học này? Hãy đăng nhập để xem.",
     "signIn": "Đăng nhập",
-    "checkingAccess": "Đang kiểm tra quyền xem…"
+    "checkingAccess": "Đang kiểm tra quyền xem…",
+    "sessionExpiredTitle": "Phiên đăng nhập đã hết hạn",
+    "sessionExpiredText": "Hãy đăng nhập lại để tiếp tục xem video."
   },
   "account": {
     "myCoursesTitle": "Khóa học của tôi",
@@ -185,7 +191,9 @@
     "menuLabel": "Menu tài khoản",
     "expires": "Hết hạn: {date}",
     "ownedLessons": "{count} bài học đã mua",
-    "removeEntry": "Xóa khỏi lịch sử"
+    "removeEntry": "Xóa khỏi lịch sử",
+    "staffNoLibrary": "Bạn đang đăng nhập bằng tài khoản quản trị. Tài khoản này không có thư viện khóa học; hãy đăng nhập bằng tài khoản học viên để xem khóa học đã mua.",
+    "continue": "Tiếp tục"
   },
   "lesson": {
     "back": "Về khóa học",
@@ -201,6 +209,9 @@
     "lockedVideoText": "Mua khóa học hoặc bài học này để xem.",
     "free": "Miễn phí",
     "signInTitle": "Đăng nhập để xem bài học",
-    "signInText": "Nội dung bài học và video chỉ dành cho tài khoản đã đăng nhập."
+    "signInText": "Nội dung bài học và video chỉ dành cho tài khoản đã đăng nhập.",
+    "upNext": "Tiếp theo: {title} (sau {seconds}s)",
+    "playNow": "Phát ngay",
+    "cancel": "Hủy"
   }
 }

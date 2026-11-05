@@ -9,7 +9,7 @@ const users = {
   "visitor@test.dev": { token: "tok-visitor", actor: "Customer", id: 2, name: "Visitor Test" },
   "admin@test.dev": { token: "tok-admin", actor: "Staff", id: 9, name: "Admin Test" },
 };
-for (let n = 1; n <= 8; n++) {
+for (let n = 1; n <= 9; n++) {
   // One buyer per checkout test: a paid order makes its buyer an owner, and tests run in parallel.
   users[`buyer${n}@test.dev`] = { token: `tok-buyer${n}`, actor: "Customer", id: 30 + n, name: `Buyer ${n}` };
 }

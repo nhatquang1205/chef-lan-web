@@ -78,6 +78,9 @@ export function BuyButton({
       }
 
       const order = await createOrder(token, target, method);
+      // Closed by hand: React Activity keeps this page mounted after navigating, and a modal left open makes the next page inert.
+      dialogRef.current?.close();
+      setBusy(null);
       router.push(localePath(lang, `/checkout/${order.code}`));
     } catch (failure) {
       setBusy(null);

@@ -127,7 +127,8 @@ test.describe("checkout", () => {
 
     const code = new URL(page.url()).pathname.split("/").pop()!;
     await expect(page.getByRole("heading", { name: `Đơn hàng ${code}` })).toBeVisible();
-    await expect(page.getByRole("link", { name: "0932 046 296" })).toBeVisible();
+    // A modal left open on the hidden course page would make this page inert.
+    await page.getByRole("article").getByRole("link", { name: "0932 046 296" }).click({ trial: true });
     await expect(page.getByRole("button", { name: dict.checkout.payWithQr })).toHaveCount(0);
 
     await bank(request, "pay", code);

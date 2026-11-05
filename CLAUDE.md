@@ -75,6 +75,27 @@ across devices.
 
 `/account/courses` lists `GET /api/v1/me/courses` (`getMyCourses`, customer token only: a staff login gets 403/empty).
 
+## Checkout (SePay Payment Gateway, bank transfer by QR)
+
+Backend design: `chef-lan` `docs/payments/`. The browser, with the customer's token, calls `POST /api/v1/orders` (the server prices it and signs the
+form), then shows `/checkout/[code]` (`CheckoutView`): what is bought, the amount, and a **real HTML form** (hidden fields from the API, POST to
+`payment.actionUrl`) that leaves the site for SePay's hosted payment page. SePay sends the customer back to the same page (`?result=...`). We show
+no bank details or QR of our own. The status is **polled** (`GET /orders/{code}`: 3s for two minutes, then 8s, paused while the tab is hidden, checked
+at once when it returns): no SignalR, one event per purchase. A payment is confirmed by the backend when SePay's IPN arrives, never by this page or by
+the return URL. Things that bite:
+
+- **Never edit, add or reorder the form fields**: they are signed, and SePay rejects the order. Render exactly what the API sends.
+- "Buy now" (`BuyButton`) renders only when `GET /checkout/config` says `enabled`; otherwise the page keeps the "contact chef Lan"
+  note. `BuyNote` always keeps that line beside the button. Staff see neither (their access reads as "owns everything").
+- After Paid, "Start learning" is a plain `<a>` (a full page load), so the course page asks for access afresh. A client link would
+  reuse the kept-alive page with stale access.
+- Order pages are `noindex` and disallowed in `robots.ts`. Another customer's order is a 404, by design.
+- `/account/orders` lists the customer's orders; a Pending one links back to its payment page. Admin logins have no orders.
+- The terms, privacy and refund text in `src/content/legal.ts` describes this flow: change them together with it.
+- Playwright (`tests/mock-api.mjs`) plays both SePay and the bank: `POST /__mock/gateway` echoes the form it received, `POST /__mock/pay/{code}` and
+  `/__mock/expire/{code}` stand for the payment and the deadline. One buyer account per test, because a paid order makes its buyer an owner and
+  tests run in parallel.
+
 ## Header categories dropdown
 
 `CategoryLinks` (server component, `await connection()`, swallows API errors) is streamed into the

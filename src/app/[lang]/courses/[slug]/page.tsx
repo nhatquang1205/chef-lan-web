@@ -159,7 +159,7 @@ async function Content({ params }: { params: PageProps<"/[lang]/courses/[slug]">
                   </p>
                 </DiscountQuote>
               </div>
-              <BuyNote dict={dict} />
+              <BuyNote dict={dict} lang={lang} slug={course.slug} returnTo={localePath(lang, `/courses/${course.slug}`)} />
             </div>
           </div>
 

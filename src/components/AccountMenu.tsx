@@ -26,6 +26,11 @@ export function AccountMenu({ lang, dict, inline = false }: { lang: Locale; dict
         </Link>
       </li>
       <li role="none">
+        <Link role="menuitem" href={localePath(lang, "/account/orders")} className={itemClass}>
+          {dict.nav.orders}
+        </Link>
+      </li>
+      <li role="none">
         <Link role="menuitem" href={localePath(lang, "/account/history")} className={itemClass}>
           {dict.nav.history}
         </Link>

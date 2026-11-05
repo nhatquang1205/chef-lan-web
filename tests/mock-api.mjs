@@ -9,7 +9,40 @@ const users = {
   "visitor@test.dev": { token: "tok-visitor", actor: "Customer", id: 2, name: "Visitor Test" },
   "admin@test.dev": { token: "tok-admin", actor: "Staff", id: 9, name: "Admin Test" },
 };
+for (let n = 1; n <= 8; n++) {
+  // One buyer per checkout test: a paid order makes its buyer an owner, and tests run in parallel.
+  users[`buyer${n}@test.dev`] = { token: `tok-buyer${n}`, actor: "Customer", id: 30 + n, name: `Buyer ${n}` };
+}
 const PASSWORD = "Passw0rd!";
+
+const ownedBy = new Set([1]);
+const orders = new Map();
+let orderCounter = 0;
+const QR_PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", "base64");
+
+const orderBody = (order) => ({
+  code: order.code,
+  status: order.status,
+  amountVnd: 1000000,
+  createdAt: order.createdAt,
+  expiresAt: order.expiresAt,
+  paidAt: order.status === "Paid" ? new Date().toISOString() : null,
+  items: [{ kind: "Course", title: "Macaron", courseSlug: "macaron", listPriceVnd: 1000000, discountVnd: 0, unitPriceVnd: 1000000 }],
+  payment:
+    order.status === "Pending"
+      ? {
+          amountVnd: 1000000,
+          actionUrl: `${ORIGIN}/__mock/gateway`,
+          fields: [
+            { name: "merchant", value: "SP-TEST-1" },
+            { name: "order_amount", value: "1000000" },
+            { name: "order_invoice_number", value: order.code },
+            { name: "success_url", value: `http://localhost:3101/checkout/${order.code}?result=success` },
+            { name: "signature", value: "mock-signature" },
+          ],
+        }
+      : null,
+});
 const byToken = (token) => Object.values(users).find((u) => u.token === token);
 
 const video = (publicId, title, durationSeconds, isFree, freeTillSeconds) => ({ publicId, title, durationSeconds, isFree, freeTillSeconds: freeTillSeconds ?? null });
@@ -53,11 +86,76 @@ const server = createServer((req, res) => {
   const url = new URL(req.url, ORIGIN);
   const path = url.pathname;
   const user = byToken((req.headers.authorization ?? "").replace("Bearer ", ""));
-  const isOwner = user?.id === 1;
+  const isOwner = user ? ownedBy.has(user.id) : false;
   let body = "";
 
   req.on("data", (chunk) => (body += chunk));
   req.on("end", () => {
+    if (path === "/qr.png") {
+      res.writeHead(200, { "Content-Type": "image/png" });
+      return res.end(QR_PNG);
+    }
+
+    // Test-only controls: pretend the bank reported the money, or let the order lapse.
+    const control = /^\/__mock\/(pay|expire)\/(\w+)$/.exec(path);
+    if (control) {
+      const order = orders.get(control[2]);
+      if (!order) return json(res, 404, {});
+      if (control[1] === "pay") {
+        order.status = "Paid";
+        ownedBy.add(order.customerId);
+      } else {
+        order.status = "Expired";
+      }
+      return json(res, 200, { ok: true });
+    }
+
+    // Stands in for SePay's hosted payment page: shows what the signed form carried, and a way back.
+    if (path === "/__mock/gateway" && req.method === "POST") {
+      const form = Object.fromEntries(new URLSearchParams(body));
+      res.writeHead(200, { "Content-Type": "text/html" });
+      return res.end(
+        `<!doctype html><title>SePay</title><h1>SePay gateway</h1>` +
+          `<p id="invoice">${form.order_invoice_number}</p><p id="amount">${form.order_amount}</p>` +
+          `<p id="merchant">${form.merchant}</p><p id="signature">${form.signature}</p>` +
+          `<a id="back" href="${form.success_url}">Back to the shop</a>`,
+      );
+    }
+
+    if (path === "/api/v1/checkout/config") return json(res, 200, { enabled: true });
+
+    if (path === "/api/v1/orders" && req.method === "POST") {
+      if (!user) return json(res, 401, {});
+      if (user.actor !== "Customer") return json(res, 403, {});
+      if (isOwner) return json(res, 409, { status: 409, code: "order.already_owned" });
+      const existing = [...orders.values()].find((o) => o.customerId === user.id && o.status === "Pending");
+      if (existing) return json(res, 200, orderBody(existing));
+      const order = {
+        code: `BBTEST${String(++orderCounter).padStart(2, "0")}`, customerId: user.id, status: "Pending",
+        createdAt: new Date().toISOString(), expiresAt: new Date(Date.now() + 3_600_000).toISOString(),
+      };
+      orders.set(order.code, order);
+      return json(res, 200, orderBody(order));
+    }
+
+    if (path === "/api/v1/me/orders") {
+      if (!user) return json(res, 401, {});
+      if (user.actor !== "Customer") return json(res, 403, {});
+      return json(res, 200, [...orders.values()].filter((o) => o.customerId === user.id).map(orderBody));
+    }
+
+    const orderRoute = /^\/api\/v1\/orders\/(\w+)(\/cancel)?$/.exec(path);
+    if (orderRoute) {
+      if (!user) return json(res, 401, {});
+      const order = orders.get(orderRoute[1]);
+      if (!order || order.customerId !== user.id) return json(res, 404, { status: 404, code: "order.not_found" });
+      if (orderRoute[2]) {
+        if (order.status !== "Pending") return json(res, 409, { status: 409, code: "order.not_pending" });
+        order.status = "Cancelled";
+      }
+      return json(res, 200, orderBody(order));
+    }
+
     if (path.startsWith("/embed/")) {
       res.writeHead(200, { "Content-Type": "text/html" });
       return res.end("<!doctype html><title>player</title><body style='background:#000'>player</body>");

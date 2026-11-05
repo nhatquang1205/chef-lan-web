@@ -51,7 +51,8 @@ export const legal: Record<Locale, Record<LegalDoc, LegalContent>> = {
           heading: "4. Giá và thanh toán",
           paragraphs: [
             "Giá được hiển thị bằng đồng Việt Nam (VND) trên từng khóa học. Chúng tôi có thể thay đổi giá và chương trình giảm giá; giá áp dụng là giá tại thời điểm bạn thanh toán.",
-            "Hiện tại việc đăng ký khóa học được thực hiện qua liên hệ trực tiếp với Chef Lan.",
+            "Thanh toán bằng chuyển khoản ngân hàng qua mã QR trên trang thanh toán của SePay. Khi thanh toán được xác nhận, hệ thống tự mở quyền truy cập cho bạn. Nếu có sự cố, bạn vẫn có thể liên hệ trực tiếp với Chef Lan để được hỗ trợ.",
+            "Đơn hàng có thời hạn thanh toán. Thanh toán sau thời hạn hoặc sai số tiền sẽ không được mở tự động; hãy liên hệ Chef Lan kèm mã đơn.",
           ],
         },
         {
@@ -78,6 +79,7 @@ export const legal: Record<Locale, Record<LegalDoc, LegalContent>> = {
           heading: "1. Dữ liệu chúng tôi thu thập",
           paragraphs: [
             "Thông tin tài khoản: họ tên, email, số điện thoại (nếu bạn cung cấp) và mật khẩu (được lưu dưới dạng mã băm, chúng tôi không đọc được mật khẩu).",
+            "Thông tin thanh toán: mã đơn hàng, số tiền và thời điểm giao dịch mà SePay báo về. Chúng tôi không lưu số thẻ hay mật khẩu ngân hàng của bạn.",
             "Thông tin sử dụng: các khóa học và bài học bạn sở hữu. Lịch sử xem video chỉ được lưu trên trình duyệt của bạn (localStorage) và không gửi về máy chủ.",
           ],
         },
@@ -92,6 +94,7 @@ export const legal: Record<Locale, Record<LegalDoc, LegalContent>> = {
           heading: "3. Bên thứ ba",
           paragraphs: [
             "Video được cung cấp qua Bunny Stream. Khi bạn xem video, nhà cung cấp này nhận địa chỉ IP và thông tin thiết bị cần thiết để phát video.",
+            "Thanh toán được xử lý qua cổng thanh toán SePay: bạn được chuyển sang trang của SePay để thanh toán, và SePay báo kết quả cho chúng tôi để xác nhận đơn hàng của bạn.",
             "Website lưu phiên đăng nhập trong trình duyệt của bạn (localStorage) để giữ trạng thái đăng nhập; không dùng cookie quảng cáo.",
           ],
         },
@@ -129,7 +132,7 @@ export const legal: Record<Locale, Record<LegalDoc, LegalContent>> = {
         {
           heading: "3. Cách yêu cầu",
           paragraphs: [
-            "Gửi email tới bonboconrestaurant@gmail.com hoặc gọi 0932 046 296, kèm email tài khoản và thông tin thanh toán. Chúng tôi phản hồi trong vòng 3 ngày làm việc.",
+            "Gửi email tới bonboconrestaurant@gmail.com hoặc gọi 0932 046 296, kèm email tài khoản, mã đơn hàng và thông tin thanh toán. Chúng tôi phản hồi trong vòng 3 ngày làm việc.",
             "Khoản hoàn tiền được chuyển về phương thức bạn đã dùng để thanh toán trong vòng 14 ngày kể từ khi yêu cầu được chấp nhận.",
           ],
         },
@@ -166,7 +169,8 @@ export const legal: Record<Locale, Record<LegalDoc, LegalContent>> = {
           heading: "4. Prices and payment",
           paragraphs: [
             "Prices are in Vietnamese dong (VND) on each course. We may change prices and discounts; the price that applies is the one at the time you pay.",
-            "At the moment, enrolling in a course is arranged by contacting Chef Lan directly.",
+            "You pay by bank transfer with a QR code on SePay's payment page. Once the payment is confirmed, access opens automatically. If something goes wrong you can still contact Chef Lan for help.",
+            "An order must be paid within its time limit. A payment after that time or for a different amount is not unlocked automatically; contact Chef Lan with the order code.",
           ],
         },
         {
@@ -194,6 +198,7 @@ export const legal: Record<Locale, Record<LegalDoc, LegalContent>> = {
           paragraphs: [
             "Account details: name, email, phone (if you give one) and password (stored as a hash; we cannot read it).",
             "Usage: the courses and lessons you own. Your watch history is kept only in your browser (localStorage) and is not sent to our servers.",
+            "Payment details: order code, amount and the time of the transaction as SePay reports it. We do not store your card numbers or bank passwords.",
           ],
         },
         {
@@ -207,6 +212,7 @@ export const legal: Record<Locale, Record<LegalDoc, LegalContent>> = {
           heading: "3. Third parties",
           paragraphs: [
             "Videos are delivered through Bunny Stream. When you watch, this provider receives the IP address and device information needed to play the video.",
+            "Payments are processed through the SePay payment gateway: you are sent to SePay's page to pay, and SePay tells us the result so we can confirm your order.",
             "The website keeps your sign-in session in your browser (localStorage); we use no advertising cookies.",
           ],
         },
@@ -244,7 +250,7 @@ export const legal: Record<Locale, Record<LegalDoc, LegalContent>> = {
         {
           heading: "3. How to ask",
           paragraphs: [
-            "Email bonboconrestaurant@gmail.com or call 0932 046 296 with your account email and payment details. We reply within 3 working days.",
+            "Email bonboconrestaurant@gmail.com or call 0932 046 296 with your account email, order code and payment details. We reply within 3 working days.",
             "Approved refunds go back to the payment method you used within 14 days.",
           ],
         },

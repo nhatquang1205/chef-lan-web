@@ -18,7 +18,8 @@
     "language": "Language",
     "account": "Account",
     "myCourses": "My courses",
-    "history": "History"
+    "history": "History",
+    "orders": "Orders"
   },
   "common": {
     "loading": "Loading…",
@@ -193,7 +194,17 @@
     "ownedLessons": "{count} lessons owned",
     "removeEntry": "Remove from history",
     "staffNoLibrary": "You are signed in with an admin account, which has no course library. Sign in with a student account to see purchased courses.",
-    "continue": "Continue"
+    "continue": "Continue",
+    "ordersTitle": "My orders",
+    "ordersEmpty": "You have no orders yet.",
+    "payNow": "Pay",
+    "staffNoOrders": "Admin accounts do not buy courses, so they have no orders.",
+    "orderStatus": {
+      "Pending": "Awaiting payment",
+      "Paid": "Paid",
+      "Expired": "Expired",
+      "Cancelled": "Cancelled"
+    }
   },
   "lesson": {
     "back": "Back to course",
@@ -213,5 +224,30 @@
     "upNext": "Up next: {title} (in {seconds}s)",
     "playNow": "Play now",
     "cancel": "Cancel"
+  },
+  "checkout": {
+    "buyNow": "Buy now",
+    "buyLesson": "Buy this lesson",
+    "creating": "Creating order…",
+    "alreadyOwned": "You already own this.",
+    "customersOnly": "Only student accounts can buy.",
+    "createFailed": "Could not create the order. Please try again.",
+    "title": "Payment",
+    "amount": "Amount",
+    "waiting": "Waiting for payment…",
+    "retrying": "Could not check the status, retrying…",
+    "expiresIn": "{time} left",
+    "backToCourse": "Back to the course",
+    "cancel": "Cancel order",
+    "paidTitle": "Payment received",
+    "paidText": "Thank you! Your access is now open.",
+    "startLearning": "Start learning",
+    "expiredTitle": "This order has expired",
+    "expiredText": "If you already paid, contact Chef Lan with order code {code}. If not, create a new order on the course page.",
+    "cancelledTitle": "Order cancelled",
+    "cancelledText": "This order was cancelled. You can create a new one on the course page.",
+    "payWithQr": "Pay by QR bank transfer",
+    "redirecting": "Taking you to SePay…",
+    "payHint": "You will be taken to SePay's secure payment page to scan a QR code with your banking app. When you have paid you come back here and the course opens automatically."
   }
 }

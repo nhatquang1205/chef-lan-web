@@ -18,7 +18,8 @@
     "language": "Ngôn ngữ",
     "account": "Tài khoản",
     "myCourses": "Khóa học của tôi",
-    "history": "Lịch sử"
+    "history": "Lịch sử",
+    "orders": "Đơn hàng"
   },
   "common": {
     "loading": "Đang tải…",
@@ -193,7 +194,17 @@
     "ownedLessons": "{count} bài học đã mua",
     "removeEntry": "Xóa khỏi lịch sử",
     "staffNoLibrary": "Bạn đang đăng nhập bằng tài khoản quản trị. Tài khoản này không có thư viện khóa học; hãy đăng nhập bằng tài khoản học viên để xem khóa học đã mua.",
-    "continue": "Tiếp tục"
+    "continue": "Tiếp tục",
+    "ordersTitle": "Đơn hàng của tôi",
+    "ordersEmpty": "Bạn chưa có đơn hàng nào.",
+    "payNow": "Thanh toán",
+    "staffNoOrders": "Tài khoản quản trị không mua khóa học nên không có đơn hàng.",
+    "orderStatus": {
+      "Pending": "Chờ thanh toán",
+      "Paid": "Đã thanh toán",
+      "Expired": "Hết hạn",
+      "Cancelled": "Đã hủy"
+    }
   },
   "lesson": {
     "back": "Về khóa học",
@@ -213,5 +224,30 @@
     "upNext": "Tiếp theo: {title} (sau {seconds}s)",
     "playNow": "Phát ngay",
     "cancel": "Hủy"
+  },
+  "checkout": {
+    "buyNow": "Mua ngay",
+    "buyLesson": "Mua bài học này",
+    "creating": "Đang tạo đơn…",
+    "alreadyOwned": "Bạn đã sở hữu nội dung này.",
+    "customersOnly": "Chỉ tài khoản học viên mới mua được.",
+    "createFailed": "Không tạo được đơn hàng. Vui lòng thử lại.",
+    "title": "Thanh toán",
+    "amount": "Số tiền",
+    "waiting": "Đang chờ thanh toán…",
+    "retrying": "Không kiểm tra được trạng thái, đang thử lại…",
+    "expiresIn": "Còn {time}",
+    "backToCourse": "Về trang khóa học",
+    "cancel": "Hủy đơn",
+    "paidTitle": "Thanh toán thành công",
+    "paidText": "Cảm ơn bạn! Quyền truy cập đã được mở.",
+    "startLearning": "Bắt đầu học",
+    "expiredTitle": "Đơn hàng đã hết hạn",
+    "expiredText": "Nếu bạn đã chuyển khoản, hãy liên hệ Chef Lan kèm mã đơn {code}. Nếu chưa, hãy tạo đơn mới ở trang khóa học.",
+    "cancelledTitle": "Đơn hàng đã hủy",
+    "cancelledText": "Đơn hàng này đã được hủy. Bạn có thể tạo đơn mới ở trang khóa học.",
+    "payWithQr": "Thanh toán bằng QR chuyển khoản",
+    "redirecting": "Đang chuyển sang SePay…",
+    "payHint": "Bạn sẽ được chuyển sang trang thanh toán an toàn của SePay để quét mã QR bằng ứng dụng ngân hàng. Thanh toán xong, bạn sẽ quay lại đây và khóa học tự động được mở."
   }
 }

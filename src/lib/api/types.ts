@@ -212,3 +212,41 @@ export interface LessonLink {
   slug: string;
   title: string;
 }
+
+export type OrderStatus = "Pending" | "Paid" | "Expired" | "Cancelled";
+
+export interface PaymentFormField {
+  name: string;
+  value: string;
+}
+
+/** The signed form that sends the customer to SePay's payment page: POST `fields` to `actionUrl`. Never edit the fields: they are signed. */
+export interface PaymentInstructions {
+  amountVnd: number;
+  actionUrl: string;
+  fields: PaymentFormField[];
+}
+
+export interface OrderItem {
+  kind: "Course" | "Lesson";
+  title: string;
+  courseSlug: string;
+  listPriceVnd: number;
+  discountVnd: number;
+  unitPriceVnd: number;
+}
+
+/** A purchase paid by bank transfer. The status already accounts for expiry. */
+export interface Order {
+  code: string;
+  status: OrderStatus;
+  amountVnd: number;
+  createdAt: string;
+  expiresAt: string;
+  paidAt?: string | null;
+  items: OrderItem[];
+  /** Only while the order can still be paid. */
+  payment?: PaymentInstructions | null;
+}
+
+export type OrderTarget = { courseSlug: string; lessonId?: never } | { lessonId: number; courseSlug?: never };

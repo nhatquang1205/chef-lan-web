@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { BuyButton } from "@/components/BuyButton";
 import { LessonVideo } from "@/components/LessonVideo";
 import { Markdown } from "@/components/Markdown";
 import { UpNext } from "@/components/UpNext";
@@ -184,6 +185,17 @@ export function LessonView({ slug, lessonSlug, lang, dict }: { slug: string; les
             <span className="font-semibold">{template(dict.course.lessonPrice, { price: lesson.priceDisplay })}</span>
             <span className="text-beige/70"> · {lesson.includedInCourse ? dict.course.buyLessonNote : dict.course.addonNote}</span>
           </p>
+        )}
+        {!page.hasAccess && lesson.priceDisplay && (
+          <div className="mt-3">
+            <BuyButton
+              target={{ lessonId: lesson.id }}
+              lang={lang}
+              dict={dict}
+              label={dict.checkout.buyLesson}
+              returnTo={lessonHref(lesson.slug)}
+            />
+          </div>
         )}
       </header>
 

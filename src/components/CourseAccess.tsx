@@ -4,6 +4,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api/client";
 import type { CourseAccess as CourseAccessData } from "@/lib/api/types";
 import { useAuth } from "@/lib/auth/AuthProvider";
+import { BuyButton } from "@/components/BuyButton";
+import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { formatVnd, template } from "@/lib/format";
 
@@ -99,10 +101,23 @@ export function NotOwnedBadge({
   ) : null;
 }
 
-/** The "contact chef Lan to enrol" note, hidden once the customer owns the whole course. */
-export function BuyNote({ dict }: { dict: Dictionary }) {
+/**
+ * How to get the course: a "Buy now" button when online payment is set up, always with the "contact chef Lan" line
+ * beside it. Hidden once the viewer owns the whole course (staff see everything, so they never see it either).
+ */
+export function BuyNote({ dict, lang, slug, returnTo }: { dict: Dictionary; lang: Locale; slug: string; returnTo: string }) {
   const { access } = useContext(AccessContext);
-  return access.hasCourseAccess ? null : <p className="rounded bg-terracotta px-4 py-2 text-sm text-beige">{dict.course.buyNote}</p>;
+
+  if (access.hasCourseAccess) {
+    return null;
+  }
+
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <BuyButton target={{ courseSlug: slug }} lang={lang} dict={dict} returnTo={returnTo} />
+      <p className="rounded bg-terracotta px-4 py-2 text-sm text-beige">{dict.course.buyNote}</p>
+    </div>
+  );
 }
 
 /** The course price: the regular one (children), or the discounted one for a signed-in customer who already has an included course. */

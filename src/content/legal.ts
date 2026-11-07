@@ -66,7 +66,7 @@ export const legal: Record<Locale, Record<LegalDoc, LegalContent>> = {
           heading: "6. Thay đổi và liên hệ",
           paragraphs: [
             "Chúng tôi có thể cập nhật điều khoản; bản mới có hiệu lực khi đăng tải trên trang này.",
-            "Mọi thắc mắc xin liên hệ bonboconrestaurant@gmail.com hoặc 0932 046 296.",
+            "Mọi thắc mắc xin liên hệ qua fanpage Facebook của Chef Lan (facebook.com/Chefphuonglandoan) hoặc số 0932 046 296.",
           ],
         },
       ],
@@ -107,7 +107,7 @@ export const legal: Record<Locale, Record<LegalDoc, LegalContent>> = {
         {
           heading: "5. Quyền của bạn",
           paragraphs: [
-            "Bạn có thể yêu cầu xem, chỉnh sửa hoặc xóa dữ liệu cá nhân của mình bằng cách gửi email tới bonboconrestaurant@gmail.com. Chúng tôi sẽ phản hồi trong thời gian hợp lý.",
+            "Bạn có thể yêu cầu xem, chỉnh sửa hoặc xóa dữ liệu cá nhân của mình bằng cách nhắn tin cho fanpage Facebook của Chef Lan (facebook.com/Chefphuonglandoan). Chúng tôi sẽ phản hồi trong thời gian hợp lý.",
           ],
         },
       ],
@@ -132,7 +132,7 @@ export const legal: Record<Locale, Record<LegalDoc, LegalContent>> = {
         {
           heading: "3. Cách yêu cầu",
           paragraphs: [
-            "Gửi email tới bonboconrestaurant@gmail.com hoặc gọi 0932 046 296, kèm email tài khoản, mã đơn hàng và thông tin thanh toán. Chúng tôi phản hồi trong vòng 3 ngày làm việc.",
+            "Nhắn tin cho fanpage Facebook của Chef Lan (facebook.com/Chefphuonglandoan) hoặc gọi 0932 046 296, kèm email tài khoản, mã đơn hàng và thông tin thanh toán. Chúng tôi phản hồi trong vòng 3 ngày làm việc.",
             "Khoản hoàn tiền được chuyển về phương thức bạn đã dùng để thanh toán trong vòng 14 ngày kể từ khi yêu cầu được chấp nhận.",
           ],
         },
@@ -184,7 +184,7 @@ export const legal: Record<Locale, Record<LegalDoc, LegalContent>> = {
           heading: "6. Changes and contact",
           paragraphs: [
             "We may update these terms; the new version applies once posted on this page.",
-            "Questions: bonboconrestaurant@gmail.com or 0932 046 296.",
+            "Questions: message Chef Lan's Facebook page (facebook.com/Chefphuonglandoan) or call 0932 046 296.",
           ],
         },
       ],
@@ -225,7 +225,7 @@ export const legal: Record<Locale, Record<LegalDoc, LegalContent>> = {
         {
           heading: "5. Your rights",
           paragraphs: [
-            "You can ask to see, correct or delete your personal data by emailing bonboconrestaurant@gmail.com. We will reply within a reasonable time.",
+            "You can ask to see, correct or delete your personal data by messaging Chef Lan's Facebook page (facebook.com/Chefphuonglandoan). We will reply within a reasonable time.",
           ],
         },
       ],
@@ -250,7 +250,7 @@ export const legal: Record<Locale, Record<LegalDoc, LegalContent>> = {
         {
           heading: "3. How to ask",
           paragraphs: [
-            "Email bonboconrestaurant@gmail.com or call 0932 046 296 with your account email, order code and payment details. We reply within 3 working days.",
+            "Message Chef Lan's Facebook page (facebook.com/Chefphuonglandoan) or call 0932 046 296 with your account email, order code and payment details. We reply within 3 working days.",
             "Approved refunds go back to the payment method you used within 14 days.",
           ],
         },

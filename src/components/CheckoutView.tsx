@@ -208,9 +208,9 @@ export function CheckoutView({ code, lang, dict }: { code: string; lang: Locale;
               </li>
             ))}
             {contact.social
-              .filter((item) => item.label === "Facebook")
+              .filter((item) => "chef" in item)
               .map((item) => (
-                <li key={item.label}>
+                <li key={item.href}>
                   <a href={item.href} target="_blank" rel="noopener noreferrer" className="font-semibold underline underline-offset-4">
                     {item.label} {item.handle}
                   </a>

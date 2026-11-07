@@ -14,7 +14,9 @@ export function Footer({ lang, dict }: { lang: Locale; dict: Dictionary }) {
           <h2 className="font-display text-xl">{dict.footer.contact}</h2>
           <ul className="mt-4 grid gap-x-10 gap-y-2 text-beige/85 sm:grid-cols-2">
             <li>{dict.footer.hours}</li>
-            <li>{dict.footer.address}</li>
+            {contact.addresses.map((address) => (
+              <li key={address}>{address}</li>
+            ))}
             {contact.phones.map((phone) => (
               <li key={phone.number}>
                 <a href={telHref(phone.number)} className="hover:text-beige hover:underline">
@@ -23,13 +25,8 @@ export function Footer({ lang, dict }: { lang: Locale; dict: Dictionary }) {
                 <span className="text-beige/55">({phone.label})</span>
               </li>
             ))}
-            <li>
-              <a href={`mailto:${contact.email}`} className="hover:text-beige hover:underline">
-                {contact.email}
-              </a>
-            </li>
             {contact.social.map((item) => (
-              <li key={item.label}>
+              <li key={item.href}>
                 <a href={item.href} target="_blank" rel="noopener noreferrer" className="hover:text-beige hover:underline">
                   {item.label} {item.handle}
                 </a>

@@ -21,3 +21,11 @@ shared modules. `GET /api/v1/shared-modules` takes the same parameters and retur
 `pnpm eslint src tests`, `pnpm typecheck`, `pnpm build` (without the API) and `pnpm test:e2e` all pass. In the browser against the local
 API: a shared module is absent from hero, category sections and the default /courses; it shows in the last home section; "Xem tất cả"
 opens the filtered list; search works inside the filter; paging keeps the filter; its detail page opens; 375 px holds.
+
+## Implementation notes
+
+- Done. `pnpm eslint src tests`, `pnpm typecheck`, `pnpm build` (API stopped) and `pnpm test:e2e` (58 tests) pass.
+- `CategorySection` now takes `id`, `title`, `href` and `linkLabel` instead of a `Category`, so the home page reuses it for "Học phần chung" (`#shared-modules`, 6 newest, link to `/courses?type=shared`). The section renders nothing when the list is empty or the API fails.
+- `/courses`: the "Loại" select is `type` (`""` = courses, `shared`); any other value is ignored. The header says "Đang xem: học phần chung" in the shared view. The filter grid gained a fifth column on large screens.
+- `searchCourses({ shared: true })` calls `/api/v1/shared-modules`; the sitemap lists both endpoints, each in its own try/catch.
+- Verified against the local API in the browser: hidden from the hero, category sections and the default list; shown in the last home section; "Xem tất cả" opens the filtered list; search works inside it; detail page opens; 375 px has no horizontal scroll. A customer owning a flagged course still gets it from `/api/v1/me/courses`. Paging keeping `type` was not exercised live (fewer than 12 shared modules exist); it is the same `hrefFor` line as the other filters.

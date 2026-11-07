@@ -58,6 +58,7 @@ const listItem = {
   id: 1, slug: "macaron", title: "Macaron", subtitle: "Italian meringue macarons", level: "Beginner", priceVnd: 1000000,
   compareAtPriceVnd: 1200000, priceDisplay: "1.000.000 ₫", lessonCount: 2, totalDurationSeconds: 1200, categories: [category],
 };
+const sharedItem = { ...listItem, id: 2, slug: "sauce-base", title: "Sauce base", subtitle: "A module shared by several courses", lessonCount: 1 };
 const detail = { ...listItem, images: [], includedCourses: [], includedIn: [], totalLessonCount: 2, totalDurationSecondsWithIncluded: 1200, lessons, metaDescription: "Learn to make macarons." };
 
 const json = (res, status, body) => {
@@ -168,6 +169,12 @@ const server = createServer((req, res) => {
     if (path === "/api/v1/courses") {
       const q = (url.searchParams.get("q") ?? "").toLowerCase();
       const items = q && !"macaron".includes(q) ? [] : [listItem];
+      return json(res, 200, { items, page: 1, pageSize: 100, totalCount: items.length, totalPages: 1, hasPrevious: false, hasNext: false });
+    }
+
+    if (path === "/api/v1/shared-modules") {
+      const q = (url.searchParams.get("q") ?? "").toLowerCase();
+      const items = q && !"sauce base".includes(q) ? [] : [sharedItem];
       return json(res, 200, { items, page: 1, pageSize: 100, totalCount: items.length, totalPages: 1, hasPrevious: false, hasNext: false });
     }
 

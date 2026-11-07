@@ -2,8 +2,9 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { CategorySection } from "@/features/landing/CategorySection";
 import { HeroSlider } from "@/features/landing/HeroSlider";
+import { localePath } from "@/i18n/config";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
-import { listCategories, listLandingCourses } from "@/lib/api/catalog";
+import { listCategories, listLandingCourses, listLandingSharedModules } from "@/lib/api/catalog";
 
 export default function HomePage() {
   return (
@@ -17,6 +18,10 @@ export default function HomePage() {
           <Categories />
         </Suspense>
       </div>
+
+      <Suspense fallback={null}>
+        <SharedModules />
+      </Suspense>
     </>
   );
 }
@@ -66,6 +71,44 @@ async function Categories() {
   return sections
     .filter((section) => section.courses.length > 0)
     .map(({ category, courses }) => (
-      <CategorySection key={category.id} category={category} courses={courses} lang={lang} dict={dict} />
+      <CategorySection
+        key={category.id}
+        id={`category-${category.slug}`}
+        title={category.name}
+        href={`${localePath(lang, "/courses")}?category=${encodeURIComponent(category.slug)}`}
+        linkLabel={dict.landing.showMore}
+        courses={courses}
+        lang={lang}
+        dict={dict}
+      />
     ));
+}
+
+async function SharedModules() {
+  await connection();
+  const [lang, dict] = await Promise.all([getLocale(), getDictionary()]);
+
+  let items;
+
+  try {
+    ({ items } = await listLandingSharedModules(6));
+  } catch {
+    return null;
+  }
+
+  if (items.length === 0) {
+    return null;
+  }
+
+  return (
+    <CategorySection
+      id="shared-modules"
+      title={dict.landing.sharedModules}
+      href={`${localePath(lang, "/courses")}?type=shared`}
+      linkLabel={dict.landing.sharedModulesAll}
+      courses={items}
+      lang={lang}
+      dict={dict}
+    />
+  );
 }

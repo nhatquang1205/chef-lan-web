@@ -27,5 +27,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // API down: the static pages are still worth listing.
   }
 
+  try {
+    // Shared modules are off the course list but their pages stay public.
+    courses = [...courses, ...(await apiFetch<Paged<CourseListItem>>("/api/v1/shared-modules?pageSize=100")).items];
+  } catch {
+    // Same: one failing list must not drop the other.
+  }
+
   return [...staticPaths.map((path) => entry(path)), ...courses.map((course) => entry(`/courses/${course.slug}`, course.publishedAt ?? undefined))];
 }

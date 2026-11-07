@@ -46,6 +46,8 @@
     "goTo": "Go to slide"
   },
   "landing": {
+    "sharedModules": "Shared modules",
+    "sharedModulesAll": "See all",
     "showMore": "Show more",
     "noCoursesYet": "No courses yet.",
     "prev": "Previous",
@@ -57,6 +59,10 @@
     "search": "Search courses",
     "searchPlaceholder": "Course name…",
     "category": "Category",
+    "type": "Type",
+    "typeCourses": "Courses",
+    "typeShared": "Shared modules",
+    "sharedHeader": "Showing: shared modules",
     "allCategories": "All categories",
     "sort": "Sort by",
     "sortNewest": "Newest",

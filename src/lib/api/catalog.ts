@@ -31,6 +31,17 @@ export async function listLandingCourses(categorySlug?: string, pageSize = 5): P
   return (await apiFetch<Paged<CourseListItem>>(`/api/v1/courses?${params}`)).items;
 }
 
+/** The newest shared modules for the home page; `totalCount` lets the caller hide the section when empty. */
+export async function listLandingSharedModules(pageSize = 6): Promise<{ items: CourseListItem[]; totalCount: number }> {
+  "use cache";
+  cacheLife(landingLife);
+  cacheTag("catalog");
+
+  const { items, totalCount } = await apiFetch<Paged<CourseListItem>>(`/api/v1/shared-modules?${new URLSearchParams({ pageSize: String(pageSize) })}`);
+
+  return { items, totalCount };
+}
+
 export interface CourseSearch {
   q?: string;
   categorySlug?: string;
@@ -38,19 +49,23 @@ export interface CourseSearch {
   sort?: CourseSort;
   page?: number;
   pageSize?: number;
+  /** Search shared modules (their own endpoint) instead of regular courses. */
+  shared?: boolean;
 }
 
 /** Not cached: `q` is free text, so caching it would let anyone grow the cache without bound. */
 export function searchCourses(search: CourseSearch): Promise<Paged<CourseListItem>> {
   const params = new URLSearchParams();
 
-  for (const [key, value] of Object.entries(search)) {
+  const { shared, ...rest } = search;
+
+  for (const [key, value] of Object.entries(rest)) {
     if (value !== undefined && value !== "") {
       params.set(key, String(value));
     }
   }
 
-  return apiFetch<Paged<CourseListItem>>(`/api/v1/courses?${params}`);
+  return apiFetch<Paged<CourseListItem>>(`${shared ? "/api/v1/shared-modules" : "/api/v1/courses"}?${params}`);
 }
 
 /** Null when the course does not exist (or is a draft — the API answers 404 for both). */

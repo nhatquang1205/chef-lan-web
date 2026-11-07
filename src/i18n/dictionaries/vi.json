@@ -47,6 +47,8 @@
   },
   "landing": {
     "showMore": "Xem thêm",
+    "sharedModules": "Học phần chung",
+    "sharedModulesAll": "Xem tất cả",
     "noCoursesYet": "Chưa có khóa học nào.",
     "prev": "Trước",
     "next": "Sau"
@@ -58,6 +60,10 @@
     "searchPlaceholder": "Tên khóa học…",
     "category": "Danh mục",
     "allCategories": "Tất cả danh mục",
+    "type": "Loại",
+    "typeCourses": "Khóa học",
+    "typeShared": "Học phần chung",
+    "sharedHeader": "Đang xem: học phần chung",
     "sort": "Sắp xếp",
     "sortNewest": "Mới nhất",
     "sortPriceAsc": "Giá tăng dần",

@@ -40,3 +40,38 @@ test.describe("course page", () => {
     await expect(page.getByRole("combobox", { name: dict.courses.sort })).toContainText(dict.courses.sortPriceAsc);
   });
 });
+
+test.describe("shared modules", () => {
+  test("home lists them in the last section, linking to the filtered list", async ({ page }) => {
+    await page.goto("/");
+    const section = page.locator("#shared-modules");
+    await expect(section.getByRole("heading", { name: dict.landing.sharedModules })).toBeVisible();
+    await expect(section.getByText("Sauce base").first()).toBeVisible();
+    await section.getByRole("link", { name: dict.landing.sharedModulesAll }).click();
+    await expect(page).toHaveURL(/\/courses\?type=shared/);
+    await expect(page.getByText(dict.courses.sharedHeader)).toBeVisible();
+  });
+
+  test("the default list has no shared module; the filter shows it and combines with search", async ({ page }) => {
+    await page.goto("/courses");
+    await expect(page.getByRole("link", { name: /Macaron/ }).first()).toBeVisible();
+    await expect(page.getByText("Sauce base")).toHaveCount(0);
+
+    await page.goto("/courses?type=shared");
+    await expect(page.getByText("Sauce base").first()).toBeVisible();
+    await expect(page.getByText("Macaron")).toHaveCount(0);
+    await expect(page.getByRole("combobox", { name: dict.courses.type })).toContainText(dict.courses.typeShared);
+    await expect(page.getByRole("link", { name: dict.courses.clear }).first()).toBeVisible();
+
+    await page.goto("/courses?type=shared&q=zzz");
+    await expect(page.getByText(dict.courses.empty)).toBeVisible();
+    await page.goto("/courses?type=shared&q=sauce");
+    await expect(page.getByText("Sauce base").first()).toBeVisible();
+  });
+
+  test("an unknown type value is ignored", async ({ page }) => {
+    await page.goto("/courses?type=whatever");
+    await expect(page.getByText("Sauce base")).toHaveCount(0);
+    await expect(page.getByText(dict.courses.sharedHeader)).toHaveCount(0);
+  });
+});

@@ -35,22 +35,24 @@ async function Content({ searchParams }: { searchParams: SearchParams }) {
   const category = first(raw.category).slice(0, 140);
   const sortRaw = first(raw.sort);
   const sort = sorts.find((s) => s === sortRaw) ?? "Newest";
+  const shared = first(raw.type) === "shared";
   const page = Math.max(1, Number.parseInt(first(raw.page), 10) || 1);
 
   const [categoriesResult, resultsResult] = await Promise.allSettled([
     listCategories(),
-    searchCourses({ q, categorySlug: category, sort, page, pageSize: PAGE_SIZE }),
+    searchCourses({ q, categorySlug: category, sort, page, pageSize: PAGE_SIZE, shared }),
   ]);
 
   const categories = categoriesResult.status === "fulfilled" ? categoriesResult.value : [];
   const activeCategory = categories.find((c) => c.slug === category);
-  const filtered = Boolean(q || category || sort !== "Newest");
+  const filtered = Boolean(q || category || shared || sort !== "Newest");
 
   const hrefFor = (target: number) => {
     const params = new URLSearchParams();
 
     if (q) params.set("q", q);
     if (category) params.set("category", category);
+    if (shared) params.set("type", "shared");
     if (sort !== "Newest") params.set("sort", sort);
     if (target > 1) params.set("page", String(target));
 
@@ -65,13 +67,14 @@ async function Content({ searchParams }: { searchParams: SearchParams }) {
     <>
       <header className="mb-8">
         <h1 className="font-display text-4xl sm:text-5xl">{dict.courses.title}</h1>
+        {shared && <p className="mt-2 text-beige/75">{dict.courses.sharedHeader}</p>}
         {activeCategory && (
           <p className="mt-2 text-beige/75">{template(dict.courses.inCategory, { name: activeCategory.name })}</p>
         )}
       </header>
 
       {/* A plain GET form: works without JavaScript, and every filter lives in the URL. */}
-      <form method="get" action={basePath} role="search" aria-label={dict.courses.search} className="mb-8 grid gap-4 rounded-lg border border-beige/15 bg-olive-raised p-4 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_auto] lg:items-end">
+      <form method="get" action={basePath} role="search" aria-label={dict.courses.search} className="mb-8 grid gap-4 rounded-lg border border-beige/15 bg-olive-raised p-4 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr_auto] lg:items-end">
         <div>
           <label htmlFor="q" className={label}>{dict.courses.search}</label>
           <input id="q" name="q" type="search" defaultValue={q} maxLength={100} placeholder={dict.courses.searchPlaceholder} className={field} />
@@ -83,6 +86,18 @@ async function Content({ searchParams }: { searchParams: SearchParams }) {
             name="category"
             defaultValue={category}
             options={[{ value: "", label: dict.courses.allCategories }, ...categories.map((c) => ({ value: c.slug, label: c.name }))]}
+          />
+        </div>
+        <div>
+          <label htmlFor="type" className={label}>{dict.courses.type}</label>
+          <Select
+            id="type"
+            name="type"
+            defaultValue={shared ? "shared" : ""}
+            options={[
+              { value: "", label: dict.courses.typeCourses },
+              { value: "shared", label: dict.courses.typeShared },
+            ]}
           />
         </div>
         <div>

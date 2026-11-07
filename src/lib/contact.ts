@@ -13,7 +13,7 @@ export const contact = {
   ],
 };
 
-export const CONTACT_PHONE = contact.phones[0].number;
+export const CONTACT_PHONE = contact.phones.find((phone) => phone.label === "Hotline")!.number;
 
 export function telHref(number: string): string {
   return `tel:${number.replaceAll(" ", "")}`;

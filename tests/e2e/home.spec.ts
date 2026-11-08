@@ -8,7 +8,8 @@ test.describe("personalised home page", () => {
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 3, name: "Macaron" })).toBeVisible();
     await expect(page.getByRole("heading", { level: 3, name: "Sauce base" })).toBeVisible();
-    await expect(page.locator("s")).toHaveCount(2); // the compare-at price of the two cards
+    await expect(page.locator("s")).toHaveCount(3); // the compare-at price of the hero and the two priced cards
+    await expect(page.getByText(dict.card.owned)).toHaveCount(0);
     await expect(page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: dict.nav.myCourses })).toHaveCount(0);
   });
 
@@ -20,17 +21,30 @@ test.describe("personalised home page", () => {
     await expect(card).not.toContainText(`2 ${dict.card.lessons}`);
   });
 
-  test("an owner no longer sees the course she owns, and sees the reduced price", async ({ page }) => {
+  test("an owner still sees the course she owns, labelled owned and without a price", async ({ page }) => {
     await login(page, "owner@test.dev");
     await page.goto("/");
-    await expect(page.getByRole("heading", { level: 3, name: "Sauce base" })).toBeVisible();
-    await expect(page.getByRole("heading", { level: 3, name: "Macaron" })).toHaveCount(0);
-    // The category and the hero held only the owned course, so they are gone entirely.
-    await expect(page.locator("#category-pastry")).toHaveCount(0);
+
+    const owned = page.getByRole("link", { name: /Macaron/ }).filter({ hasText: dict.card.owned });
+    await expect(owned.first()).toBeVisible();
+    await expect(owned.first()).not.toContainText("1.000.000");
+    await expect(owned.first().locator("s")).toHaveCount(0);
+    await expect(page.locator("#category-pastry").getByText(dict.card.owned)).toHaveCount(1);
 
     const card = page.getByRole("link", { name: /Sauce base/ });
     await expect(card.getByText("800.000 ₫")).toBeVisible();
     await expect(card.locator("s")).toHaveText("1.000.000 ₫");
+  });
+
+  test("the course list labels the owned course and shows the reduced price too", async ({ page }) => {
+    await login(page, "owner@test.dev");
+    await page.goto("/courses");
+    const card = page.getByRole("link", { name: /Macaron/ }).first();
+    await expect(card).toContainText(dict.card.owned);
+    await expect(card).not.toContainText("1.000.000");
+
+    await page.goto("/courses?type=shared");
+    await expect(page.getByRole("link", { name: /Sauce base/ }).getByText("800.000 ₫")).toBeVisible();
   });
 
   test("a visitor who owns nothing sees the full list and the reduced price", async ({ page }) => {
@@ -81,6 +95,18 @@ test.describe("personalised home page", () => {
     await link.click();
     await expect(page).toHaveURL(/\/account\/courses$/);
     await expect(link).toHaveAttribute("aria-current", "page");
+  });
+
+  test("a free course reads Miễn phí on its card and on its page, never 0 ₫", async ({ page }) => {
+    await page.goto("/");
+    const card = page.getByRole("link", { name: /Free class/ }).first();
+    await expect(card).toContainText(dict.common.free);
+    await expect(card).not.toContainText("0 ₫");
+
+    await page.goto("/courses/free-class");
+    await expect(page.getByRole("heading", { level: 1, name: "Free class" })).toBeVisible();
+    await expect(page.getByText(dict.common.free).first()).toBeVisible();
+    await expect(page.getByText("0 ₫")).toHaveCount(0);
   });
 
   test("an admin sees every course and no My courses item", async ({ page }) => {

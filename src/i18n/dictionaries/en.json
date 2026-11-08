@@ -36,6 +36,7 @@
     "minutes": "min"
   },
   "card": {
+    "owned": "Owned",
     "lessons": "lessons",
     "lifetime": "Lifetime access"
   },

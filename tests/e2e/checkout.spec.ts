@@ -149,4 +149,22 @@ test.describe("checkout", () => {
     await page.getByRole("button", { name: dict.account.menuLabel }).first().click();
     await expect(page.getByRole("menuitem", { name: dict.nav.orders })).toBeVisible();
   });
+
+  test("a free course: Buy now then contacting chef Lan lands on a Paid order, and the lists call it owned at once", async ({ page }) => {
+    await login(page, "buyer10@test.dev");
+    await page.goto("/courses/free-class");
+    await expect(page.getByText(dict.common.free).first()).toBeVisible();
+
+    await page.getByRole("button", { name: dict.checkout.buyNow }).click();
+    await page.getByRole("button", { name: dict.checkout.optionContactTitle }).click();
+    await expect(page).toHaveURL(/\/checkout\/BBTEST\d+$/);
+    await expect(page.getByRole("heading", { name: dict.checkout.paidTitle })).toBeVisible();
+    await expect(page.getByRole("link", { name: dict.checkout.startLearning })).toBeVisible();
+
+    // Client navigation keeps the pages alive; the catalog state was refreshed, not left to age.
+    await page.goto("/");
+    const card = page.getByRole("link", { name: /Free class/ }).first();
+    await expect(card).toContainText(dict.card.owned);
+    await expect(card).not.toContainText(dict.common.free);
+  });
 });

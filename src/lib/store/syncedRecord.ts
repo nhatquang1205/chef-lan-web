@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { readRecord, writeRecord, type StoreData, type StoreName } from "./db";
 
 interface SyncedRecordOptions<S extends StoreName> {
@@ -12,16 +12,23 @@ interface SyncedRecordOptions<S extends StoreName> {
   fetch: () => Promise<StoreData[S] | null>;
 }
 
+interface SyncedRecord<S extends StoreName> {
+  data: StoreData[S] | null;
+  /** Fetches now, whatever the age of the stored copy. Does nothing for nobody (not a customer, or session loading). */
+  refresh(): void;
+}
+
 /**
  * The stored copy for the signed-in customer, shown at once and refreshed from the API when it is missing or
  * `maxAgeMs` old: on load, on a timer, and when the tab becomes visible again. A fetch right after login (or an
  * account switch) is forced. A failed fetch keeps the stored copy and waits for the next trigger.
  */
-export function useSyncedRecord<S extends StoreName>({ store, userId, maxAgeMs, fetch }: SyncedRecordOptions<S>): StoreData[S] | null {
+export function useSyncedRecord<S extends StoreName>({ store, userId, maxAgeMs, fetch }: SyncedRecordOptions<S>): SyncedRecord<S> {
   const [state, setState] = useState<{ userId: number; data: StoreData[S] } | null>(null);
   const fetchRef = useRef(fetch);
   const previousUser = useRef<number | null | undefined>(undefined);
   const forcePending = useRef(false);
+  const refreshRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     fetchRef.current = fetch;
@@ -46,6 +53,7 @@ export function useSyncedRecord<S extends StoreName>({ store, userId, maxAgeMs, 
 
     let cancelled = false;
     let inFlight = false;
+    let again = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
 
     const schedule = (delay: number) => {
@@ -72,6 +80,8 @@ export function useSyncedRecord<S extends StoreName>({ store, userId, maxAgeMs, 
       }
 
       if (inFlight) {
+        // The running fetch may have been answered before the change that caused this one.
+        again ||= forcePending.current;
         return;
       }
 
@@ -95,6 +105,11 @@ export function useSyncedRecord<S extends StoreName>({ store, userId, maxAgeMs, 
         // Keep the stored copy; the next trigger tries again.
       } finally {
         inFlight = false;
+
+        if (again && !cancelled) {
+          again = false;
+          void load();
+        }
       }
     }
 
@@ -104,15 +119,23 @@ export function useSyncedRecord<S extends StoreName>({ store, userId, maxAgeMs, 
       }
     };
 
+    refreshRef.current = () => {
+      forcePending.current = true;
+      void load();
+    };
+
     document.addEventListener("visibilitychange", onVisible);
     void load();
 
     return () => {
       cancelled = true;
+      refreshRef.current = null;
       clearTimeout(timer);
       document.removeEventListener("visibilitychange", onVisible);
     };
   }, [store, userId, maxAgeMs]);
 
-  return state && state.userId === userId ? state.data : null;
+  const refresh = useCallback(() => refreshRef.current?.(), []);
+
+  return { data: state && state.userId === userId ? state.data : null, refresh };
 }

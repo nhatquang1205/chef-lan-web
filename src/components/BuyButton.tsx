@@ -6,6 +6,7 @@ import { ApiError } from "@/lib/api/client";
 import { createOrder, isCheckoutEnabled } from "@/lib/api/orders";
 import type { OrderPaymentMethod, OrderTarget } from "@/lib/api/types";
 import { useAuth } from "@/lib/auth/AuthProvider";
+import { useCatalogState } from "@/lib/catalogState/CatalogStateProvider";
 import { localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 
@@ -47,6 +48,7 @@ export function BuyButton({
 }) {
   const auth = useAuth();
   const router = useRouter();
+  const { refresh } = useCatalogState();
   const transferEnabled = useCheckoutEnabled() === true;
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [busy, setBusy] = useState<OrderPaymentMethod | null>(null);
@@ -82,6 +84,12 @@ export function BuyButton({
       // Closed by hand: React Activity keeps this page mounted after navigating, and a modal left open makes the next page inert.
       dialogRef.current?.close();
       setBusy(null);
+
+      // A free course is Paid at once: the home page and the lists should say "owned" without waiting.
+      if (order.status === "Paid") {
+        refresh();
+      }
+
       router.push(localePath(lang, `/checkout/${order.code}`));
     } catch (failure) {
       setBusy(null);

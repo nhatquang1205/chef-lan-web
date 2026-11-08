@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ApiError } from "@/lib/api/client";
 import { cancelOrder, getOrder } from "@/lib/api/orders";
 import type { Order } from "@/lib/api/types";
+import { useCatalogState } from "@/lib/catalogState/CatalogStateProvider";
 import { useRequireAuth } from "@/lib/auth/useRequireAuth";
 import { localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
@@ -27,6 +28,8 @@ const FAST_WINDOW_MS = 120_000;
 export function CheckoutView({ code, lang, dict }: { code: string; lang: Locale; dict: Dictionary }) {
   const auth = useRequireAuth(lang);
   const router = useRouter();
+  const { refresh } = useCatalogState();
+  const refreshRef = useRef(refresh);
   const [state, setState] = useState<State>({ kind: "loading" });
   const [retrying, setRetrying] = useState(false);
   const [now, setNow] = useState(0);
@@ -36,11 +39,16 @@ export function CheckoutView({ code, lang, dict }: { code: string; lang: Locale;
   const pending = order?.status === "Pending";
 
   useEffect(() => {
+    refreshRef.current = refresh;
+  });
+
+  useEffect(() => {
     if (auth.status !== "authenticated") {
       return;
     }
 
     let cancelled = false;
+    let sawPending = false;
     let timer: number | undefined;
     const startedAt = Date.now();
 
@@ -65,7 +73,14 @@ export function CheckoutView({ code, lang, dict }: { code: string; lang: Locale;
         setState({ kind: "ok", order: next });
         setRetrying(false);
 
-        if (next.status !== "Pending") {
+        if (next.status === "Pending") {
+          sawPending = true;
+        } else {
+          // Approved while the customer watched: the catalog should now call the course owned.
+          if (sawPending && next.status === "Paid") {
+            refreshRef.current();
+          }
+
           return;
         }
       } catch (error) {

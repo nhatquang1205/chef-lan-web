@@ -151,12 +151,16 @@ async function Content({ params }: { params: PageProps<"/[lang]/courses/[slug]">
                 <p className="text-xs uppercase tracking-widest text-beige/55">{dict.course.price}</p>
                 {/* The regular price, replaced by the discounted one for a signed-in customer who qualifies. */}
                 <DiscountQuote dict={dict}>
-                  <p className="flex items-baseline gap-3">
-                    <span className="text-3xl font-semibold">{course.priceDisplay}</span>
-                    {course.compareAtPriceVnd != null && course.compareAtPriceVnd > course.priceVnd && (
-                      <s className="text-beige/50">{formatVnd(course.compareAtPriceVnd)}</s>
-                    )}
-                  </p>
+                  {course.priceVnd === 0 ? (
+                    <p className="text-3xl font-semibold">{dict.common.free}</p>
+                  ) : (
+                    <p className="flex items-baseline gap-3">
+                      <span className="text-3xl font-semibold">{course.priceDisplay}</span>
+                      {course.compareAtPriceVnd != null && course.compareAtPriceVnd > course.priceVnd && (
+                        <s className="text-beige/50">{formatVnd(course.compareAtPriceVnd)}</s>
+                      )}
+                    </p>
+                  )}
                 </DiscountQuote>
               </div>
               <BuyNote dict={dict} lang={lang} slug={course.slug} returnTo={localePath(lang, `/courses/${course.slug}`)} />

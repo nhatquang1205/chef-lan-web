@@ -10,19 +10,34 @@ const users = {
   "catalog@test.dev": { token: "tok-catalog", actor: "Customer", id: 50, name: "Catalog Test" },
   "admin@test.dev": { token: "tok-admin", actor: "Staff", id: 9, name: "Admin Test" },
 };
-for (let n = 1; n <= 9; n++) {
+for (let n = 1; n <= 10; n++) {
   // One buyer per checkout test: a paid order makes its buyer an owner, and tests run in parallel.
   users[`buyer${n}@test.dev`] = { token: `tok-buyer${n}`, actor: "Customer", id: 30 + n, name: `Buyer ${n}` };
 }
 const PASSWORD = "Passw0rd!";
 
 const ownedBy = new Set([1]);
+const freeOwnedBy = new Set();
 const orders = new Map();
 let orderCounter = 0;
 const catalogStateRequests = new Map();
 const QR_PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", "base64");
 
-const orderBody = (order) => ({
+const orderBody = (order) => (order.free ? freeOrderBody(order) : macaronOrderBody(order));
+
+const freeOrderBody = (order) => ({
+  code: order.code,
+  status: order.status,
+  paymentMethod: order.method,
+  amountVnd: 0,
+  createdAt: order.createdAt,
+  expiresAt: order.expiresAt,
+  paidAt: order.createdAt,
+  items: [{ kind: "Course", title: "Free class", courseSlug: "free-class", listPriceVnd: 0, discountVnd: 0, unitPriceVnd: 0 }],
+  payment: null,
+});
+
+const macaronOrderBody = (order) => ({
   code: order.code,
   status: order.status,
   paymentMethod: order.method,
@@ -61,8 +76,14 @@ const listItem = {
   compareAtPriceVnd: 1200000, priceDisplay: "1.000.000 ₫", lessonCount: 2, totalDurationSeconds: 1200,
   totalLessonCount: 5, totalDurationSecondsWithIncluded: 4800, categories: [category],
 };
+const freeItem = {
+  ...listItem, id: 3, slug: "free-class", title: "Free class", subtitle: "A course at no cost", priceVnd: 0, compareAtPriceVnd: null,
+  priceDisplay: "0 ₫", lessonCount: 1, totalLessonCount: 1, totalDurationSecondsWithIncluded: 600, totalDurationSeconds: 600,
+};
 const sharedItem = { ...listItem, id: 2, slug: "sauce-base", title: "Sauce base", subtitle: "A module shared by several courses", lessonCount: 1 };
 const detail = { ...listItem, images: [], includedCourses: [], includedIn: [], totalLessonCount: 2, totalDurationSecondsWithIncluded: 1200, lessons, metaDescription: "Learn to make macarons." };
+
+const freeDetail = { ...freeItem, images: [], includedCourses: [], includedIn: [], lessons: [], metaDescription: "A free course." };
 
 const json = (res, status, body) => {
   res.writeHead(status, { "Content-Type": "application/json" });
@@ -133,6 +154,17 @@ const server = createServer((req, res) => {
       if (!user) return json(res, 401, {});
       if (user.actor !== "Customer") return json(res, 403, {});
       if (isOwner) return json(res, 409, { status: 409, code: "order.already_owned" });
+      const { courseSlug, method } = JSON.parse(body || "{}");
+      if (courseSlug === "free-class") {
+        if (freeOwnedBy.has(user.id)) return json(res, 409, { status: 409, code: "order.already_owned" });
+        const order = {
+          code: `BBTEST${String(++orderCounter).padStart(2, "0")}`, customerId: user.id, status: "Paid", free: true, method: method ?? "ContactChef",
+          createdAt: new Date().toISOString(), expiresAt: new Date(Date.now() + 3_600_000).toISOString(),
+        };
+        orders.set(order.code, order);
+        freeOwnedBy.add(user.id);
+        return json(res, 201, orderBody(order));
+      }
       const existing = [...orders.values()].find((o) => o.customerId === user.id && o.status === "Pending");
       if (existing) return json(res, 200, orderBody(existing));
       const order = {
@@ -171,7 +203,7 @@ const server = createServer((req, res) => {
 
     if (path === "/api/v1/courses") {
       const q = (url.searchParams.get("q") ?? "").toLowerCase();
-      const items = q && !"macaron".includes(q) ? [] : [listItem];
+      const items = [listItem, freeItem].filter((c) => !q || c.slug.includes(q) || c.title.toLowerCase().includes(q));
       return json(res, 200, { items, page: 1, pageSize: 100, totalCount: items.length, totalPages: 1, hasPrevious: false, hasNext: false });
     }
 
@@ -182,6 +214,11 @@ const server = createServer((req, res) => {
     }
 
     if (path === "/api/v1/courses/macaron") return json(res, 200, detail);
+    if (path === "/api/v1/courses/free-class") return json(res, 200, freeDetail);
+    if (path === "/api/v1/courses/free-class/access") {
+      if (!user || user.actor !== "Customer") return json(res, 401, {});
+      return json(res, 200, { hasCourseAccess: freeOwnedBy.has(user.id), lessonIds: [] });
+    }
     if (path.startsWith("/api/v1/courses/") && !path.includes("/", 16)) return json(res, 404, { status: 404, title: "Not found" });
 
     if (path === "/api/v1/courses/macaron/access") {
@@ -225,7 +262,7 @@ const server = createServer((req, res) => {
       if (!user || user.actor !== "Customer") return json(res, 401, {});
       catalogStateRequests.set(user.id, (catalogStateRequests.get(user.id) ?? 0) + 1);
       return json(res, 200, {
-        ownedCourseIds: isOwner ? [1] : [],
+        ownedCourseIds: [...(isOwner ? [1] : []), ...(freeOwnedBy.has(user.id) ? [3] : [])],
         prices: [{ courseId: 2, listPriceVnd: 1000000, finalPriceVnd: 800000 }],
       });
     }

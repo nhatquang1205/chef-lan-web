@@ -8,13 +8,16 @@ import { useSyncedRecord } from "@/lib/store/syncedRecord";
 const MAX_AGE_MS = 30 * 60_000;
 
 interface CatalogStateValue {
-  /** The signed-in customer owns this course whole (so the home page hides it). False for everyone else. */
+  /** The signed-in customer owns this course whole (cards show "owned" instead of a price). False for everyone else. */
   isOwned(courseId: number): boolean;
   /** The price this customer pays when it is below the list price; undefined otherwise. */
   finalPriceOf(courseId: number): number | undefined;
+  /** Fetches the state now (after a purchase), instead of waiting for the stored copy to age. No-op for anyone but a customer. */
+  refresh(): void;
 }
 
-const empty: CatalogStateValue = { isOwned: () => false, finalPriceOf: () => undefined };
+const noop = () => {};
+const empty: CatalogStateValue = { isOwned: () => false, finalPriceOf: () => undefined, refresh: noop };
 
 const CatalogStateContext = createContext<CatalogStateValue>(empty);
 
@@ -28,11 +31,11 @@ export function CatalogStateProvider({ children }: { children: React.ReactNode }
     return token ? getCatalogState(token) : null;
   }, [getAccessToken]);
 
-  const data = useSyncedRecord({ store: "catalogState", userId, maxAgeMs: MAX_AGE_MS, fetch: fetchState });
+  const { data, refresh } = useSyncedRecord({ store: "catalogState", userId, maxAgeMs: MAX_AGE_MS, fetch: fetchState });
 
   const value = useMemo<CatalogStateValue>(() => {
     if (!data) {
-      return empty;
+      return { ...empty, refresh };
     }
 
     const owned = new Set(data.ownedCourseIds);
@@ -45,8 +48,9 @@ export function CatalogStateProvider({ children }: { children: React.ReactNode }
 
         return price && price.finalPriceVnd < price.listPriceVnd ? price.finalPriceVnd : undefined;
       },
+      refresh,
     };
-  }, [data]);
+  }, [data, refresh]);
 
   return <CatalogStateContext.Provider value={value}>{children}</CatalogStateContext.Provider>;
 }

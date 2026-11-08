@@ -35,12 +35,18 @@ Records are per account (`customerId`). `deleteUserRecords(customerId)` clears e
 - A timer fires at `fetchedAt + maxAgeMs`; when the tab becomes visible the record is re-read (another tab may have refreshed it)
   and fetched if due. Timer and listener are removed on cleanup (pages stay mounted in React Activity).
 - A failed fetch keeps the stored copy; the next trigger tries again.
+- The hook returns `{ data, refresh }`. `refresh()` forces a fetch now, whatever the age of the copy (use it when the customer
+  just did something that changes the data, such as a purchase). If a fetch is already running it is repeated once it ends, since
+  the running one may have been answered before the change. It does nothing for nobody (not a customer, session loading).
 
 ## Catalog state
 
 `CatalogStateProvider` (inside `AuthProvider`) fetches `GET /api/v1/me/catalog-state` every 30 minutes at most and exposes
-`useCatalogState()` -> `{ isOwned(courseId), finalPriceOf(courseId) }` (empty for anyone but a signed-in customer). The home page's
-`HeroSlider` and `CategorySection` hide owned courses and show the reduced price. A course approved by staff may stay on the home page up to 30 minutes.
+`useCatalogState()` -> `{ isOwned(courseId), finalPriceOf(courseId), refresh() }` (empty for anyone but a signed-in customer, and
+until the component has hydrated). `CoursePrice` (used by `CourseCard` and the hero) shows "Đã sở hữu" for an owned course
+(they are labelled, not hidden), "Miễn phí" for a price of 0, and the reduced price with the list price struck. `BuyButton` calls
+`refresh()` when the order it creates is already Paid (free course) and `CheckoutView` when polling sees a Pending order turn Paid,
+so the label appears at once. A course approved by staff elsewhere may stay unlabelled for up to 30 minutes.
 
 ## Adding a feature (bookmarks, history...)
 

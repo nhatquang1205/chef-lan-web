@@ -1,23 +1,21 @@
 import Link from "next/link";
+import { CoursePrice } from "./CoursePrice";
 import { Thumbnail } from "./Thumbnail";
 import { localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
-import { formatDuration, formatVnd } from "@/lib/format";
+import { formatDuration } from "@/lib/format";
 import type { CourseListItem } from "@/lib/api/types";
+import type { PriceDict } from "@/lib/priceDict";
 
 export function CourseCard({
   course,
   lang,
   dict,
-  finalPriceVnd,
 }: {
   course: CourseListItem;
   lang: Locale;
-  dict: Pick<Dictionary, "card" | "duration">;
-  /** What the signed-in customer pays, when it is below the list price (shared modules they own). */
-  finalPriceVnd?: number;
+  dict: Pick<Dictionary, "duration"> & Pick<PriceDict, "common"> & { card: Pick<Dictionary["card"], "lessons" | "owned"> };
 }) {
-  const discounted = finalPriceVnd != null && finalPriceVnd < course.priceVnd;
   const lessonCount = course.totalLessonCount ?? course.lessonCount;
   const durationSeconds = course.totalDurationSecondsWithIncluded ?? course.totalDurationSeconds;
 
@@ -44,15 +42,7 @@ export function CourseCard({
           {durationSeconds > 0 && ` · ${formatDuration(durationSeconds, dict)}`}
         </p>
 
-        <p className="flex items-baseline gap-2">
-          <span className="text-lg font-semibold text-beige">{discounted ? formatVnd(finalPriceVnd) : course.priceDisplay}</span>
-          {discounted ? (
-            <s className="text-sm text-beige/50">{course.priceDisplay}</s>
-          ) : (
-            course.compareAtPriceVnd != null &&
-            course.compareAtPriceVnd > course.priceVnd && <s className="text-sm text-beige/50">{formatVnd(course.compareAtPriceVnd)}</s>
-          )}
-        </p>
+        <CoursePrice course={course} dict={dict} />
       </div>
     </Link>
   );

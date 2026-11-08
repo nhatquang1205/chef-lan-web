@@ -78,7 +78,7 @@ across devices.
 ## Client store and the personalised home page
 
 Owned courses and reduced prices come from `GET /api/v1/me/catalog-state`, kept in IndexedDB and refreshed every 30
-minutes; the home page hides owned courses client-side. See `docs/client-store.md` (also how to add bookmarks or history).
+minutes; owned courses are labelled "Đã sở hữu" (not hidden) and a price of 0 reads "Miễn phí" (`CoursePrice`, plan 07). See `docs/client-store.md` (also how to add bookmarks or history).
 English is hidden for now: `publicLocales` in `src/i18n/config.ts` is `["vi"]`, so no toggle, `/en/**` redirects (307) to the
 Vietnamese path in `next.config.ts` and the sitemap lists `vi` only. Add `"en"` to `publicLocales` to bring it back.
 

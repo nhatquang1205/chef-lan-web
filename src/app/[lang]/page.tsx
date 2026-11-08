@@ -5,6 +5,7 @@ import { HeroSlider } from "@/features/landing/HeroSlider";
 import { localePath } from "@/i18n/config";
 import { getDictionary, getLocale, type Dictionary } from "@/i18n/dictionaries";
 import { listCategories, listLandingCourses, listLandingSharedModules } from "@/lib/api/catalog";
+import { priceDict } from "@/lib/priceDict";
 
 export default function HomePage() {
   return (
@@ -26,9 +27,10 @@ export default function HomePage() {
   );
 }
 
-// Only the strings the client-side sections use cross to the browser, not the whole dictionary.
+// Only the strings the client price component and the carousels use cross to the browser, not the whole dictionary.
 const cardDict = (dict: Dictionary) => ({
   card: dict.card,
+  common: { free: dict.common.free },
   duration: dict.duration,
   landing: { prev: dict.landing.prev, next: dict.landing.next },
 });
@@ -49,7 +51,7 @@ async function Hero() {
     return null;
   }
 
-  return <HeroSlider courses={courses} lang={lang} dict={{ nav: { home: dict.nav.home }, hero: dict.hero }} />;
+  return <HeroSlider courses={courses} lang={lang} dict={{ ...priceDict(dict), nav: { home: dict.nav.home }, hero: dict.hero }} />;
 }
 
 async function Categories() {

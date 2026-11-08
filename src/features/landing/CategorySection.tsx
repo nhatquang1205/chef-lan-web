@@ -1,14 +1,11 @@
-"use client";
-
 import Link from "next/link";
 import { Carousel } from "@/components/Carousel";
 import { CourseCard } from "@/components/CourseCard";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { CourseListItem } from "@/lib/api/types";
-import { useCatalogState } from "@/lib/catalogState/CatalogStateProvider";
 
-/** A row of courses on the home page. The courses this customer already owns are left out; an empty row renders nothing. */
+/** A row of courses on the home page. */
 export function CategorySection({
   id,
   title,
@@ -24,15 +21,8 @@ export function CategorySection({
   linkLabel: string;
   courses: CourseListItem[];
   lang: Locale;
-  dict: Pick<Dictionary, "card" | "duration"> & { landing: Pick<Dictionary["landing"], "prev" | "next"> };
+  dict: Pick<Dictionary, "duration"> & Pick<Dictionary, "card"> & { common: Pick<Dictionary["common"], "free"> } & { landing: Pick<Dictionary["landing"], "prev" | "next"> };
 }) {
-  const { isOwned, finalPriceOf } = useCatalogState();
-  const visible = courses.filter((course) => !isOwned(course.id));
-
-  if (visible.length === 0) {
-    return null;
-  }
-
   const headingId = `${id}-heading`;
 
   return (
@@ -55,8 +45,8 @@ export function CategorySection({
         prevLabel={dict.landing.prev}
         nextLabel={dict.landing.next}
       >
-        {visible.map((course) => (
-          <CourseCard key={course.id} course={course} lang={lang} dict={dict} finalPriceVnd={finalPriceOf(course.id)} />
+        {courses.map((course) => (
+          <CourseCard key={course.id} course={course} lang={lang} dict={dict} />
         ))}
       </Carousel>
     </section>

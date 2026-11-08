@@ -8,13 +8,15 @@ API: `GET /api/v1/me/catalog-state` (customer token) →
 
 | | |
 |---|---|
-| Home page | For a signed-in customer: courses owned whole are hidden (hero slider, category sections, shared modules); a course with a reduced price shows the final price with the list price struck. A section left empty is hidden. `/courses` and course pages unchanged |
+| Home page | For a signed-in customer: courses owned whole are NOT hidden: they are labelled "Đã sở hữu" instead of a price (changed by plan 07); a course with a reduced price shows the final price with the list price struck. `/courses` cards use the same price component (plan 07); course pages unchanged |
 | Refresh | Fetch after login (forced) and when the stored copy is 30+ minutes old. Staff and anonymous: no fetch, nothing hidden. A course approved by staff may stay on the home page up to 30 minutes (accepted) |
 | Storage | IndexedDB via `idb`. This is the pattern for future bookmarks, history and the like: document it in `docs/client-store.md` |
 | Navbar | "Khóa học của tôi" after "Khóa học", signed-in customers only, to `/account/courses` (also stays in the account menu) |
 | English | Hidden for this release: no VI/EN toggle, `/en` and `/en/...` redirect (temporary) to the Vietnamese page, sitemap `vi` only. Code and `en.json` stay |
 | Bank transfer | Off in the API. `BuyButton` already hides the option when `/checkout/config` is disabled: dialog stays with one option, no code change but its doc comment |
 | Contact order page | Hotline (`CONTACT_PHONE`, 0932 046 296) and Chef Lan's Facebook only; Mrs. Lan's number removed |
+
+> **Changed by plan 07:** owned courses are labelled, not hidden (items 6 and 7 below describe the original filtering).
 
 ## Part A: client store and home page
 

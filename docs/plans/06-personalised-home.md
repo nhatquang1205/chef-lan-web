@@ -78,6 +78,7 @@ item; no toggle; `/en` → `/`; contact page; 375 px holds. Add implementation n
 - `Carousel` now calls `embla.reInit()` when its slide count changes (slides are filtered after mount).
 - `CourseCard`/`formatDuration` take `Pick<Dictionary, ...>`, and `app/[lang]/page.tsx` passes the client sections only the strings
   they use. The home page flashes the full list for an instant before IndexedDB answers.
+- List totals: course cards show `totalLessonCount` / `totalDurationSecondsWithIncluded` (fall back to the own counts); backend plan `chef-lan/docs/included-courses/plans/05-list-totals.md`; the mock gives Macaron 5 lessons / 1 h 20 and `home.spec.ts` asserts the card.
 - `/en` redirects are 307 (temporary); `redirects()` is skipped if `"en"` is in `publicLocales`.
 - The contact panel's hotline label is the literal "Hotline".
 - Tests: `tests/e2e/home.spec.ts` (new), routing/seo/checkout specs updated; the mock has `catalog@test.dev` (own request counter).

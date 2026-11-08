@@ -18,6 +18,8 @@ export function CourseCard({
   finalPriceVnd?: number;
 }) {
   const discounted = finalPriceVnd != null && finalPriceVnd < course.priceVnd;
+  const lessonCount = course.totalLessonCount ?? course.lessonCount;
+  const durationSeconds = course.totalDurationSecondsWithIncluded ?? course.totalDurationSeconds;
 
   return (
     <Link
@@ -38,8 +40,8 @@ export function CourseCard({
         {course.subtitle && <p className="line-clamp-2 text-sm text-beige/70">{course.subtitle}</p>}
 
         <p className="mt-auto pt-2 text-sm text-beige/60">
-          {course.lessonCount} {dict.card.lessons}
-          {course.totalDurationSeconds > 0 && ` · ${formatDuration(course.totalDurationSeconds, dict)}`}
+          {lessonCount} {dict.card.lessons}
+          {durationSeconds > 0 && ` · ${formatDuration(durationSeconds, dict)}`}
         </p>
 
         <p className="flex items-baseline gap-2">

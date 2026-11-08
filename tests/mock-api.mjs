@@ -58,7 +58,8 @@ const lessons = [
 const category = { id: 1, name: "Pastry", slug: "pastry", displayOrder: 1 };
 const listItem = {
   id: 1, slug: "macaron", title: "Macaron", subtitle: "Italian meringue macarons", level: "Beginner", priceVnd: 1000000,
-  compareAtPriceVnd: 1200000, priceDisplay: "1.000.000 ₫", lessonCount: 2, totalDurationSeconds: 1200, categories: [category],
+  compareAtPriceVnd: 1200000, priceDisplay: "1.000.000 ₫", lessonCount: 2, totalDurationSeconds: 1200,
+  totalLessonCount: 5, totalDurationSecondsWithIncluded: 4800, categories: [category],
 };
 const sharedItem = { ...listItem, id: 2, slug: "sauce-base", title: "Sauce base", subtitle: "A module shared by several courses", lessonCount: 1 };
 const detail = { ...listItem, images: [], includedCourses: [], includedIn: [], totalLessonCount: 2, totalDurationSecondsWithIncluded: 1200, lessons, metaDescription: "Learn to make macarons." };

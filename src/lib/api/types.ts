@@ -29,6 +29,9 @@ export interface CourseListItem {
   priceDisplay: string;
   lessonCount: number;
   totalDurationSeconds: number;
+  /** Own lessons plus the published courses it includes. Absent from an older API. */
+  totalLessonCount?: number;
+  totalDurationSecondsWithIncluded?: number;
   accessDurationDays?: number | null;
   categories: Category[];
 }

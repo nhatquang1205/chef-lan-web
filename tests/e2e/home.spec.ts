@@ -12,6 +12,14 @@ test.describe("personalised home page", () => {
     await expect(page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: dict.nav.myCourses })).toHaveCount(0);
   });
 
+  test("a course card shows the totals with the included modules, not its own counts", async ({ page }) => {
+    await page.goto("/");
+    const card = page.getByRole("link", { name: /Macaron/ }).first();
+    await expect(card).toContainText(`5 ${dict.card.lessons}`);
+    await expect(card).toContainText(`1 ${dict.duration.hours} 20 ${dict.duration.minutes}`);
+    await expect(card).not.toContainText(`2 ${dict.card.lessons}`);
+  });
+
   test("an owner no longer sees the course she owns, and sees the reduced price", async ({ page }) => {
     await login(page, "owner@test.dev");
     await page.goto("/");

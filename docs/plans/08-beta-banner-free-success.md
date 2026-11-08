@@ -6,8 +6,8 @@
 |---|---|
 | Free order page | A Paid order with `amountVnd === 0` reads **"Đăng ký thành công"** / "Quyền truy cập đã được mở." instead of "Thanh toán thành công" / "Cảm ơn bạn! Quyền truy cập đã được mở." |
 | Banner | One short line at the top of every page, above the header, not dismissible |
-| Banner text (vi) | "Website đang chạy thử nghiệm, nội dung từ các nhóm Facebook đang được chuyển dần lên đây. Tin mới nhất và hỗ trợ: **Facebook Chef Phương Lan Đoàn**." The bold part links to Chef Lan's page (`contact.social` item with `chef: true`), new tab, `rel="noopener noreferrer"` |
-| Banner text (en) | "This website is in trial: content from our Facebook groups is being moved here step by step. Latest news and help: **Chef Phương Lan Đoàn on Facebook**." |
+| Banner text (vi) | "Website đang trong quá trình thử nghiệm, nội dung khoá học từ các nhóm Facebook đang được cập nhật trong thời gian sớm nhất. Quý học viên hãy theo dõi và liên hệ chúng tôi tại: **Facebook Chef Phương Lan Đoàn**." (wording from the user) The bold part links to Chef Lan's page (`contact.social` item with `chef: true`), new tab, `rel="noopener noreferrer"` |
+| Banner text (en) | "This website is in trial: course content from our Facebook groups is being added as soon as possible. Please follow and contact us at **Chef Phương Lan Đoàn on Facebook**." |
 
 ## Build
 

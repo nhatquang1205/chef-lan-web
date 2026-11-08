@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { CategorySection } from "@/features/landing/CategorySection";
 import { HeroSlider } from "@/features/landing/HeroSlider";
 import { localePath } from "@/i18n/config";
-import { getDictionary, getLocale } from "@/i18n/dictionaries";
+import { getDictionary, getLocale, type Dictionary } from "@/i18n/dictionaries";
 import { listCategories, listLandingCourses, listLandingSharedModules } from "@/lib/api/catalog";
 
 export default function HomePage() {
@@ -26,6 +26,13 @@ export default function HomePage() {
   );
 }
 
+// Only the strings the client-side sections use cross to the browser, not the whole dictionary.
+const cardDict = (dict: Dictionary) => ({
+  card: dict.card,
+  duration: dict.duration,
+  landing: { prev: dict.landing.prev, next: dict.landing.next },
+});
+
 // Both sections wait for a real request before touching the API (`connection()`), so
 // `next build` never needs the backend and an outage during a build cannot fail it. The data
 // functions are still cached at runtime.
@@ -42,7 +49,7 @@ async function Hero() {
     return null;
   }
 
-  return <HeroSlider courses={courses} lang={lang} dict={dict} />;
+  return <HeroSlider courses={courses} lang={lang} dict={{ nav: { home: dict.nav.home }, hero: dict.hero }} />;
 }
 
 async function Categories() {
@@ -79,7 +86,7 @@ async function Categories() {
         linkLabel={dict.landing.showMore}
         courses={courses}
         lang={lang}
-        dict={dict}
+        dict={cardDict(dict)}
       />
     ));
 }
@@ -108,7 +115,7 @@ async function SharedModules() {
       linkLabel={dict.landing.sharedModulesAll}
       courses={items}
       lang={lang}
-      dict={dict}
+      dict={cardDict(dict)}
     />
   );
 }

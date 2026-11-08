@@ -75,6 +75,13 @@ across devices.
 
 `/account/courses` lists `GET /api/v1/me/courses` (`getMyCourses`, customer token only: a staff login gets 403/empty).
 
+## Client store and the personalised home page
+
+Owned courses and reduced prices come from `GET /api/v1/me/catalog-state`, kept in IndexedDB and refreshed every 30
+minutes; the home page hides owned courses client-side. See `docs/client-store.md` (also how to add bookmarks or history).
+English is hidden for now: `publicLocales` in `src/i18n/config.ts` is `["vi"]`, so no toggle, `/en/**` redirects (307) to the
+Vietnamese path in `next.config.ts` and the sitemap lists `vi` only. Add `"en"` to `publicLocales` to bring it back.
+
 ## Checkout (SePay Payment Gateway, bank transfer by QR)
 
 Backend design: `chef-lan` `docs/payments/`. The browser, with the customer's token, calls `POST /api/v1/orders` (the server prices it and signs the

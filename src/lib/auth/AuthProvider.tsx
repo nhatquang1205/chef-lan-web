@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { apiFetch, ApiError, NetworkError } from "@/lib/api/client";
 import type { SessionResponse } from "@/lib/api/types";
+import { deleteUserRecords } from "@/lib/store/db";
 
 /**
  * Tokens live in localStorage. That is readable by any script on the page, so an XSS bug
@@ -262,6 +263,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (!current) {
       return;
+    }
+
+    if (current.user.actor === "Customer") {
+      void deleteUserRecords(current.user.id);
     }
 
     try {

@@ -48,6 +48,10 @@ export function SiteHeader({
       label: dict.nav.courses,
       active: pathname.startsWith(localePath(lang, "/courses")),
     },
+    // Only for signed-in customers, and only once hydrated: the server HTML cannot know who is looking.
+    ...(hydrated && auth.status === "authenticated" && auth.user?.actor === "Customer"
+      ? [{ key: "myCourses", href: localePath(lang, "/account/courses"), label: dict.nav.myCourses, active: pathname.startsWith(localePath(lang, "/account/courses")) }]
+      : []),
   ];
 
   const linkClass = (active: boolean) =>

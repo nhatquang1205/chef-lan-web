@@ -130,6 +130,8 @@ test.describe("checkout", () => {
     // A modal left open on the hidden course page would make this page inert.
     await page.getByRole("article").getByRole("link", { name: "0932 046 296" }).click({ trial: true });
     await expect(page.getByRole("button", { name: dict.checkout.payWithQr })).toHaveCount(0);
+    await expect(page.getByRole("article").getByRole("link", { name: "0775 965 143" })).toHaveCount(0);
+    await expect(page.getByRole("article").getByText("0775 965 143")).toHaveCount(0);
 
     await bank(request, "pay", code);
     await expect(page.getByRole("heading", { name: dict.checkout.paidTitle })).toBeVisible({ timeout: 15_000 });

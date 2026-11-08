@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
-import { locales, switchLocalePath, type Locale } from "@/i18n/config";
+import { locales, publicLocales, switchLocalePath, type Locale } from "@/i18n/config";
 
 function Toggle({ lang, label }: { lang: Locale; label: string }) {
   const pathname = usePathname();
@@ -34,6 +34,10 @@ function Toggle({ lang, label }: { lang: Locale; label: string }) {
 }
 
 export function LanguageToggle(props: { lang: Locale; label: string }) {
+  if (publicLocales.length < 2) {
+    return null;
+  }
+
   return (
     // useSearchParams needs a boundary; until it resolves, show the current locale only.
     <Suspense fallback={<span className="text-sm font-semibold uppercase tracking-widest">{props.lang}</span>}>

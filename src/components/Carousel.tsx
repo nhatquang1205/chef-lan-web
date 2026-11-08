@@ -61,6 +61,13 @@ export function Carousel({
     setCanNext(embla.canScrollNext());
   }, [embla]);
 
+  // Slides can be filtered out after mount (the home page hides what the customer owns).
+  const slideCount = children.length;
+
+  useEffect(() => {
+    embla?.reInit();
+  }, [embla, slideCount]);
+
   useEffect(() => {
     if (!embla) {
       return;

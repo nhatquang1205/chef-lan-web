@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { publicLocales } from "./src/i18n/config";
 
 const nextConfig: NextConfig = {
   // The e2e run builds into its own folder so it never clobbers a running `next dev`.
@@ -9,6 +10,18 @@ const nextConfig: NextConfig = {
   // app/[lang], so a bare path is rewritten to /vi/... here. English is /en/... and is left
   // alone. (This was a proxy.ts rewrite first; behind nginx's X-Forwarded-Proto: https the
   // proxy rewrite made Next fetch https://localhost:3100 over TLS and every page was a 500.)
+  // English is hidden for now: send /en and /en/... to the Vietnamese page (temporary). Never redirect /vi/...
+  // (see CLAUDE.md, "i18n"): the rewritten path would be redirected again and loop.
+  async redirects() {
+    if (publicLocales.includes("en")) {
+      return [];
+    }
+
+    return [
+      { source: "/en", destination: "/", permanent: false },
+      { source: "/en/:path*", destination: "/:path*", permanent: false },
+    ];
+  },
   async rewrites() {
     return {
       beforeFiles: [],

@@ -253,3 +253,9 @@ export interface Order {
 }
 
 export type OrderTarget = { courseSlug: string; lessonId?: never } | { lessonId: number; courseSlug?: never };
+
+/** `GET /api/v1/me/catalog-state`: what a signed-in customer owns whole, and the reduced prices they pay. */
+export interface CatalogState {
+  ownedCourseIds: number[];
+  prices: { courseId: number; listPriceVnd: number; finalPriceVnd: number }[];
+}

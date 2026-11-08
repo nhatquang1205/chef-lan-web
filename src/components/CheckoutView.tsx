@@ -11,7 +11,7 @@ import { localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { formatVnd, template } from "@/lib/format";
 import { formatClock } from "@/lib/history";
-import { contact, telHref } from "@/lib/contact";
+import { CONTACT_PHONE, contact, telHref } from "@/lib/contact";
 
 type State = { kind: "loading" } | { kind: "ok"; order: Order } | { kind: "not_found" } | { kind: "error" };
 
@@ -199,14 +199,12 @@ export function CheckoutView({ code, lang, dict }: { code: string; lang: Locale;
           <p className="mt-4 text-xs uppercase tracking-widest text-beige/55">{dict.checkout.contactCodeLabel}</p>
           <p className="font-display text-4xl tracking-wider">{order.code}</p>
           <ul className="mt-4 space-y-2">
-            {contact.phones.map((phone) => (
-              <li key={phone.number}>
-                <a href={telHref(phone.number)} className="font-semibold underline underline-offset-4">
-                  {phone.number}
-                </a>{" "}
-                <span className="text-beige/55">({phone.label})</span>
-              </li>
-            ))}
+            <li>
+              <a href={telHref(CONTACT_PHONE)} className="font-semibold underline underline-offset-4">
+                {CONTACT_PHONE}
+              </a>{" "}
+              <span className="text-beige/55">(Hotline)</span>
+            </li>
             {contact.social
               .filter((item) => "chef" in item)
               .map((item) => (

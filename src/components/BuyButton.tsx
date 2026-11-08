@@ -27,8 +27,9 @@ export function useCheckoutEnabled(): boolean | null {
 
 /**
  * "Buy now": signed-out visitors are sent to log in and come back here; signed-in ones pick how to pay in a dialog
- * (contact chef Lan, always; bank transfer only when online payment is set up). Either choice creates the order
- * and goes to its page.
+ * (contact chef Lan, always; bank transfer only when the API says online payment is on). Bank transfer is switched
+ * off in the API for now, so the dialog offers one option; the second appears again by itself when it is enabled.
+ * Either choice creates the order and goes to its page.
  */
 export function BuyButton({
   target,

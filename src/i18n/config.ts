@@ -2,6 +2,9 @@ export const locales = ["vi", "en"] as const;
 
 export type Locale = (typeof locales)[number];
 
+/** Locales offered to visitors. English is built but hidden for now: no toggle, /en redirects, not in the sitemap. */
+export const publicLocales: readonly Locale[] = ["vi"];
+
 export const defaultLocale: Locale = "vi";
 
 export const hasLocale = (value: string): value is Locale =>

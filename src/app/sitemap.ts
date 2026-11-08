@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { connection } from "next/server";
 import { apiFetch } from "@/lib/api/client";
 import type { CourseListItem, Paged } from "@/lib/api/types";
-import { localePath, locales } from "@/i18n/config";
+import { localePath, publicLocales } from "@/i18n/config";
 import { siteUrl } from "@/lib/site";
 
 const staticPaths = ["/", "/courses", "/terms", "/privacy", "/refund"];
@@ -12,7 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   await connection();
 
   const origin = siteUrl();
-  const urls = (path: string) => Object.fromEntries(locales.map((lang) => [lang, `${origin}${localePath(lang, path)}`]));
+  const urls = (path: string) => Object.fromEntries(publicLocales.map((lang) => [lang, `${origin}${localePath(lang, path)}`]));
   const entry = (path: string, lastModified?: string): MetadataRoute.Sitemap[number] => ({
     url: `${origin}${localePath("vi", path)}`,
     lastModified,

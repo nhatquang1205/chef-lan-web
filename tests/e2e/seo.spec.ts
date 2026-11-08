@@ -2,10 +2,10 @@ import { expect, test } from "@playwright/test";
 import { dict } from "./helpers";
 
 test.describe("seo and legal", () => {
-  test("sitemap lists the courses and legal pages with both languages", async ({ request }) => {
+  test("sitemap lists the courses and legal pages in Vietnamese only", async ({ request }) => {
     const xml = await (await request.get("/sitemap.xml")).text();
     expect(xml).toContain("/courses/macaron");
-    expect(xml).toContain("/en/courses/macaron");
+    expect(xml).not.toContain("/en/");
     for (const path of ["/terms", "/privacy", "/refund"]) expect(xml).toContain(path);
   });
 

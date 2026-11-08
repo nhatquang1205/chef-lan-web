@@ -1,6 +1,6 @@
 import type { Dictionary } from "@/i18n/dictionaries";
 
-export function formatDuration(totalSeconds: number, dict: Dictionary): string {
+export function formatDuration(totalSeconds: number, dict: Pick<Dictionary, "duration">): string {
   const minutes = Math.round(totalSeconds / 60);
 
   if (minutes < 60) {

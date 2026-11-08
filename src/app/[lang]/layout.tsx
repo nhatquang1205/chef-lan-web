@@ -6,6 +6,7 @@ import { Logo } from "@/components/Logo";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Footer } from "@/components/Footer";
 import { AuthProvider } from "@/lib/auth/AuthProvider";
+import { CatalogStateProvider } from "@/lib/catalogState/CatalogStateProvider";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
 import { hasLocale, locales } from "@/i18n/config";
 import { siteUrl } from "@/lib/site";
@@ -52,28 +53,30 @@ export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
     <html lang={lang} data-scroll-behavior="smooth" className={`${display.variable} ${body.variable} h-full`}>
       <body className="flex min-h-full flex-col">
         <AuthProvider>
-          {/* The header reads the pathname, which is only known per request. */}
-          <Suspense
-            fallback={
-              <header className="sticky top-0 z-40 h-16 border-b border-beige/15 bg-olive/90">
-                <div className="mx-auto flex h-full max-w-7xl items-center px-4 sm:px-6">
-                  <Logo lang={lang} />
-                </div>
-              </header>
-            }
-          >
-            <SiteHeader
-              lang={lang}
-              dict={dict}
-              categoryLinks={
-                <Suspense fallback={null}>
-                  <CategoryLinks lang={lang} />
-                </Suspense>
+          <CatalogStateProvider>
+            {/* The header reads the pathname, which is only known per request. */}
+            <Suspense
+              fallback={
+                <header className="sticky top-0 z-40 h-16 border-b border-beige/15 bg-olive/90">
+                  <div className="mx-auto flex h-full max-w-7xl items-center px-4 sm:px-6">
+                    <Logo lang={lang} />
+                  </div>
+                </header>
               }
-            />
-          </Suspense>
-          <main className="flex-1">{children}</main>
-          <Footer lang={lang} dict={dict} />
+            >
+              <SiteHeader
+                lang={lang}
+                dict={dict}
+                categoryLinks={
+                  <Suspense fallback={null}>
+                    <CategoryLinks lang={lang} />
+                  </Suspense>
+                }
+              />
+            </Suspense>
+            <main className="flex-1">{children}</main>
+            <Footer lang={lang} dict={dict} />
+          </CatalogStateProvider>
         </AuthProvider>
       </body>
     </html>

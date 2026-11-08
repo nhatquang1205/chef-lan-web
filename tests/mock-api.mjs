@@ -7,6 +7,7 @@ const ORIGIN = `http://127.0.0.1:${PORT}`;
 const users = {
   "owner@test.dev": { token: "tok-owner", actor: "Customer", id: 1, name: "Owner Test" },
   "visitor@test.dev": { token: "tok-visitor", actor: "Customer", id: 2, name: "Visitor Test" },
+  "catalog@test.dev": { token: "tok-catalog", actor: "Customer", id: 50, name: "Catalog Test" },
   "admin@test.dev": { token: "tok-admin", actor: "Staff", id: 9, name: "Admin Test" },
 };
 for (let n = 1; n <= 9; n++) {
@@ -18,6 +19,7 @@ const PASSWORD = "Passw0rd!";
 const ownedBy = new Set([1]);
 const orders = new Map();
 let orderCounter = 0;
+const catalogStateRequests = new Map();
 const QR_PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", "base64");
 
 const orderBody = (order) => ({
@@ -217,6 +219,17 @@ const server = createServer((req, res) => {
       if (user.actor !== "Customer") return json(res, 403, {});
       return json(res, 200, isOwner ? [{ courseId: 1, slug: "macaron", title: "Macaron", hasCourseAccess: true, lessons: [] }] : []);
     }
+
+    if (path === "/api/v1/me/catalog-state") {
+      if (!user || user.actor !== "Customer") return json(res, 401, {});
+      catalogStateRequests.set(user.id, (catalogStateRequests.get(user.id) ?? 0) + 1);
+      return json(res, 200, {
+        ownedCourseIds: isOwner ? [1] : [],
+        prices: [{ courseId: 2, listPriceVnd: 1000000, finalPriceVnd: 800000 }],
+      });
+    }
+
+    if (path === "/__mock/catalog-state-requests") return json(res, 200, { count: catalogStateRequests.get(Number(url.searchParams.get("customer"))) ?? 0 });
 
     if (path === "/api/v1/auth/login") {
       const { email, password } = JSON.parse(body || "{}");

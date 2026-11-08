@@ -4,6 +4,19 @@ import { localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { contact, telHref } from "@/lib/contact";
 
+const facebook = contact.social.filter((item) => item.label === "Facebook");
+const otherSocial = contact.social.filter((item) => item.label !== "Facebook");
+
+function socialItem(item: (typeof contact.social)[number]) {
+  return (
+    <li key={item.href}>
+      <a href={item.href} target="_blank" rel="noopener noreferrer" className="hover:text-beige hover:underline">
+        {item.label} {item.handle}
+      </a>
+    </li>
+  );
+}
+
 export function Footer({ lang, dict }: { lang: Locale; dict: Dictionary }) {
   return (
     <footer className="mt-24 border-t border-beige/15 bg-olive">
@@ -13,7 +26,7 @@ export function Footer({ lang, dict }: { lang: Locale; dict: Dictionary }) {
         <div>
           <h2 className="font-display text-xl">{dict.footer.contact}</h2>
           <ul className="mt-4 grid gap-x-10 gap-y-2 text-beige/85 sm:grid-cols-2">
-            <li>{dict.footer.hours}</li>
+            {/* Two columns filled row by row, so the pairs line up: addresses, phones, Facebook pages, then hours beside Instagram. */}
             {contact.addresses.map((address) => (
               <li key={address}>{address}</li>
             ))}
@@ -25,13 +38,9 @@ export function Footer({ lang, dict }: { lang: Locale; dict: Dictionary }) {
                 <span className="text-beige/55">({phone.label})</span>
               </li>
             ))}
-            {contact.social.map((item) => (
-              <li key={item.href}>
-                <a href={item.href} target="_blank" rel="noopener noreferrer" className="hover:text-beige hover:underline">
-                  {item.label} {item.handle}
-                </a>
-              </li>
-            ))}
+            {facebook.map(socialItem)}
+            <li>{dict.footer.hours}</li>
+            {otherSocial.map(socialItem)}
           </ul>
         </div>
       </div>

@@ -64,7 +64,8 @@ test.describe("shared modules", () => {
     await expect(page.getByRole("link", { name: dict.courses.clear }).first()).toBeVisible();
 
     await page.goto("/courses?type=shared&q=zzz");
-    await expect(page.getByText(dict.courses.empty)).toBeVisible();
+    // While the page streams in, the old and new result lists can briefly coexist (as for the other assertions here).
+    await expect(page.getByText(dict.courses.empty).first()).toBeVisible();
     await page.goto("/courses?type=shared&q=sauce");
     await expect(page.getByText("Sauce base").first()).toBeVisible();
   });

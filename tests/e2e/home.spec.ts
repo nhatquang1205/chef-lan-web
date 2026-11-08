@@ -47,6 +47,8 @@ test.describe("personalised home page", () => {
 
     await login(page, "catalog@test.dev");
     await expect.poll(count).toBe(before + 1);
+    // The fetch can land before the post-login redirect: be on the home page before reloading it.
+    await page.goto("/");
     await page.reload();
     await expect(page.getByRole("heading", { level: 3, name: "Macaron" }).first()).toBeVisible();
     await page.waitForTimeout(500);

@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { CategoryLinks } from "@/components/CategoryLinks";
 import { Logo } from "@/components/Logo";
 import { SiteHeader } from "@/components/SiteHeader";
+import { TrialBanner } from "@/components/TrialBanner";
 import { Footer } from "@/components/Footer";
 import { AuthProvider } from "@/lib/auth/AuthProvider";
 import { CatalogStateProvider } from "@/lib/catalogState/CatalogStateProvider";
@@ -54,6 +55,7 @@ export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
       <body className="flex min-h-full flex-col">
         <AuthProvider>
           <CatalogStateProvider>
+            <TrialBanner dict={dict} />
             {/* The header reads the pathname, which is only known per request. */}
             <Suspense
               fallback={

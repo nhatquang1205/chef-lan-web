@@ -6,6 +6,10 @@
   "brand": {
     "tagline": "Italian homemade restaurant"
   },
+  "banner": {
+    "text": "Website đang chạy thử nghiệm, nội dung từ các nhóm Facebook đang được chuyển dần lên đây. Tin mới nhất và hỗ trợ:",
+    "link": "Facebook Chef Phương Lan Đoàn"
+  },
   "nav": {
     "home": "Trang chủ",
     "categories": "Danh mục",
@@ -248,6 +252,8 @@
     "cancel": "Hủy đơn",
     "paidTitle": "Thanh toán thành công",
     "paidText": "Cảm ơn bạn! Quyền truy cập đã được mở.",
+    "freeTitle": "Đăng ký thành công",
+    "freeText": "Quyền truy cập đã được mở.",
     "startLearning": "Bắt đầu học",
     "expiredTitle": "Đơn hàng đã hết hạn",
     "expiredText": "Nếu bạn đã chuyển khoản, hãy liên hệ Chef Lan kèm mã đơn {code}. Nếu chưa, hãy tạo đơn mới ở trang khóa học.",

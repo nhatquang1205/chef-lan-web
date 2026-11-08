@@ -6,6 +6,10 @@
   "brand": {
     "tagline": "Italian homemade restaurant"
   },
+  "banner": {
+    "text": "This website is in trial: content from our Facebook groups is being moved here step by step. Latest news and help:",
+    "link": "Chef Phương Lan Đoàn on Facebook"
+  },
   "nav": {
     "home": "Home",
     "categories": "Categories",
@@ -248,6 +252,8 @@
     "cancel": "Cancel order",
     "paidTitle": "Payment received",
     "paidText": "Thank you! Your access is now open.",
+    "freeTitle": "Registration complete",
+    "freeText": "Your access is now open.",
     "startLearning": "Start learning",
     "expiredTitle": "This order has expired",
     "expiredText": "If you already paid, contact Chef Lan with order code {code}. If not, create a new order on the course page.",

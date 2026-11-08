@@ -4,6 +4,15 @@ import { dict, login } from "./helpers";
 const MOCK = "http://127.0.0.1:5099";
 
 test.describe("personalised home page", () => {
+  test("every page opens with the trial banner and its link to chef Lan's Facebook", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByText(dict.banner.text)).toBeVisible();
+    const link = page.getByRole("link", { name: dict.banner.link });
+    await expect(link).toHaveAttribute("href", "https://www.facebook.com/Chefphuonglandoan");
+    await expect(link).toHaveAttribute("target", "_blank");
+    await expect(link).toHaveAttribute("rel", /noopener/);
+  });
+
   test("anonymous sees every course at the list price, and no My courses item", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 3, name: "Macaron" })).toBeVisible();

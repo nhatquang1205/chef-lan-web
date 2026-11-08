@@ -156,8 +156,9 @@ export function CheckoutView({ code, lang, dict }: { code: string; lang: Locale;
   }
 
   if (order.status === "Paid") {
+    const free = order.amountVnd === 0;
     return (
-      <Message title={dict.checkout.paidTitle} text={dict.checkout.paidText} live>
+      <Message title={free ? dict.checkout.freeTitle : dict.checkout.paidTitle} text={free ? dict.checkout.freeText : dict.checkout.paidText} live>
         {/* A plain link: a full page load, so the course page asks for access afresh and unlocks. */}
         <a href={courseHref} className={buttonClass}>
           {dict.checkout.startLearning}

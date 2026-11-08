@@ -158,7 +158,8 @@ test.describe("checkout", () => {
     await page.getByRole("button", { name: dict.checkout.buyNow }).click();
     await page.getByRole("button", { name: dict.checkout.optionContactTitle }).click();
     await expect(page).toHaveURL(/\/checkout\/BBTEST\d+$/);
-    await expect(page.getByRole("heading", { name: dict.checkout.paidTitle })).toBeVisible();
+    await expect(page.getByRole("heading", { name: dict.checkout.freeTitle })).toBeVisible();
+    await expect(page.getByText(dict.checkout.freeText)).toBeVisible();
     await expect(page.getByRole("link", { name: dict.checkout.startLearning })).toBeVisible();
 
     // Client navigation keeps the pages alive; the catalog state was refreshed, not left to age.

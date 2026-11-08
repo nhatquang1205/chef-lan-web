@@ -11,7 +11,7 @@ browser -> nginx :80/:443 --(by hostname)--> 127.0.0.1:3100  chef-lan-web (next 
 **Ports.** Only nginx listens on 80/443; both apps stay on loopback, each on its own port
 (this one: **3100**). Two sites share 80/443 because nginx tells them apart by hostname
 (`server_name`), so chef-lan-web needs **its own hostname**: `courses.bonbocon.com`. In Cloudflare add an `A` record
-`courses` (and `@`, `www`, `api`, `admin`) to the VPS IP, **DNS only** (grey cloud; no AAAA, the VPS has no IPv6). The API
+`courses` (and `@`, `www`, `api`, `admin`) to the VPS IP, **proxied** (orange cloud; no AAAA, the VPS has no IPv6), SSL/TLS mode **Full (strict)**. The API
 is a separate host, `api.bonbocon.com` (`chef-lan/deploy/nginx/`); this nginx block does not proxy it.
 
 ## One-time VPS setup
@@ -40,7 +40,7 @@ Run as the deploy user (the same one wish-list uses). Replace `<deploy-user>`.
 6. **nginx:** copy `deploy/nginx.conf` to `/etc/nginx/sites-available/chef-lan-web` (`server_name courses.bonbocon.com` is
    already set), `sudo ln -s` it into `sites-enabled`,
    `sudo nginx -t && sudo systemctl reload nginx`, then `sudo certbot --nginx -d courses.bonbocon.com`.
-   The old `course-cheflan.duckdns.org` host only redirects here (`chef-lan/deploy/nginx/duckdns-redirects`).
+   The old `course-cheflan.duckdns.org` host is retired.
 7. **First start:** `bash ~/chef-lan-web/scripts/deploy.sh` (builds and starts the service).
 
 ## GitHub (repo settings)

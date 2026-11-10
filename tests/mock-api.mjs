@@ -98,6 +98,12 @@ const freeItem = {
 const sharedItem = { ...listItem, id: 2, slug: "sauce-base", title: "Sauce base", subtitle: "A module shared by several courses", lessonCount: 1 };
 const detail = { ...listItem, images: [], includedCourses: [], includedIn: [], totalLessonCount: 2, totalDurationSecondsWithIncluded: 1200, lessons, metaDescription: "Learn to make macarons." };
 
+const moduleDetail = {
+  ...detail, id: 4, slug: "with-module", title: "With module", lessonCount: 2,
+  includedCourses: [{ slug: "sauce-base", title: "Sauce base", lessonCount: 1, totalDurationSeconds: 600,
+    lessons: [{ id: 20, slug: "sauce-one", title: "Sauce one", sortOrder: 1, durationSeconds: 600, includedInCourse: true, videos: [video("bbbbbbbbbbbbbbb1", "Base", 600, false)] }] }],
+};
+
 const freeDetail = { ...freeItem, images: [], includedCourses: [], includedIn: [], lessons: [], metaDescription: "A free course." };
 
 const json = (res, status, body) => {
@@ -252,6 +258,7 @@ const server = createServer((req, res) => {
     }
 
     if (path === "/api/v1/courses/macaron") return json(res, 200, detail);
+    if (path === "/api/v1/courses/with-module") return json(res, 200, moduleDetail);
     if (path === "/api/v1/courses/free-class") return json(res, 200, freeDetail);
     if (path === "/api/v1/courses/free-class/access") {
       if (!user || user.actor !== "Customer") return json(res, 401, {});

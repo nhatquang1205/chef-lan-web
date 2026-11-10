@@ -59,6 +59,7 @@ async function Content({ params }: { params: PageProps<"/[lang]/courses/[slug]">
   }
 
   const includedLessons = course.lessons.filter((l) => l.includedInCourse);
+  const hasModules = course.includedCourses.length > 0;
   const addonLessons = course.lessons.filter((l) => !l.includedInCourse);
   const learnItems = (course.whatYouWillLearn ?? "")
     .split("\n")
@@ -227,11 +228,8 @@ async function Content({ params }: { params: PageProps<"/[lang]/courses/[slug]">
             {template(dict.course.lessonsCount, { count: course.totalLessonCount })}
             {totalDuration > 0 && ` · ${formatDuration(totalDuration, dict)}`}
           </p>
-        <ol className="mt-4 divide-y divide-beige/15 rounded-lg border border-beige/15">
-            {includedLessons.map((lesson, index) => renderLesson(lesson, index, false))}
-          </ol>
-          {course.includedCourses.map((shared) => (
-            <div key={shared.slug} className="mt-10">
+          {course.includedCourses.map((shared, i) => (
+            <div key={shared.slug} className={i === 0 ? "mt-4" : "mt-10"}>
               <h3 className="font-display text-xl">{template(dict.course.sharedModule, { title: shared.title })}</h3>
               <p className="mt-1 text-sm text-beige/70">{dict.course.sharedModuleNote}</p>
               <ol className="mt-3 divide-y divide-beige/15 rounded-lg border border-beige/15">
@@ -239,6 +237,12 @@ async function Content({ params }: { params: PageProps<"/[lang]/courses/[slug]">
               </ol>
             </div>
           ))}
+          <div className={hasModules ? "mt-10" : "mt-4"}>
+            {hasModules && <h3 className="font-display text-xl">{course.title}</h3>}
+            <ol className={`${hasModules ? "mt-3 " : ""}divide-y divide-beige/15 rounded-lg border border-beige/15`}>
+              {includedLessons.map((lesson, index) => renderLesson(lesson, index, false))}
+            </ol>
+          </div>
           {addonLessons.length > 0 && (
             <>
               <h3 className="mt-10 font-display text-xl">{dict.course.addonsTitle}</h3>

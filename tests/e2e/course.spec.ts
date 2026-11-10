@@ -10,6 +10,26 @@ test.describe("course page", () => {
     await expect(page.getByText("Cơ bản")).toHaveCount(0);
   });
 
+  test("a shared module comes first, then the course's own lessons under its title", async ({ page }) => {
+    await page.goto("/courses/with-module");
+    const outline = page.locator("section", { has: page.getByRole("heading", { level: 2, name: dict.course.outline }) });
+    const moduleHeading = outline.getByRole("heading", { level: 3, name: dict.course.sharedModule.replace("{title}", "Sauce base") });
+    const ownHeading = outline.getByRole("heading", { level: 3, name: "With module", exact: true });
+    await expect(moduleHeading).toBeVisible();
+    await expect(ownHeading).toBeVisible();
+    const top = async (l: typeof moduleHeading) => (await l.boundingBox())!.y;
+    expect(await top(moduleHeading)).toBeLessThan(await top(outline.getByRole("heading", { level: 3, name: "Step one" })));
+    expect(await top(outline.getByRole("heading", { level: 3, name: "Sauce one" }))).toBeLessThan(await top(ownHeading));
+    expect(await top(ownHeading)).toBeLessThan(await top(outline.getByRole("heading", { level: 3, name: "Step one" })));
+  });
+
+  test("a course without a module has no title heading in the outline", async ({ page }) => {
+    await page.goto("/courses/macaron");
+    const outline = page.locator("section", { has: page.getByRole("heading", { level: 2, name: dict.course.outline }) });
+    await expect(outline.getByRole("heading", { level: 3, name: "Macaron", exact: true })).toHaveCount(0);
+    await expect(outline.getByRole("heading", { level: 3, name: "Step one" })).toBeVisible();
+  });
+
   test("anonymous: Buy now and every lesson marked not owned", async ({ page }) => {
     await page.goto("/courses/macaron");
     await expect(page.getByRole("button", { name: dict.checkout.buyNow }).first()).toBeVisible();

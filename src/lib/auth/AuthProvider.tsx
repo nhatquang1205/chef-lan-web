@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { apiFetch, ApiError, NetworkError } from "@/lib/api/client";
-import type { SessionResponse } from "@/lib/api/types";
+import type { Customer, MeResponse, SessionResponse } from "@/lib/api/types";
 import { deleteUserRecords } from "@/lib/store/db";
 
 /**
@@ -19,6 +19,11 @@ export interface AuthUser {
   name: string;
   actor: "Customer" | "Staff";
   role?: string;
+  /** Customers only. `profileComplete` is undefined for a session saved before the field existed, until /me answers. */
+  email?: string | null;
+  phone?: string | null;
+  provinceCode?: string | null;
+  profileComplete?: boolean;
 }
 
 interface Session {
@@ -26,6 +31,18 @@ interface Session {
   accessTokenExpiresAt: string;
   refreshToken: string;
   user: AuthUser;
+}
+
+function toCustomerUser(customer: Customer | undefined): AuthUser {
+  return {
+    id: customer?.id ?? 0,
+    name: customer?.fullName ?? "",
+    actor: "Customer",
+    email: customer?.email ?? null,
+    phone: customer?.phone ?? null,
+    provinceCode: customer?.provinceCode ?? null,
+    profileComplete: customer?.profileComplete,
+  };
 }
 
 /** Maps the API response (customer or staff) onto the stored session. */
@@ -38,7 +55,7 @@ function toSession(response: SessionResponse): Session {
     refreshToken: response.refreshToken,
     user: staff
       ? { id: staff.id, name: staff.displayName, actor: "Staff", role: staff.role }
-      : { id: response.customer?.id ?? 0, name: response.customer?.fullName ?? "", actor: "Customer" },
+      : toCustomerUser(response.customer),
   };
 }
 
@@ -46,7 +63,7 @@ export type AuthFailure =
   | { kind: "invalid" | "notActivated" | "locked" | "inactive" | "emailUsed" | "validation" | "inviteInvalid" | "network" | "unknown" }
   | { kind: "rateLimited"; seconds: number };
 
-export type AuthResult = { ok: true } | { ok: false; failure: AuthFailure; fieldErrors?: Record<string, string[]> };
+export type AuthResult = { ok: true; user: AuthUser } | { ok: false; failure: AuthFailure; fieldErrors?: Record<string, string[]> };
 
 export interface RegisterInput {
   email: string;
@@ -63,6 +80,8 @@ interface AuthContextValue {
   /** Sets the first password from an invitation link and signs in, replacing any current session. */
   acceptInvite(token: string, password: string): Promise<AuthResult>;
   logout(): Promise<void>;
+  /** Replaces the signed-in customer's details with what the API just returned (after saving the profile). */
+  updateCustomer(customer: Customer): void;
   /** A valid access token for API calls from the browser, renewed first if it is about to expire. Null when signed out. */
   getAccessToken(): Promise<string | null>;
 }
@@ -157,6 +176,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let cancelled = false;
 
+    // A session saved before profiles existed has no `profileComplete`: ask /me once so the gate can decide.
+    async function completeUser(saved: Session) {
+      if (saved.user.actor !== "Customer" || saved.user.profileComplete !== undefined) {
+        return;
+      }
+
+      try {
+        const me = await apiFetch<MeResponse>("/api/v1/me", { token: saved.accessToken });
+
+        if (!cancelled && me.customer && sessionRef.current === saved) {
+          store({ ...saved, user: toCustomerUser(me.customer) });
+        }
+      } catch {
+        // Unknown stays unknown: the gate does nothing until a later sign-in or refresh answers.
+      }
+    }
+
     async function restore() {
       const saved = readSession();
 
@@ -168,6 +204,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (new Date(saved.accessTokenExpiresAt).getTime() - Date.now() > REFRESH_MARGIN_MS) {
         applySession(saved);
         setStatus("authenticated");
+        await completeUser(saved);
         return;
       }
 
@@ -203,15 +240,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = useCallback<AuthContextValue["login"]>(
     async (email, password) => {
       try {
-        store(
-          toSession(
-            await apiFetch<SessionResponse>("/api/v1/auth/login", {
-              method: "POST",
-              body: { email, password },
-            }),
-          ),
+        const next = toSession(
+          await apiFetch<SessionResponse>("/api/v1/auth/login", {
+            method: "POST",
+            body: { email, password },
+          }),
         );
-        return { ok: true };
+        store(next);
+        return { ok: true, user: next.user };
       } catch (error) {
         return toFailure(error);
       }
@@ -222,15 +258,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const register = useCallback<AuthContextValue["register"]>(
     async (input) => {
       try {
-        store(
-          toSession(
-            await apiFetch<SessionResponse>("/api/v1/auth/register", {
-              method: "POST",
-              body: { ...input, phone: input.phone || null },
-            }),
-          ),
+        const next = toSession(
+          await apiFetch<SessionResponse>("/api/v1/auth/register", {
+            method: "POST",
+            body: { ...input, phone: input.phone || null },
+          }),
         );
-        return { ok: true };
+        store(next);
+        return { ok: true, user: next.user };
       } catch (error) {
         return toFailure(error);
       }
@@ -241,17 +276,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const acceptInvite = useCallback<AuthContextValue["acceptInvite"]>(
     async (token, password) => {
       try {
-        store(
-          toSession(
-            await apiFetch<SessionResponse>("/api/v1/auth/invitations/accept", {
-              method: "POST",
-              body: { token, password },
-            }),
-          ),
+        const next = toSession(
+          await apiFetch<SessionResponse>("/api/v1/auth/invitations/accept", {
+            method: "POST",
+            body: { token, password },
+          }),
         );
-        return { ok: true };
+        store(next);
+        return { ok: true, user: next.user };
       } catch (error) {
         return toFailure(error);
+      }
+    },
+    [store],
+  );
+
+  const updateCustomer = useCallback<AuthContextValue["updateCustomer"]>(
+    (customer) => {
+      const current = sessionRef.current;
+
+      if (current?.user.actor === "Customer" && current.user.id === customer.id) {
+        store({ ...current, user: toCustomerUser(customer) });
       }
     },
     [store],
@@ -330,8 +375,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [store]);
 
   const value = useMemo<AuthContextValue>(
-    () => ({ status, user: session?.user ?? null, login, register, acceptInvite, logout, getAccessToken }),
-    [status, session, login, register, acceptInvite, logout, getAccessToken],
+    () => ({ status, user: session?.user ?? null, login, register, acceptInvite, logout, updateCustomer, getAccessToken }),
+    [status, session, login, register, acceptInvite, logout, updateCustomer, getAccessToken],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

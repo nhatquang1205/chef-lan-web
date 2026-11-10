@@ -5,7 +5,7 @@ import { dict } from "./helpers";
 const nginx = { Host: "course.example", "X-Forwarded-Proto": "https" };
 
 test.describe("locale routing", () => {
-  for (const path of ["/", "/courses", "/vi/courses", "/login", "/terms"]) {
+  for (const path of ["/", "/courses", "/vi/courses", "/login"]) {
     test(`${path} answers 200 without redirecting`, async ({ request }) => {
       const response = await request.get(path, { maxRedirects: 0 });
       expect(response.status()).toBe(200);

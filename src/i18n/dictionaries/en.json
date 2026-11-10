@@ -23,7 +23,8 @@
     "account": "Account",
     "myCourses": "My courses",
     "history": "History",
-    "orders": "Orders"
+    "orders": "Orders",
+    "profile": "Personal details"
   },
   "common": {
     "loading": "Loading…",
@@ -162,14 +163,27 @@
     "contact": "Contact Chef Lan",
     "loginLink": "Go to log in"
   },
+  "profile": {
+    "title": "Personal details",
+    "intro": "Please tell us your phone number and province to continue.",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone number",
+    "province": "Province / city",
+    "provincePlaceholder": "Choose a province / city",
+    "save": "Save",
+    "saving": "Saving…",
+    "loading": "Loading…",
+    "loadFailed": "Could not load the list of provinces. Please reload the page.",
+    "staff": "Admin accounts have no customer profile.",
+    "nameRequired": "Please enter your name.",
+    "phoneInvalid": "The phone number is not valid (9 to 15 digits).",
+    "provinceRequired": "Please choose a province / city."
+  },
   "footer": {
     "contact": "Contact",
     "hours": "08:00 – 22:00",
-    "rights": "All rights reserved, Bon Bocon.",
-    "terms": "Terms of use",
-    "privacy": "Privacy policy",
-    "refund": "Refund policy",
-    "updated": "Last updated: {date}"
+    "rights": "All rights reserved, Bon Bocon."
   },
   "watch": {
     "previewNotice": "This is a preview: the first {seconds} seconds are free.",

@@ -35,6 +35,13 @@ export function AccountMenu({ lang, dict, inline = false }: { lang: Locale; dict
           {dict.nav.history}
         </Link>
       </li>
+      {user.actor === "Customer" && (
+        <li role="none">
+          <Link role="menuitem" href={localePath(lang, "/account/profile")} className={itemClass}>
+            {dict.nav.profile}
+          </Link>
+        </li>
+      )}
       <li role="none">
         <button type="button" role="menuitem" onClick={() => void logout()} className={itemClass}>
           {dict.nav.logout}

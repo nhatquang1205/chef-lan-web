@@ -155,6 +155,15 @@ export interface Customer {
   email: string | null;
   fullName: string;
   phone?: string | null;
+  /** Slug of one of the provinces from GET /provinces; null until the customer fills it in. */
+  provinceCode?: string | null;
+  /** Phone and province are both filled in. Absent from an older API. */
+  profileComplete?: boolean;
+}
+
+export interface Province {
+  code: string;
+  name: string;
 }
 
 /** An admin who signed in through the shared login (see the backend's CustomerAuthController). */
@@ -172,6 +181,13 @@ export interface Staff {
  * exactly one of `customer` and `staff` is present. /auth/register returns the customer shape
  * without `actor`.
  */
+/** `GET /api/v1/me`: exactly one of `customer` and `staff` is present. */
+export interface MeResponse {
+  actor: "Customer" | "Staff";
+  customer?: Customer;
+  staff?: Staff;
+}
+
 export interface SessionResponse {
   actor?: "Customer" | "Staff";
   accessToken: string;

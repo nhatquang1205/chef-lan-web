@@ -7,6 +7,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { TrialBanner } from "@/components/TrialBanner";
 import { Footer } from "@/components/Footer";
 import { AuthProvider } from "@/lib/auth/AuthProvider";
+import { ProfileGate } from "@/lib/auth/ProfileGate";
 import { CatalogStateProvider } from "@/lib/catalogState/CatalogStateProvider";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
 import { hasLocale, locales } from "@/i18n/config";
@@ -56,6 +57,10 @@ export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
         <AuthProvider>
           <CatalogStateProvider>
             <TrialBanner dict={dict} />
+            {/* Reads the pathname, so it too waits for the request. */}
+            <Suspense fallback={null}>
+              <ProfileGate lang={lang} />
+            </Suspense>
             {/* The header reads the pathname, which is only known per request. */}
             <Suspense
               fallback={
@@ -77,7 +82,7 @@ export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
               />
             </Suspense>
             <main className="flex-1">{children}</main>
-            <Footer lang={lang} dict={dict} />
+            <Footer dict={dict} />
           </CatalogStateProvider>
         </AuthProvider>
       </body>

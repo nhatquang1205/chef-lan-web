@@ -5,7 +5,7 @@ import type { CourseListItem, Paged } from "@/lib/api/types";
 import { localePath, publicLocales } from "@/i18n/config";
 import { siteUrl } from "@/lib/site";
 
-const staticPaths = ["/", "/courses", "/terms", "/privacy", "/refund"];
+const staticPaths = ["/", "/courses"];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Resolved per request: building must not need the API.

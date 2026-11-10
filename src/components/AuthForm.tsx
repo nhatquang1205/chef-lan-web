@@ -6,6 +6,7 @@ import { useId, useState, useSyncExternalStore } from "react";
 import { useAuth, type AuthFailure } from "@/lib/auth/AuthProvider";
 import { localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
+import { profileHref, safeNext } from "@/lib/auth/profileRedirect";
 import { template } from "@/lib/format";
 
 const subscribeNothing = () => () => {};
@@ -13,11 +14,6 @@ const subscribeNothing = () => () => {};
 /** False until the page's JavaScript has hydrated this form. */
 function useHydrated() {
   return useSyncExternalStore(subscribeNothing, () => true, () => false);
-}
-
-/** Same-origin paths only: `?next=https://evil.example` or `//evil.example` would be an open redirect. */
-function safeNext(value: string | null): string | null {
-  return value && value.startsWith("/") && !value.startsWith("//") && !value.includes("\\") ? value : null;
 }
 
 function message(failure: AuthFailure, dict: Dictionary): string {
@@ -71,7 +67,7 @@ export function AuthForm({ mode, lang, dict }: { mode: "login" | "register"; lan
         });
 
     if (result.ok) {
-      router.replace(destination);
+      router.replace(result.user.actor === "Customer" && result.user.profileComplete === false ? profileHref(lang, destination) : destination);
       return;
     }
 

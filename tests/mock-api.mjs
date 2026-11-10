@@ -14,7 +14,22 @@ for (let n = 1; n <= 10; n++) {
   // One buyer per checkout test: a paid order makes its buyer an owner, and tests run in parallel.
   users[`buyer${n}@test.dev`] = { token: `tok-buyer${n}`, actor: "Customer", id: 30 + n, name: `Buyer ${n}` };
 }
+// One incomplete customer per test that saves a profile: the mock keeps the change, and tests run in parallel.
+for (let n = 1; n <= 8; n++) {
+  users[`incomplete${n}@test.dev`] = { token: `tok-incomplete${n}`, actor: "Customer", id: 60 + n, name: `Incomplete ${n}`, phone: null, provinceCode: null };
+}
 const PASSWORD = "Passw0rd!";
+const provinces = [
+  { code: "ha-noi", name: "Hà Nội" },
+  { code: "da-nang", name: "Đà Nẵng" },
+  { code: "ho-chi-minh", name: "TP. Hồ Chí Minh" },
+];
+const customerBody = (user, email) => {
+  const phone = user.phone === undefined ? "0901234567" : user.phone;
+  const provinceCode = user.provinceCode === undefined ? "ha-noi" : user.provinceCode;
+  return { id: user.id, email, fullName: user.name, phone, provinceCode, profileComplete: Boolean(phone && provinceCode) };
+};
+const emailOf = (user) => Object.keys(users).find((key) => users[key] === user);
 
 const ownedBy = new Set([1]);
 const freeOwnedBy = new Set();
@@ -97,13 +112,13 @@ const session = (user) => ({
   refreshToken: `refresh-${user.token}`,
   ...(user.actor === "Staff"
     ? { staff: { id: user.id, email: "admin@test.dev", displayName: user.name, role: "Admin", mustChangePassword: false } }
-    : { customer: { id: user.id, email: "x@test.dev", fullName: user.name } }),
+    : { customer: customerBody(user, emailOf(user)) }),
 });
 
 const server = createServer((req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Headers", "authorization, content-type");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
 
   if (req.method === "OPTIONS") {
     return json(res, 204);
@@ -146,6 +161,29 @@ const server = createServer((req, res) => {
           `<p id="merchant">${form.merchant}</p><p id="signature">${form.signature}</p>` +
           `<a id="back" href="${form.success_url}">Back to the shop</a>`,
       );
+    }
+
+    if (path === "/api/v1/provinces") return json(res, 200, provinces);
+
+    if (path === "/api/v1/me" && req.method === "GET") {
+      if (!user) return json(res, 401, {});
+      return user.actor === "Staff"
+        ? json(res, 200, { actor: "Staff", staff: session(user).staff })
+        : json(res, 200, { actor: "Customer", customer: customerBody(user, emailOf(user)) });
+    }
+
+    if (path === "/api/v1/me/profile" && req.method === "PUT") {
+      if (!user || user.actor !== "Customer") return json(res, 401, {});
+      const { fullName, phone, provinceCode } = JSON.parse(body || "{}");
+      const errors = {};
+      if (!fullName) errors.FullName = ["Tên không được để trống."];
+      if (!/^\+?[0-9]{9,15}$/.test(String(phone ?? "").replace(/[\s.]/g, ""))) errors.Phone = ["Số điện thoại không hợp lệ."];
+      if (!provinces.some((p) => p.code === provinceCode)) errors.ProvinceCode = ["Tỉnh/thành không hợp lệ."];
+      if (Object.keys(errors).length > 0) return json(res, 400, { status: 400, title: "Validation", errors });
+      user.name = fullName;
+      user.phone = String(phone).replace(/[\s.]/g, "");
+      user.provinceCode = provinceCode;
+      return json(res, 200, customerBody(user, emailOf(user)));
     }
 
     if (path === "/api/v1/checkout/config") return json(res, 200, { enabled: true });

@@ -101,10 +101,18 @@ the return URL. Things that bite:
   reuse the kept-alive page with stale access.
 - Order pages are `noindex` and disallowed in `robots.ts`. Another customer's order is a 404, by design.
 - `/account/orders` lists the customer's orders; a Pending one links back to its payment page. Admin logins have no orders.
-- The terms, privacy and refund text in `src/content/legal.ts` describes this flow: change them together with it.
+- There are no terms, privacy or refund pages for now (plan 09 removed them: `/terms` etc. are 404).
 - Playwright (`tests/mock-api.mjs`) plays both SePay and the bank: `POST /__mock/gateway` echoes the form it received, `POST /__mock/pay/{code}` and
   `/__mock/expire/{code}` stand for the payment and the deadline. One buyer account per test, because a paid order makes its buyer an owner and
   tests run in parallel.
+
+## Profile gate
+
+A signed-in **customer** whose `profileComplete` is `false` is sent to `/account/profile?next=<path>` from every page by
+`ProfileGate` (`src/lib/auth/ProfileGate.tsx`, in the layout under Suspense, renders nothing). Exempt: `/account/profile`,
+`/login`, `/activate`. Staff, anonymous visitors and an unknown state (`undefined`, a session saved before the field existed,
+until `GET /me` answers) are never gated. Login and invite activation go straight to the profile page when incomplete.
+`next` is always checked with `safeNext` (`src/lib/auth/profileRedirect.ts`). See `docs/plans/09-profile-completion-no-legal.md`.
 
 ## Header categories dropdown
 

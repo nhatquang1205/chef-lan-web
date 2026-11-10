@@ -23,7 +23,8 @@
     "account": "Tài khoản",
     "myCourses": "Khóa học của tôi",
     "history": "Lịch sử",
-    "orders": "Đơn hàng"
+    "orders": "Đơn hàng",
+    "profile": "Thông tin cá nhân"
   },
   "common": {
     "loading": "Đang tải…",
@@ -162,14 +163,27 @@
     "contact": "Liên hệ Chef Lan",
     "loginLink": "Đến trang đăng nhập"
   },
+  "profile": {
+    "title": "Thông tin cá nhân",
+    "intro": "Vui lòng cho chúng tôi biết số điện thoại và tỉnh/thành của bạn để tiếp tục.",
+    "name": "Tên",
+    "email": "Email",
+    "phone": "Số điện thoại",
+    "province": "Tỉnh/thành",
+    "provincePlaceholder": "Chọn tỉnh/thành",
+    "save": "Lưu",
+    "saving": "Đang lưu…",
+    "loading": "Đang tải…",
+    "loadFailed": "Không tải được danh sách tỉnh/thành. Vui lòng tải lại trang.",
+    "staff": "Tài khoản quản trị không có thông tin cá nhân của học viên.",
+    "nameRequired": "Vui lòng nhập tên.",
+    "phoneInvalid": "Số điện thoại không hợp lệ (9 đến 15 chữ số).",
+    "provinceRequired": "Vui lòng chọn tỉnh/thành."
+  },
   "footer": {
     "contact": "Liên hệ",
     "hours": "08:00 – 22:00",
-    "rights": "Bản quyền thuộc Bon Bocon.",
-    "terms": "Điều khoản sử dụng",
-    "privacy": "Chính sách bảo mật",
-    "refund": "Chính sách hoàn tiền",
-    "updated": "Cập nhật lần cuối: {date}"
+    "rights": "Bản quyền thuộc Bon Bocon."
   },
   "watch": {
     "previewNotice": "Đây là bản xem thử: {seconds} giây đầu được xem miễn phí.",

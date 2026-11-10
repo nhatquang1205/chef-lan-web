@@ -1,12 +1,12 @@
 import { expect, test } from "@playwright/test";
 import { dict } from "./helpers";
 
-test.describe("seo and legal", () => {
-  test("sitemap lists the courses and legal pages in Vietnamese only", async ({ request }) => {
+test.describe("seo", () => {
+  test("sitemap lists the courses in Vietnamese only", async ({ request }) => {
     const xml = await (await request.get("/sitemap.xml")).text();
     expect(xml).toContain("/courses/macaron");
     expect(xml).not.toContain("/en/");
-    for (const path of ["/terms", "/privacy", "/refund"]) expect(xml).toContain(path);
+    for (const path of ["/terms", "/privacy", "/refund"]) expect(xml).not.toContain(path);
   });
 
   test("robots.txt points at the sitemap", async ({ request }) => {
@@ -27,16 +27,14 @@ test.describe("seo and legal", () => {
     await expect(page.locator('meta[name="robots"]').first()).toHaveAttribute("content", /noindex/);
   });
 
-  for (const [path, title] of [
-    ["/terms", dict.footer.terms],
-    ["/privacy", dict.footer.privacy],
-    ["/refund", dict.footer.refund],
-  ] as const) {
-    test(`${path} renders and is linked from the footer`, async ({ page }) => {
-      await page.goto("/");
-      await page.getByRole("navigation", { name: "Legal" }).getByRole("link", { name: title }).click();
-      await expect(page).toHaveURL(new RegExp(`${path}$`));
-      await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  for (const path of ["/terms", "/privacy", "/refund"]) {
+    test(`${path} is gone`, async ({ request }) => {
+      expect((await request.get(path, { maxRedirects: 0 })).status()).toBe(404);
     });
   }
+
+  test("the footer has no legal links", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByRole("navigation", { name: "Legal" })).toHaveCount(0);
+  });
 });

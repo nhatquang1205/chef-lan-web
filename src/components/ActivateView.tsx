@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { apiFetch, ApiError } from "@/lib/api/client";
 import { useAuth, type AuthFailure } from "@/lib/auth/AuthProvider";
+import { profileHref } from "@/lib/auth/profileRedirect";
 import { template } from "@/lib/format";
 import { localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
@@ -126,7 +127,8 @@ export function ActivateView({ lang, dict }: { lang: Locale; dict: Dictionary })
     const result = await auth.acceptInvite(token, password);
 
     if (result.ok) {
-      router.replace(`${localePath(lang, "/account/courses")}?activated=1`);
+      const destination = `${localePath(lang, "/account/courses")}?activated=1`;
+      router.replace(result.user.actor === "Customer" && result.user.profileComplete === false ? profileHref(lang, destination) : destination);
       return;
     }
 

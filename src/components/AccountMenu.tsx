@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRef, useState } from "react";
+import { useOutsideClose } from "@/lib/useOutsideClose";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
@@ -13,6 +14,8 @@ export function AccountMenu({ lang, dict, inline = false }: { lang: Locale; dict
   const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
   const pointer = useRef<string>("mouse");
+  const root = useRef<HTMLDivElement>(null);
+  useOutsideClose(open, [root], () => setOpen(false));
 
   if (!user) {
     return null;
@@ -59,10 +62,6 @@ export function AccountMenu({ lang, dict, inline = false }: { lang: Locale; dict
   if (inline) {
     return (
       <div className="w-full">
-        <p className="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-beige">
-          <span className="truncate">{user.name}</span>
-          {admin}
-        </p>
         <ul role="menu" aria-label={dict.account.menuLabel} className="flex flex-col">
           {items}
         </ul>
@@ -72,6 +71,7 @@ export function AccountMenu({ lang, dict, inline = false }: { lang: Locale; dict
 
   return (
     <div
+      ref={root}
       className="relative"
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}

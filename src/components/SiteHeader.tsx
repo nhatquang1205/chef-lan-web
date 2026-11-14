@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { AccountMenu } from "./AccountMenu";
 import { LanguageToggle } from "./LanguageToggle";
 import { Logo } from "./Logo";
 import { useAuth } from "@/lib/auth/AuthProvider";
+import { useOutsideClose } from "@/lib/useOutsideClose";
 import { localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 
@@ -36,6 +37,31 @@ export function SiteHeader({
   const pathname = usePathname();
   const auth = useAuth();
   const hydrated = useHydrated();
+  const menuRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const categoriesRef = useRef<HTMLDivElement>(null);
+  const [menuPath, setMenuPath] = useState(pathname);
+
+  if (menuPath !== pathname) {
+    setMenuPath(pathname);
+    setOpen(false);
+  }
+
+  useOutsideClose(open, [menuRef, menuButtonRef], () => setOpen(false));
+  useOutsideClose(categoriesOpen, [categoriesRef], () => setCategoriesOpen(false));
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open]);
 
   const home = localePath(lang, "/");
   const items = [
@@ -59,19 +85,26 @@ export function SiteHeader({
       active ? "text-beige underline decoration-terracotta decoration-2 underline-offset-8" : "text-beige/75 hover:text-beige"
     }`;
 
-  const renderAccount = (inline: boolean) => !hydrated || auth.status === "loading" ? (
+  const loading = !hydrated || auth.status === "loading";
+  const user = auth.status === "authenticated" ? auth.user : null;
+
+  const loginLink = (className: string) => (
+    <Link
+      href={localePath(lang, "/login")}
+      aria-current={pathname === localePath(lang, "/login") ? "page" : undefined}
+      className={`rounded bg-terracotta font-semibold uppercase tracking-widest text-beige hover:bg-terracotta-hover ${className}`}
+    >
+      {dict.nav.login}
+    </Link>
+  );
+
+  const renderAccount = () => loading ? (
     // Reserve the space so the header does not jump when the session is read.
     <div aria-hidden className="h-9 w-28" />
-  ) : auth.status === "authenticated" && auth.user ? (
-      <AccountMenu lang={lang} dict={dict} inline={inline} />
+  ) : user ? (
+      <AccountMenu lang={lang} dict={dict} />
     ) : (
-      <Link
-        href={localePath(lang, "/login")}
-        aria-current={pathname === localePath(lang, "/login") ? "page" : undefined}
-        className="rounded bg-terracotta px-4 py-2 text-sm font-semibold uppercase tracking-widest text-beige hover:bg-terracotta-hover"
-      >
-        {dict.nav.login}
-      </Link>
+      loginLink("px-4 py-2 text-sm")
     );
 
   return (
@@ -85,6 +118,7 @@ export function SiteHeader({
               // Opens on hover, on focus, and on tap/click of the chevron; Escape or leaving closes it.
               <div
                 key={item.key}
+                ref={categoriesRef}
                 className="relative flex items-center"
                 onMouseEnter={() => setCategoriesOpen(true)}
                 onMouseLeave={() => setCategoriesOpen(false)}
@@ -133,25 +167,40 @@ export function SiteHeader({
 
         <div className="hidden items-center gap-5 md:flex">
           <LanguageToggle lang={lang} label={dict.nav.language} />
-          {renderAccount(false)}
+          {renderAccount()}
         </div>
 
-        <button
-          type="button"
-          className="rounded p-2 md:hidden"
-          aria-expanded={open}
-          aria-controls="mobile-menu"
-          aria-label={open ? dict.nav.closeMenu : dict.nav.menu}
-          onClick={() => setOpen((value) => !value)}
-        >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-            {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
-          </svg>
-        </button>
+        <div className="flex min-w-0 items-center gap-2 md:hidden">
+          {loading ? (
+            <div aria-hidden className="h-8 w-16" />
+          ) : user ? (
+            <p className="flex min-w-0 max-w-40 items-center gap-2 text-sm font-semibold text-beige">
+              <span className="truncate">{user.name}</span>
+              {user.actor === "Staff" && (
+                <span className="shrink-0 rounded bg-terracotta px-2 py-0.5 text-xs font-semibold uppercase tracking-widest">{dict.auth.adminBadge}</span>
+              )}
+            </p>
+          ) : (
+            loginLink("px-3 py-1.5 text-xs")
+          )}
+          <button
+            ref={menuButtonRef}
+            type="button"
+            className="shrink-0 rounded p-2"
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            aria-label={open ? dict.nav.closeMenu : dict.nav.menu}
+            onClick={() => setOpen((value) => !value)}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+              {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
+            </svg>
+          </button>
+        </div>
       </div>
 
       {open && (
-        <div id="mobile-menu" className="border-t border-beige/15 px-4 pb-5 pt-3 md:hidden" onClick={() => setOpen(false)}>
+        <div ref={menuRef} id="mobile-menu" className="border-t border-beige/15 px-4 pb-5 pt-3 md:hidden" onClick={() => setOpen(false)}>
           <nav aria-label="Main" className="flex flex-col">
             {items.map((item) => (
               <div key={item.key}>
@@ -162,9 +211,9 @@ export function SiteHeader({
               </div>
             ))}
           </nav>
-          <div className="mt-3 flex flex-wrap items-start justify-between gap-4 border-t border-beige/15 pt-4" onClick={(e) => e.stopPropagation()}>
+          <div className="mt-3 flex flex-wrap items-start justify-between gap-4 border-t border-beige/15 pt-4">
             <LanguageToggle lang={lang} label={dict.nav.language} />
-            {renderAccount(true)}
+            {!loading && user && <AccountMenu lang={lang} dict={dict} inline />}
           </div>
         </div>
       )}

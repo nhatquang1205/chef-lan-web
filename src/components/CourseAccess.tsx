@@ -106,7 +106,12 @@ export function NotOwnedBadge({
  * bank transfer. Hidden once the viewer owns the whole course (staff see everything, so they never see it either).
  */
 export function BuyNote({ dict, lang, slug, returnTo }: { dict: Dictionary; lang: Locale; slug: string; returnTo: string }) {
-  const { access } = useContext(AccessContext);
+  const { access, ready } = useContext(AccessContext);
+
+  if (!ready) {
+    // Same height as the button (py-3 + one line), so the page does not jump when access is known.
+    return <div aria-hidden className="invisible h-12" />;
+  }
 
   if (access.hasCourseAccess) {
     return null;

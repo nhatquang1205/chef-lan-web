@@ -181,7 +181,13 @@ async function Content({ params }: { params: PageProps<"/[lang]/courses/[slug]">
               >
                 {course.images.map((image, index) => (
                   <div key={image.url} className="relative aspect-[4/3]">
-                    <Thumbnail src={image.url} alt={image.alt || course.title} priority={index === 0} sizes="(min-width: 768px) 50vw, 100vw" />
+                    <Thumbnail
+                      src={image.url}
+                      alt={image.alt || course.title}
+                      priority={index === 0}
+                      loading={index === 0 ? undefined : "eager"}
+                      sizes="(min-width: 768px) 50vw, 100vw"
+                    />
                   </div>
                 ))}
               </Carousel>

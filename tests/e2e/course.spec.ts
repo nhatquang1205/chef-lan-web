@@ -23,6 +23,17 @@ test.describe("course page", () => {
     expect(await top(ownHeading)).toBeLessThan(await top(outline.getByRole("heading", { level: 3, name: "Step one" })));
   });
 
+  test("every gallery image loads eagerly, only the first with high priority", async ({ page }) => {
+    await page.goto("/courses/with-module");
+    const images = page.getByRole("region", { name: dict.course.gallery }).locator("img");
+    await expect(images).toHaveCount(3);
+
+    for (const [index, image] of (await images.all()).entries()) {
+      await expect(image).toHaveAttribute("loading", "eager");
+      await expect(image).toHaveAttribute("fetchpriority", index === 0 ? "high" : "low");
+    }
+  });
+
   test("a course without a module has no title heading in the outline", async ({ page }) => {
     await page.goto("/courses/macaron");
     const outline = page.locator("section", { has: page.getByRole("heading", { level: 2, name: dict.course.outline }) });

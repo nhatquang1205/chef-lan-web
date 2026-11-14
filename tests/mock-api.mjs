@@ -98,8 +98,9 @@ const freeItem = {
 const sharedItem = { ...listItem, id: 2, slug: "sauce-base", title: "Sauce base", subtitle: "A module shared by several courses", lessonCount: 1 };
 const detail = { ...listItem, images: [], includedCourses: [], includedIn: [], totalLessonCount: 2, totalDurationSecondsWithIncluded: 1200, lessons, metaDescription: "Learn to make macarons." };
 
+const pixel = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 const moduleDetail = {
-  ...detail, id: 4, slug: "with-module", title: "With module", lessonCount: 2,
+  ...detail, images: [1, 2, 3].map((n) => ({ url: `${pixel}#${n}`, alt: `Gallery ${n}` })), id: 4, slug: "with-module", title: "With module", lessonCount: 2,
   includedCourses: [{ slug: "sauce-base", title: "Sauce base", lessonCount: 1, totalDurationSeconds: 600,
     lessons: [{ id: 20, slug: "sauce-one", title: "Sauce one", sortOrder: 1, durationSeconds: 600, includedInCourse: true, videos: [video("bbbbbbbbbbbbbbb1", "Base", 600, false)] }] }],
 };

@@ -10,12 +10,15 @@ export function Thumbnail({
   alt,
   className = "",
   priority = false,
+  loading,
   sizes,
 }: {
   src?: string | null;
   alt: string;
   className?: string;
   priority?: boolean;
+  /** Overrides the loading derived from `priority`, e.g. eager but not high priority for off-screen gallery slides. */
+  loading?: "eager" | "lazy";
   sizes?: string;
 }) {
   if (!src) {
@@ -28,6 +31,8 @@ export function Thumbnail({
     );
   }
 
+  const resolvedLoading = loading ?? (priority ? "eager" : "lazy");
+
   return (
     <Image
       src={src}
@@ -35,8 +40,8 @@ export function Thumbnail({
       fill
       unoptimized
       // `priority` is deprecated in Next 16; above-the-fold images load eagerly instead.
-      loading={priority ? "eager" : "lazy"}
-      fetchPriority={priority ? "high" : "auto"}
+      loading={resolvedLoading}
+      fetchPriority={priority ? "high" : resolvedLoading === "eager" ? "low" : "auto"}
       sizes={sizes}
       className={`object-cover ${className}`}
     />
